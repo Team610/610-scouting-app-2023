@@ -5,6 +5,7 @@ import styles from '../styles/Home.module.css'
 import { app } from '../firebase/FirebaseConfig'
 import Layout from './layout'
 
+
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {

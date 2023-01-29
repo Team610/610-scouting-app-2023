@@ -16,7 +16,7 @@ paddingLeft:"0px",}
         header = {
             <Header height = {70} p="md">
                 <div style={{display:"flex", alignItems: 'center', height:"100%"}}> 
-                    <Text size="xl" weight = "bolder">Team 610 Stopwatch</Text>
+                    <Text size="xl" weight = "bolder">Intake-Location</Text>
                 </div>
             </Header>
         }

@@ -51,7 +51,7 @@ export default function Home() {
       
       <Footer height={130} p="md">
           {coords.map((coord) => {
-            return <span>({coord.x}, {coord.y})    </span>
+            return <span>({coord.x}, {coord.y-85})    </span>
           })}
       </Footer>
     </div>

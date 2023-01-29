@@ -74,7 +74,11 @@ export default function Home() {
       </div>
       <Footer height={130} p="md">
           {coords.map((coord) => {
-            return <span>({coord[0]}, {coord[1]-85-37})    </span>
+            return (
+
+                <span>({coord[0]}, {coord[1]-85-37}, {coord[2]===2 ? 'Cube' : ''}
+                  {coord[2]===1 ? 'Cone':''})  </span>
+            )
           })}
       </Footer>
     </div>

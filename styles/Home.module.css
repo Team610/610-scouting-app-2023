@@ -7,6 +7,11 @@
   min-height: 100vh;
 }
 
+.gfg {
+  margin: 3%;
+  position: relative;
+}
+
 .description {
   display: inherit;
   justify-content: inherit;

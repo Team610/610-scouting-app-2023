@@ -19,6 +19,7 @@ import {
 } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import SignIn from './signIn';
+import Link from 'next/link'
 
 const useStyles = createStyles((theme) => ({
     link: {
@@ -96,15 +97,18 @@ export function HeaderMegaMenu() {
                 <Group position="apart" sx={{ height: '100%', color: 'black' }}>
 
                     <Group sx={{ height: '100%' }} spacing={0} className={classes.hiddenMobile}>
-                        <a href="#" className={classes.link}>
+                        <Link href="/" className={classes.link}>
+                            Home
+                        </Link>
+                        <Link href="/match" className={classes.link}>
                             Match
-                        </a>
-                        <a href="#" className={classes.link}>
+                        </Link>
+                        <Link href="/teams" className={classes.link}>
                             Teams
-                        </a>
-                        <a href="#" className={classes.link}>
+                        </Link>
+                        <Link href="/data" className={classes.link}>
                             Data
-                        </a>
+                        </Link>
                     </Group>
 
                     <Group className={classes.hiddenMobile}>

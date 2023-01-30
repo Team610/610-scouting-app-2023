@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { Checkbox, Switch } from '@mantine/core';
 import { Text } from '@mantine/core';
 
-let isDocked = false;
+
 
 function AutoOuTele({ setMatchState }: { setMatchState: Function }) {
     const [checked, setChecked] = useState(false);
+    //set the match state to if the match is tele (true) or auto (false)
     setMatchState(checked ? true : false);
 
     return (
@@ -18,92 +19,77 @@ function AutoOuTele({ setMatchState }: { setMatchState: Function }) {
         </>
     );
 }
-function Dock({ name, setPoints, matchState }: { name: String, setPoints: Function, matchState: boolean }) {
-
-    const [checked, setChecked] = useState(false);
-
-    if (checked && name === "Docked") {
-        setPoints(!matchState ? 8 : 6)
-        isDocked = true
-    } else if (name === "Docked") {
-        setPoints(0)
-        isDocked = false
+function ChargeScoring({ setPoints, isTele }: { setPoints: Function, isTele: boolean }) {
+    //see if the robot is docked
+    const [dockCheck, setDockCheck] = useState(false);
+    //see if the robot is engaged
+    const [engageCheck, setEngageCheck] = useState(false);
+    if (dockCheck && !engageCheck) {  //only dock, not engaged
+        setPoints(!isTele ? 8 : 6);
+    } else if (dockCheck && engageCheck) { //dock and engage
+        setPoints(!isTele ? 12 : 10);
+    } else { //anything else (not scoring)
+        setPoints(0);
     }
-    if (checked && isDocked && name === "Engaged") {
-        setPoints(!matchState ? 12 : 10)
-    } else if (isDocked && name === "Engaged") {
-        setPoints(!matchState ? 8 : 6)
-    }
+
     return (
         <>
-            <Checkbox
-                checked={checked} onChange={(event) => setChecked(event.currentTarget.checked)}
-                sx={{ "& .mantine-Checkbox-label": { color: "white", fontFamily: "arial", fontSize: "20px" } }}
-                label={name}
-            />
+            <div style={{ display: "flex", flexDirection: "column", gap: "15px" }}>
+                <Checkbox checked={dockCheck} onChange={(event) => setDockCheck(event.currentTarget.checked)}
+                    sx={{ "& .mantine-Checkbox-label": { color: "white", fontFamily: "arial", fontSize: "20px" } }} label="Docked" />
+
+                <Checkbox checked={engageCheck} onChange={(event) => setEngageCheck(event.currentTarget.checked)}
+                    sx={{ "& .mantine-Checkbox-label": { color: "white", fontFamily: "arial", fontSize: "20px" } }} label="Engaged" />
+            </div>
+
         </>
+
     );
 }
 
-export default function Charge() {
+export default function ChargeStation() {
+    //sees if the match is in tele
     const [isItTele, setMatchState] = useState(false);
-    const [pointPlayer1, setPointsForPlayer1] = useState(0);
-    const [pointPlayer2, setPointsForPlayer2] = useState(0);
-    const [pointPlayer3, setPointsForPlayer3] = useState(0);
+    //tracks points for each teams/players from 1-3
+    const [pointPlyr1, setPtsPlyr1] = useState(0);
+    const [pointPlyr2, setPtsPlyr2] = useState(0);
+    const [pointPlyr3, setPtsPlyr3] = useState(0);
 
     return (
         <>
-
             <div style={{ margin: "30px+50px", display: "flex", justifyContent: "center" }}>
                 <AutoOuTele setMatchState={setMatchState} />
             </div>
 
-            
-            <div style={{display: "flex", flexDirection: "row", gap: "50px", justifyContent: "center"}}>
+            <div style={{ display: "flex", flexDirection: "row", gap: "50px", justifyContent: "center" }}>
 
                 <div>
                     <Text style={{ margin: "20px+50px+15px", fontSize: "18px" }}>Team You're Scouting:</Text>
                     <div style={{ margin: "20px+50px+15px" }}>
-                        <Dock name={"Docked"} setPoints={setPointsForPlayer1} matchState={isItTele} />
+                        <ChargeScoring setPoints={setPtsPlyr1} isTele={isItTele} />
                     </div>
-                    <div style={{ margin: "0px+50px" }}>
-                        <Dock name={"Engaged"} setPoints={setPointsForPlayer1} matchState={isItTele} />
-                    </div>
-
-                    <Text style={{ margin: "10px+50px", color: "white", fontSize: "20px" }}>Single: {pointPlayer1}</Text>
+                    <Text style={{ margin: "10px+50px", color: "white", fontSize: "20px" }}>Single: {pointPlyr1}</Text>
                 </div>
 
                 <div>
                     <Text style={{ margin: "20px+50px+15px", fontSize: "18px" }}>Team 2:</Text>
                     <div style={{ margin: "20px+50px+15px" }}>
-                        <Dock name={"Docked"} setPoints={setPointsForPlayer2} matchState={isItTele} />
+                        <ChargeScoring setPoints={setPtsPlyr2} isTele={isItTele} />
                     </div>
-                    <div style={{ margin: "0px+50px" }}>
-                        <Dock name={"Engaged"} setPoints={setPointsForPlayer2} matchState={isItTele} />
-                    </div>
-
-                    <Text style={{ margin: "10px+50px", color: "white", fontSize: "20px" }}>Single: {pointPlayer2}</Text>
+                    <Text style={{ margin: "10px+50px", color: "white", fontSize: "20px" }}>Single: {pointPlyr2}</Text>
                 </div>
 
                 <div>
                     <Text style={{ margin: "20px+50px+15px", fontSize: "18px" }}>Team 3:</Text>
                     <div style={{ margin: "20px+50px+15px" }}>
-                        <Dock name={"Docked"} setPoints={setPointsForPlayer3} matchState={isItTele} />
+                        <ChargeScoring setPoints={setPtsPlyr3} isTele={isItTele} />
                     </div>
-                    <div style={{ margin: "0px+50px" }}>
-                        <Dock name={"Engaged"} setPoints={setPointsForPlayer3} matchState={isItTele} />
-                    </div>
-
-                    <Text style={{ margin: "10px+50px", color: "white", fontSize: "20px" }}>Single: {pointPlayer3}</Text>
+                    <Text style={{ margin: "10px+50px", color: "white", fontSize: "20px" }}>Single: {pointPlyr3}</Text>
                 </div>
-
 
             </div>
 
-
-
-            <Text style={{ margin: "10px+50px", color: "white", fontSize: "20px", display: "flex", justifyContent: "center" }}>Team: {pointPlayer1 + pointPlayer2 + pointPlayer3}</Text>
+            <Text style={{ margin: "10px+50px", color: "white", fontSize: "20px", display: "flex", justifyContent: "center" }}>Team: {pointPlyr1 + pointPlyr2 + pointPlyr3}</Text>
         </>
     );
 }
-

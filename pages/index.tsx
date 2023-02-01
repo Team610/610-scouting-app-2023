@@ -4,13 +4,14 @@ import { Inter } from '@next/font/google'
 import styles from '../styles/Home.module.css'
 import {app} from '../firebase/FirebaseConfig'
 import { setDoc } from 'firebase/firestore'
-import {ok} from '../firebase/GabeTesting';
+import {editDoc, read} from '../firebase/GabeTesting';
 
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
   const firebase = app
-  ok()
+  editDoc()
+  read()
   return (
     <>
 

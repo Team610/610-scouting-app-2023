@@ -6,6 +6,9 @@ import "firebase/firestore";
 import { getDatabase, ref, set } from "firebase/database";
 import {doc, setDoc } from "firebase/firestore";
 
-await setDoc(doc(database, "test"), {
+
+export async function ok (){
+await setDoc(doc(database, "match", "test"), {
   name: "jo"
 });
+}

@@ -1,9 +1,73 @@
+.links{
+  color: orange;
+  text-decoration: underline;
+  display: flex;
+  padding: 1rem;
+  font-family: 'Lucida Sans', "Lucida Console", "Lucida Sans Typewriter", monaco, "Bitstream Vera Sans Mono", monospace;
+}
+
+.buttons{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  text-align: center;
+  padding: 1rem;
+  font-family: 'Lucida Sans', "Lucida Console", "Lucida Sans Typewriter", monaco, "Bitstream Vera Sans Mono", monospace;
+}
+
+.navbar{
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  flex: 1 0 auto;
+  background-color: rgb(63, 179, 164);
+  font-family: 'Lucida Sans', "Lucida Console", "Lucida Sans Typewriter", monaco, "Bitstream Vera Sans Mono", monospace; 
+}
+
+.footer{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+
+  background-color:rgb(94, 202, 159);
+  color:rgb(255, 255, 255);
+  font-size: 3rem;
+  font-family: 'Lucida Sans', "Lucida Console", "Lucida Sans Typewriter", monaco, "Bitstream Vera Sans Mono", monospace;
+}
+
+.header{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  
+  background-image: url('../pages/image/Banner.png');
+  width: 100%;
+  height: 400px;
+  background-repeat: no-repeat;
+  background-size: cover;
+  border: 5px solid rgb(255, 255, 255);
+  background-blend-mode: color;
+  background-position: center;
+
+  color:rgb(202, 128, 94);
+  font-size: 3rem;
+  font-family: 'Lucida Sans', "Lucida Console", "Lucida Sans Typewriter", monaco, "Bitstream Vera Sans Mono", monospace;
+}
+
 .main {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 6rem;
+  padding: 7rem;
   min-height: 100vh;
 }
 
@@ -77,11 +141,29 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  padding: 4rem 0;
+  padding: 2rem;
+  background-color: rgb(63, 179, 164);
+  font-family: 'Lucida Sans', "Lucida Console", "Lucida Sans Typewriter", monaco, "Bitstream Vera Sans Mono", monospace; 
+}
+
+.banner{
+  border-style: solid;
+  border-color: black; 
+  width: 1600px;
+  height: 350px;
+  object-fit: cover;
+}
+
+.top{
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  height: auto;
 }
 
 .center::before {
-  background: var(--secondary-glow);
   border-radius: 50%;
   width: 480px;
   height: 360px;
@@ -89,7 +171,6 @@
 }
 
 .center::after {
-  background: var(--primary-glow);
   width: 240px;
   height: 180px;
   z-index: -1;

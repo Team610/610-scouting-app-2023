@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Field from "./field";
+import TimerFunction from "./TimerFunction";
 
 export interface GamePiece {
   auto: boolean;
@@ -16,6 +17,9 @@ export interface Score {
 export default function MatchScreen() {
   const [gamePieces, setGamePieces] = useState<GamePiece[]>([]);
   const [score, setScore] = useState(0);
+  const [auto, setAuto] = useState(true);
+
+  let time = TimerFunction(15, setAuto);
 
   const scores = {
     lvl1: 2,
@@ -24,14 +28,13 @@ export default function MatchScreen() {
   };
 
   function addGamePiece(
-    auto: boolean,
     level: number,
     cone: boolean,
     grid: number,
     remove: boolean | undefined
   ) {
     let obj: GamePiece = {
-      auto: false,
+      auto: auto,
       level: level,
       cone: cone,
       grid: grid,
@@ -52,6 +55,7 @@ export default function MatchScreen() {
     <>
       <p>Score: {score}</p>
       <Field addGamePiece={addGamePiece} />
+      {auto ? "auto" : "teleop"}
     </>
   );
 }

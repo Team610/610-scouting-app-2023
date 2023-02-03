@@ -22,6 +22,7 @@
     "firebase": "^9.15.0",
     "next": "13.1.2",
     "next-auth": "^4.18.10",
+    "next-images": "^1.8.4",
     "react": "18.2.0",
     "react-detect-click-outside": "^1.1.7",
     "react-dom": "18.2.0",

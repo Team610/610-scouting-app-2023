@@ -82,10 +82,10 @@ function Box({ gamePiece, level, addGamePiece, grid }: BoxProps) {
               else {
                 if (gamePiece == "cone") {
                   setContent(cone);
-                  addGamePiece(false, level, true, grid);
+                  addGamePiece(level, true, grid);
                 } else {
                   setContent(cube);
-                  addGamePiece(false, level, false, grid);
+                  addGamePiece(level, false, grid);
                 }
               }
             }
@@ -95,7 +95,7 @@ function Box({ gamePiece, level, addGamePiece, grid }: BoxProps) {
                 //open up menu to change selection
                 open();
               }
-              addGamePiece(false, level, gamePiece, grid, true);
+              addGamePiece(level, gamePiece, grid, true);
               setContent(undefined);
             }
           }}
@@ -121,11 +121,11 @@ function Box({ gamePiece, level, addGamePiece, grid }: BoxProps) {
               width={30}
               onClick={() => {
                 if (content == cone) {
-                  addGamePiece(false, level, gamePiece == "cone", grid, true);
+                  addGamePiece(level, gamePiece == "cone", grid, true);
                   setContent(undefined);
                 } else {
                   setContent(cone);
-                  addGamePiece(false, level, gamePiece == "cone", grid, false);
+                  addGamePiece(level, gamePiece == "cone", grid, false);
                 }
                 close();
               }}
@@ -137,10 +137,10 @@ function Box({ gamePiece, level, addGamePiece, grid }: BoxProps) {
               onClick={() => {
                 if (content == cube) {
                   setContent(undefined);
-                  addGamePiece(false, level, gamePiece == "cube", grid, true);
+                  addGamePiece(level, gamePiece == "cube", grid, true);
                 } else {
                   setContent(cube);
-                  addGamePiece(false, level, gamePiece == "cube", grid, false);
+                  addGamePiece(level, gamePiece == "cube", grid, false);
                 }
                 close();
               }}

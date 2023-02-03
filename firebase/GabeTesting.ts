@@ -17,12 +17,21 @@ export async function editDoc() {
   });
 }
 
+export async function editDocument(collection: string) {
+  await setDoc(doc(database, "match", collection), {
+    name: "joe"
+  });
+}
+
 export async function deleteStuff() {
   await deleteDoc(doc(database, "match", "test"));
 }
 
-export async function read() {
+export async function deleteDocument(collection: string) {
+  await deleteDoc(doc(database, "match", collection));
+}
 
+export async function read() {
   const docSnap = await getDoc(doc(database, "match", "test"));
 
   if (docSnap.exists()) {

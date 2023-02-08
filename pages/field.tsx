@@ -92,6 +92,7 @@ function Box({ gamePiece, level, addGamePiece, grid }: BoxProps) {
             //if cell is not empty, the game piece can be anything, and it already has a gamepiece in it
             else {
               if (gamePiece == "any") {
+                console.log("made it");
                 //open up menu to change selection
                 open();
               }

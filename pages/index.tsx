@@ -9,12 +9,13 @@ import Link from "next/link";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-
   return (
     <>
-      <div className = {styles.center}>
+      <div className={styles.center}>
         <h2>
-          <Link href='/match' className = {styles.center}>Start</Link>
+          <Link href="/match" className={styles.center}>
+            Start
+          </Link>
         </h2>
       </div>
     </>

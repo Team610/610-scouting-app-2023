@@ -1,7 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import ChargeStation from "./ChargeStation";
+import { deafultChargingStation } from "./match";
 
-export default function TimerFunction(count: number, setAuto: Function) {
+export default function TimerFunction(
+  count: number,
+  setGameState: Function,
+  setChargingStation: Function
+) {
   const [time, setTime] = useState(count);
 
   // redirect page to "TeleOp" after 10 seconds while displaying remaining time on page
@@ -10,7 +16,8 @@ export default function TimerFunction(count: number, setAuto: Function) {
       setTime(time - 1);
     }, 1000);
     if (time === 0) {
-      setAuto(false);
+      setGameState("teleop");
+      setChargingStation(deafultChargingStation);
     }
     return () => clearTimeout(timer);
   }, [time]);

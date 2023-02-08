@@ -7,10 +7,10 @@ import React, { useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { Piedra } from "@next/font/google";
 
-export interface IntakeLocation{
-  left: number,
-  top: number,
-  gamePiece: string
+export interface IntakeLocation {
+  left: number;
+  top: number;
+  gamePiece: string;
 }
 
 export default function Home() {
@@ -19,40 +19,34 @@ export default function Home() {
   const [opened, { close, open }] = useDisclosure(false);
 
   function handleClick(e: any) {
-    const handleMouseMove = (event: any) => {
-      setMousePos({ x: event.clientX, y: event.clientY });
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-
     let obj = {
       left: mousePos.x,
       top: mousePos.y,
-      gamePiece: ""
-    }
+      gamePiece: "",
+    };
     let temp = [...coords, obj];
     setCoords(temp);
     open();
   }
 
   function pieceSelected(x: any) {
-    let temp = coords
-    coords[coords.length - 1].gamePiece = x
+    let temp = coords;
+    coords[coords.length - 1].gamePiece = x;
     setCoords(temp);
     close();
   }
 
-  // React.useEffect(() => {
-  //   const handleMouseMove = (event: any) => {
-  //     setMousePos({ x: event.clientX, y: event.clientY });
-  //   };
+  React.useEffect(() => {
+    const handleMouseMove = (event: any) => {
+      setMousePos({ x: event.clientX, y: event.clientY });
+    };
 
-  //   window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove);
 
-  //   return () => {
-  //     window.removeEventListener("mousemove", handleMouseMove);
-  //   };
-  // }, []);
+    return () => {
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
 
   return (
     <div>
@@ -64,74 +58,77 @@ export default function Home() {
           style={{ position: "absolute" }}
           alt="image"
         />
-
       </div>
-      {coords.map((coord: IntakeLocation) => {
+      {coords.map((coord: IntakeLocation, idx) => {
+        if (!opened || idx !== coords.length - 1) {
           return (
             <Image
-                src={coord.gamePiece == "cone" ? cone: coord.gamePiece == "cube" ? cube:""}
-                alt="gamepiece"
-                style={{
-                  left: coord.left,
-                  top: coord.top,
-                  position: "absolute",
-                }}
-                width={30}
-              ></Image>
+              src={
+                coord.gamePiece == "cone"
+                  ? cone
+                  : coord.gamePiece == "cube"
+                  ? cube
+                  : ""
+              }
+              alt="gamepiece"
+              style={{
+                left: coord.left,
+                top: coord.top,
+                position: "absolute",
+              }}
+              width={30}
+            ></Image>
           );
-        })}
-        
-      <div style={{top: 80, left: 850, width: 500, height: 400, position: "absolute"}}>
-        {coords.map((coord: IntakeLocation) => {
-          return (
-            <span>
-              
-              ({coord.left}, {coord.top - 85 - 37}, {coord.gamePiece}
-              ){" "}
-            </span>
-          );
-        })}
-      </div>
-      {
-        opened ? 
-        <div
+        }
+      })}
+
+      <div
         style={{
-          display: "flex",
-          justifyContent: "center",
-          gap: "10px",
-          paddingTop: "10px",
-          left: coords[coords.length - 1].left - 35,
-          top: coords[coords.length - 1].top - 30,
+          top: 80,
+          left: 850,
+          width: 500,
+          height: 400,
           position: "absolute",
         }}
-      >
-        <GamePieceSelect pieceSelected={pieceSelected}/>
-
-      </div> : null
-      }
+      ></div>
+      {opened ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "10px",
+            paddingTop: "10px",
+            left: coords[coords.length - 1].left - 45,
+            top: coords[coords.length - 1].top - 40,
+            position: "absolute",
+          }}
+        >
+          <GamePieceSelect pieceSelected={pieceSelected} />
+        </div>
+      ) : null}
     </div>
   );
 }
 
-function GamePieceSelect({pieceSelected}: {pieceSelected: Function}) {
+function GamePieceSelect({ pieceSelected }: { pieceSelected: Function }) {
   return (
-      <div>
-        <Image
-          src={cone}
-          alt="gamepiece"
-          width={30}
-          onClick={() => {
-            pieceSelected("cone");
-          }}
-        ></Image>
-        <Image
-          src={cube}
-          alt="gamepiece"
-          width={30}
-          onClick={() => {
-            pieceSelected("cube");
-          }}
-        ></Image>
-      </div>
-    )
+    <div>
+      <Image
+        src={cone}
+        alt="gamepiece"
+        width={30}
+        onClick={() => {
+          pieceSelected("cone");
+        }}
+      ></Image>
+      <Image
+        src={cube}
+        alt="gamepiece"
+        width={30}
+        onClick={() => {
+          pieceSelected("cube");
+        }}
+      ></Image>
+    </div>
+  );
 }

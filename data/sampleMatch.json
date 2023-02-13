@@ -1,0 +1,23 @@
+{
+    "team": 1,
+    "match":1,
+    "teleopClimb":0,
+    "autoClimb":1,
+    "numPartners":1,
+    "cycles": [
+        {
+            "x": 20,
+            "y": 30,
+            "teleop": false,
+            "scoringPosition": "topLeft",
+            "object": "CONE"
+        },
+        {
+            "x": 80,
+            "y": 90,
+            "teleop": true,
+            "scoringPosition": null,
+            "object": "CUBE"
+        }
+    ]
+}

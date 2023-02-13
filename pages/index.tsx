@@ -2,7 +2,7 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from '@next/font/google'
 import styles from '../styles/Home.module.css'
-import { create100Teams,score } from '../neo4j/GabeTesting'
+import { create100Teams,score,climb } from '../neo4j/GabeTesting'
 import { Button } from '@mantine/core'
 const sampleMatch = require("../data/sampleMatch.json")
 
@@ -28,6 +28,7 @@ export default function Home() {
           </p>
           <Button onClick={() => create100Teams()}>CREATE</Button>
           <Button onClick={() => score({data:sampleMatch})}>Scored</Button>
+          <Button onClick={() => climb({data:sampleMatch})}>Climb</Button>
           <div>
             <a
               href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"

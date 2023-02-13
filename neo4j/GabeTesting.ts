@@ -22,11 +22,87 @@ export async function create100Teams() {
     }
   }
 }
+
+// climb
+export async function climb({ data }: { data: any }) {
+  let id: any;
+  if (data.teleopClimb != 0) {
+    let climbStatus: String;
+    if (data.teleopClimb == 1) {
+      climbStatus = "DOCKED"
+    } else {
+      climbStatus = "ENGAGED"
+    }
+    try {
+      const tx = session.beginTransaction()
+      const result = await tx.run(
+        'MERGE (c:TeleopClimb{team: toInteger($team)}) return ID(c)',
+        {
+          team: data.team,
+        },
+      )
+      id = result.records[0].get(0).toNumber()
+      await tx.commit()
+    } catch (error) {
+      console.error(error)
+    }
+    try {
+      const tx = session.beginTransaction()
+      const result = await tx.run(
+        'MATCH (t:Team), (c:TeleopClimb) WHERE t.name = toInteger($team) AND ID(c) = $id CREATE (t)-[r:' + climbStatus + '{match:toInteger($match), numPartners:toInteger($numPartners)}]->(c)',
+        {
+          match: data.match,
+          team: data.team,
+          id: id,
+          numPartners: data.numPartners
+        },
+      )
+      await tx.commit()
+    } catch (error) {
+      console.error(error)
+    }
+  }
+  if (data.autoClimb != 0) {
+    let climbStatus: String;
+    if (data.autoClimb == 1) {
+      climbStatus = "DOCKED"
+    } else {
+      climbStatus = "ENGAGED"
+    }
+    try {
+      const tx = session.beginTransaction()
+      const result = await tx.run(
+        'MERGE (c:AutoClimb{team: toInteger($team)}) return ID(c)',
+        {
+          team: data.team,
+        },
+      )
+      id = result.records[0].get(0).toNumber()
+      await tx.commit()
+    } catch (error) {
+      console.error(error)
+    }
+    try {
+      const tx = session.beginTransaction()
+      const result = await tx.run(
+        'MATCH (t:Team), (c:AutoClimb) WHERE t.name = toInteger($team) AND ID(c) = $id CREATE (t)-[r:' + climbStatus + '{match:toInteger($match)}]->(c)',
+        {
+          match: data.match,
+          team: data.team,
+          id: id,
+        },
+      )
+      await tx.commit()
+    } catch (error) {
+      console.error(error)
+    }
+  }
+}
+
 //score
 export async function score({ data }: { data: any }) {
+  //climb
   let id: any;
-  //increment through each cycle of the json
-  console.log(data.cycles.length)
   for (var i = 0; i < data.cycles.length; i++) {
     try {
       //create the cycle node for the current cycle
@@ -69,20 +145,22 @@ export async function score({ data }: { data: any }) {
         const tx2 = session.beginTransaction()
         const result2 = await tx2.run(
           'MERGE (z:ScoringPosition{name: $name, team:toInteger($team)}) RETURN ID(z)',
-          { name: data.cycles[i].scoringPosition, 
-            team: data.team },
+          {
+            name: data.cycles[i].scoringPosition,
+            team: data.team
+          },
         )
-          scoringId = result2.records[0].get(0).toNumber()
+        scoringId = result2.records[0].get(0).toNumber()
         await tx2.commit()
         console.log(id + " " + scoringId)
         const tx3 = session.beginTransaction()
         const result3 = await tx3.run(
           'MATCH (c:Cycle), (s:ScoringPosition) WHERE ID(c) = $id AND ID(s) = $scoringId CREATE (c)-[r:SCORED{teleop:$teleop, match:toInteger($match)}]->(s)',
           {
-            id:id,
-            scoringId:scoringId,
-            teleop:data.cycles[i].teleop,
-            match:data.match
+            id: id,
+            scoringId: scoringId,
+            teleop: data.cycles[i].teleop,
+            match: data.match
           }
         )
         await tx3.commit()
@@ -94,18 +172,18 @@ export async function score({ data }: { data: any }) {
   }
 }
 
-export async function getAmountCube({team} : {team:number}) {
+export async function getAmountCube({ team }: { team: number }) {
   const tx = session.beginTransaction()
-    try {
-      const result = await tx.run(
-        '',
-        {},
-      )
+  try {
+    const result = await tx.run(
+      '',
+      {},
+    )
 
-      await tx.commit()
-    } catch (error) {
-      console.error(error)
-    }
+    await tx.commit()
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 export async function friends() {

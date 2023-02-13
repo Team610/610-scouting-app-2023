@@ -17,10 +17,9 @@ export interface IntakeLocation {
 export default function Home() {
   let [current, setCurrent] = useState<any>([[]]);
   let [mousePos, setMousePos] = useState<any>({});
-  let [gamePiece, setGamePiece] = useState(0);
 
-  const [gameList, setGameList] = useState<any>([[[450, 300, 2], [500, 300, 2], [400, 300, 2], [350, 300, 2], [300, 300, 2]], [[450, 250, 2], [500, 250, 2], [400, 250, 2], [350, 250, 2], [300, 250, 2]], [[450, 200, 2], [500, 200, 2], [400, 200, 2], [350, 200, 2], [300, 200, 2]], [[450, 400, 2], [500, 400, 2], [400, 400, 2], [350, 400, 2], [300, 400, 2]]]);
-  
+  const [gameList, setGameList] = useState<any>([[{left: 450, top: 200, gamePiece: "cone"}, {left: 400, top: 200, gamePiece: "cone"}], [{left: 450, top: 250, gamePiece: "cone"}, {left: 400, top: 250, gamePiece: "cone"}], [{left: 450, top: 300, gamePiece: "cone"}, {left: 400, top: 300, gamePiece: "cone"}], [{left: 450, top: 350, gamePiece: "cone"}, {left: 400, top: 350, gamePiece: "cone"}]]);
+
   const [selectedOption, setSelectedOption] = useState('');
 
   const [opened, { close, open }] = useDisclosure(false);

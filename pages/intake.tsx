@@ -1,9 +1,18 @@
 import { Button, Footer, Group, Text } from "@mantine/core";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
+import cone from "../styles/img/cone.png";
+import cube from "../styles/img/cube.png";
 import myPic from "../assets/FRCGameField.jpg";
 import React, { use, useState } from "react";
+import { useDisclosure } from "@mantine/hooks";
+import { Piedra } from "@next/font/google";
 
 
+export interface IntakeLocation {
+  left: number;
+  top: number;
+  gamePiece: string;
+}
 
 export default function Home() {
   let [current, setCurrent] = useState<any>([[]]);
@@ -14,26 +23,26 @@ export default function Home() {
   
   const [selectedOption, setSelectedOption] = useState('');
 
+  const [opened, { close, open }] = useDisclosure(false);
+
+
+
   function handleClick(e: any) {
-    let bounds = e.target.getBoundingClientRect();
-    console.log(bounds.top);
-    if (gamePiece != 0) {
-      let temp = [...current, [mousePos.x - 6, mousePos.y + 12, gamePiece]];
-      setCurrent(temp);
-    }
-    console.log(current);
+    let obj = {
+      left: mousePos.x,
+      top: mousePos.y,
+      gamePiece: "",
+    };
+    let temp = [...current, obj];
+    setCurrent(temp);
+    open();
   }
 
-  function handleConeClick() {
-    setGamePiece(1);
-  }
-
-  function handleNoneClick() {
-    setGamePiece(0);
-  }
-
-  function handleCubeClick() {
-    setGamePiece(2);
+  function pieceSelected(x: any) {
+    let temp = current;
+    current[current.length - 1].gamePiece = x;
+    setCurrent(temp);
+    close();
   }
 
   function clear() {
@@ -69,9 +78,6 @@ export default function Home() {
   return (
     <div>
       <Group position="left" spacing="xl">
-        <Button onClick={() => handleCubeClick()}> Cube</Button>
-        <Button onClick={() => handleConeClick()}> Cone</Button>
-        <Button onClick={() => handleNoneClick()}> None</Button>
         <Button onClick={() => clear()}> Clear</Button>
         <select value={selectedOption} onChange={handleChange}>
           <option value="">Match Selection</option>
@@ -90,31 +96,77 @@ export default function Home() {
           style={{ position: "absolute" }}
           alt="image"
         />
-        {current.map((coord: any) => { // this line for some reason produces an error when trying to switch
-          return (                     // to a game prior to clearing the board first even when the board is empty
-            <text
+      </div>
+      {current.map((coord: IntakeLocation, idx: number) => {
+        if (!opened || idx !== current.length - 1) {
+          return (
+            <Image
+              src={
+                coord.gamePiece == "cone"
+                  ? cone
+                  : coord.gamePiece == "cube"
+                  ? cube
+                  : ""
+              }
+              alt="gamepiece"
               style={{
-                left: coord[0],
-                top: coord[1] - 85 - 37,
+                left: coord.left,
+                top: coord.top,
                 position: "absolute",
               }}
-            >
-              {coord[2] === 2 ? "🧊" : ""}
-              {coord[2] === 1 ? "⚠" : ""}
-            </text>
+              width={30}
+            ></Image>
           );
-        })}
-      </div>
-      <Footer height={600}>
-        {current.map((coord: any) => {
-          return (
-            <span>
-              ({coord[0]}, {coord[1] - 85 - 37}, {coord[2] === 2 ? "Cube" : ""}
-              {coord[2] === 1 ? "Cone" : ""}){" "}
-            </span>
-          );
-        })}
-      </Footer>
+        }
+      })}
+
+      <div
+        style={{
+          top: 80,
+          left: 850,
+          width: 500,
+          height: 400,
+          position: "absolute",
+        }}
+      ></div>
+      {opened ? (
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            gap: "10px",
+            paddingTop: "10px",
+            left: current[current.length - 1].left - 45,
+            top: current[current.length - 1].top - 40,
+            position: "absolute",
+          }}
+        >
+          <GamePieceSelect pieceSelected={pieceSelected} />
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function GamePieceSelect({ pieceSelected }: { pieceSelected: Function }) {
+  return (
+    <div>
+      <Image
+        src={cone}
+        alt="gamepiece"
+        width={30}
+        onClick={() => {
+          pieceSelected("cone");
+        }}
+      ></Image>
+      <Image
+        src={cube}
+        alt="gamepiece"
+        width={30}
+        onClick={() => {
+          pieceSelected("cube");
+        }}
+      ></Image>
     </div>
   );
 }

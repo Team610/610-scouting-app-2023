@@ -5,7 +5,7 @@ import cube from "../styles/img/cube.png";
 import myPic from "../assets/FRCGameField.jpg";
 import React, { use, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
-import { Piedra } from "@next/font/google";
+import { Nothing_You_Could_Do, Piedra } from "@next/font/google";
 
 
 export interface IntakeLocation {
@@ -14,7 +14,7 @@ export interface IntakeLocation {
   gamePiece: string;
 }
 
-export default function Home() {
+export default function Home({gamePiece, setGamePiece} : {gamePiece: String, setGamePiece : Function}) {
   let [current, setCurrent] = useState<any>([[]]);
   let [mousePos, setMousePos] = useState<any>({});
 
@@ -128,7 +128,7 @@ export default function Home() {
           position: "absolute",
         }}
       ></div>
-      {opened ? (
+      {opened && gamePiece == "nothing"? (
         <div
           style={{
             display: "flex",
@@ -138,16 +138,15 @@ export default function Home() {
             left: current[current.length - 1].left - 45,
             top: current[current.length - 1].top - 40,
             position: "absolute",
-          }}
-        >
-          <GamePieceSelect pieceSelected={pieceSelected} />
+          }}>
+          <GamePieceSelect pieceSelected={pieceSelected} gamePiece={gamePiece} setGamePiece={setGamePiece}/>
+
         </div>
       ) : null}
     </div>
   );
 }
-
-function GamePieceSelect({ pieceSelected }: { pieceSelected: Function }) {
+function GamePieceSelect({ pieceSelected, gamePiece, setGamePiece}: { pieceSelected: Function, gamePiece: String, setGamePiece: Function }) {
   return (
     <div>
       <Image
@@ -155,7 +154,8 @@ function GamePieceSelect({ pieceSelected }: { pieceSelected: Function }) {
         alt="gamepiece"
         width={30}
         onClick={() => {
-          pieceSelected("cone");
+          setGamePiece("cone") 
+          pieceSelected("cone")
         }}
       ></Image>
       <Image
@@ -163,7 +163,8 @@ function GamePieceSelect({ pieceSelected }: { pieceSelected: Function }) {
         alt="gamepiece"
         width={30}
         onClick={() => {
-          pieceSelected("cube");
+          setGamePiece("cube") 
+          pieceSelected("cube")
         }}
       ></Image>
     </div>

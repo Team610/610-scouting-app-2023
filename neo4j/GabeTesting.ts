@@ -1,13 +1,10 @@
 import Head from "next/head";
-import neo4j from 'neo4j-driver'
-
-const uri = "bolt://localhost:7687"
-const driver = neo4j.driver(uri, neo4j.auth.basic("neo4j", "password"))
-const session = driver.session()
-const personName = 'Alice'
+import { Session } from "next-auth";
+import { getNeoSession } from "./Session";
 
 //create 100 teams with names 0-99 to test with 
 export async function create100Teams() {
+  const session = getNeoSession()
   for (let index = 0; index < 100; index++) {
     const tx = session.beginTransaction()
     try {
@@ -25,6 +22,7 @@ export async function create100Teams() {
 
 // climb
 export async function climb({ data }: { data: any }) {
+  const session = getNeoSession()
   let id: any;
   if (data.teleopClimb != 0) {
     let climbStatus: String;
@@ -101,6 +99,7 @@ export async function climb({ data }: { data: any }) {
 
 //score
 export async function score({ data }: { data: any }) {
+  const session = getNeoSession()
   //climb
   let id: any;
   for (var i = 0; i < data.cycles.length; i++) {
@@ -173,6 +172,7 @@ export async function score({ data }: { data: any }) {
 }
 
 export async function getAmountCube({ team }: { team: number }) {
+  const session = getNeoSession()
   const tx = session.beginTransaction()
   try {
     const result = await tx.run(
@@ -187,6 +187,7 @@ export async function getAmountCube({ team }: { team: number }) {
 }
 
 export async function friends() {
+  const session = getNeoSession()
   const tx = session.beginTransaction()
   try {
     const result = await tx.run(
@@ -201,6 +202,7 @@ export async function friends() {
 }
 
 export async function edit() {
+  const session = getNeoSession()
   const tx = session.beginTransaction()
   try {
     const result = await tx.run(
@@ -213,8 +215,30 @@ export async function edit() {
   }
 }
 
-export async function closeDriver() {
-  // on application exit:
-  await session.close()
-  await driver.close()
+export async function addUser(user: Session){
+  const session = getNeoSession()
+  const tx = session.beginTransaction()
+
+  try {
+      const result = await tx.run(
+        'MATCH (a:User{ name: $name, email: $email}) RETURN a',
+        { name: user.user?.name, email: user.user?.email },
+      )
+
+      console.log(result.records[0])
+
+      if(result.records[0] == undefined){
+          if(user.user?.email?.includes("@crescentschool.org")){
+              const result = await tx.run(
+                  'MERGE (a:User{ name: $name, email: $email}) RETURN a',
+                  { name: user.user?.name, email: user.user?.email },
+                )
+          }
+      }
+
+      await tx.commit()
+    } catch (error) {
+      console.error(error)
+    }
+    await tx.close()
 }

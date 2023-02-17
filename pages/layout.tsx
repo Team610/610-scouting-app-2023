@@ -18,8 +18,16 @@ import {
   ScrollArea,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import SignIn from "./signIn";
+import SignIn, { checkAccount } from "./signIn";
 import Link from "next/link";
+import { getSession, signIn, signOut } from "next-auth/react";
+import {
+  GetServerSidePropsContext,
+  NextComponentType,
+  NextPageContext,
+} from "next";
+import { ReactNode } from "react";
+import { addUser } from "../neo4j/User";
 
 const useStyles = createStyles((theme) => ({
   link: {
@@ -93,16 +101,32 @@ const useStyles = createStyles((theme) => ({
   },
 }));
 
-export default function Layout() {
-  return (
-    <>
-      <HeaderMegaMenu />
-    </>
-  );
+export default function Layout({ children }: { children: ReactNode }) {
+  let auth = checkAccount();
+  if (auth) {
+    return (
+      <>
+        <HeaderMegaMenu />
+        {children}
+      </>
+    );
+  } else {
+    return (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <h1>Please Sign in With a Crescent School Email</h1>
+        <Button onClick={() => signIn("google")}>Sign In</Button>
+      </div>
+    );
+  }
 }
 export function HeaderMegaMenu() {
-  const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
-    useDisclosure(false);
   const { classes, theme } = useStyles();
 
   return (
@@ -126,17 +150,18 @@ export function HeaderMegaMenu() {
             <Link href="/data" className={classes.link}>
               Data
             </Link>
+            <Link
+              href={""}
+              onClick={() => signIn("google")}
+              className={classes.link}
+            >
+              Sign Out
+            </Link>
           </Group>
 
           <Group className={classes.avatar}>
             <SignIn />
           </Group>
-
-          <Burger
-            opened={drawerOpened}
-            onClick={toggleDrawer}
-            className={classes.hiddenDesktop}
-          />
         </Group>
       </Header>
     </Box>

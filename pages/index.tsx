@@ -7,6 +7,11 @@ import { Button } from "@mantine/core";
 import sampleMatch from "../data/sampleMatch.json";
 import SignIn from "./signIn";
 import Link from "next/link";
+import { getSession, useSession } from "next-auth/react";
+import { Context, useEffect, useState } from "react";
+import { GetServerSidePropsContext } from "next";
+import neo4j from "neo4j-driver";
+import { addUser } from "../neo4j/User";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -14,15 +19,42 @@ export default function Home() {
   return (
     <>
       <Button onClick={async () => await create100Teams()}>CREATE</Button>
-      <Button onClick={async () => await score({ data: sampleMatch })}>Scored</Button>
-      <Button onClick={async () => await climb({data:sampleMatch})}>Climb</Button>
-      <div className={styles.center}>
+      <Button onClick={async () => await score({ data: sampleMatch })}>
+        Scored
+      </Button>
+      <Button onClick={async () => await climb({ data: sampleMatch })}>
+        Climb
+      </Button>
+      {/* <Button
+        onClick={async () =>
+          await addUser({
+            user: {
+              name: "adam",
+              email: "adamomarali@crescentschool.org",
+              image: "hi",
+            },
+            expires: "hi",
+          })
+        }
+      >
+        Hi
+      </Button> */}
+      {/* <div className={styles.center}>
         <h2>
           <Link href="/match" className={styles.center}>
             Start
           </Link>
         </h2>
-      </div>
+      </div> */}
     </>
   );
+}
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const user = await getSession(context);
+  if (user) {
+    await addUser(user);
+  }
+
+  return { props: {} };
 }

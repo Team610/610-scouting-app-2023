@@ -1,7 +1,10 @@
 import type { AppProps } from "next/app";
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider, useSession } from "next-auth/react";
 import Layout from "./layout";
 import { MantineProvider } from "@mantine/core";
+import { useEffect, useState } from "react";
+import { addUser } from "../neo4j/GabeTesting";
+import neo4j from "neo4j-driver";
 
 export default function App({
   Component,
@@ -15,8 +18,9 @@ export default function App({
           withNormalizeCSS
           theme={{ colorScheme: "dark" }}
         >
-          <Layout />
-          <Component {...pageProps} />
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
         </MantineProvider>
       </SessionProvider>
     </>

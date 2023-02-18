@@ -14,8 +14,8 @@ export default function Home() {
   return (
     <>
       <Button onClick={async () => await create100Teams()}>CREATE</Button>
-      <Button onClick={async () => await score({ data: sampleMatch })}>Scored</Button>
-      <Button onClick={async () => await climb({data:sampleMatch})}>Climb</Button>
+      <Button onClick={async () => await score({ data : sampleMatch })}>Scored</Button>
+      <Button onClick={async () => await climb({ data : sampleMatch})}>Climb</Button>
       <div className={styles.center}>
         <h2>
           <Link href="/match" className={styles.center}>

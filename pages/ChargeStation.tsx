@@ -6,36 +6,26 @@ import { ChargingStation, deafultChargingStation } from "./match";
 
 //returns checkboxes so the user can see if the robot is docked or engaged
 function ChargeScoring({
-  isAuto,
-  setChargingStation,
-  chargingStation,
+  gameState,
+  chargeStationScore,
 }: {
-  isAuto: String;
-  setChargingStation: Function;
-  chargingStation: ChargingStation;
+  gameState: String;
+  chargeStationScore: Function;
 }) {
   //see if the robot is docked
   const [docked, setDocked] = useState(false);
   //see if the robot is engaged
   const [engaged, setEngaged] = useState(false);
-
+  //sees if first time switching to teleop
+  const [firstTime, setFirstTime] = useState(true);
   useEffect(() => {
-    setChargingStation({
-      auto: {
-        dock: isAuto && docked,
-        engage: isAuto && engaged,
-      },
-      teleop: {
-        dock: !isAuto && docked,
-        engage: !isAuto && engaged,
-        numPartners: chargingStation.teleop.numPartners,
-      },
-    });
-    if (isAuto === "teleop") {
+    if (gameState != "auto") {
+      setFirstTime(false);
       setDocked(false);
       setEngaged(false);
     }
-  }, [docked, engaged, isAuto]);
+    chargeStationScore(docked, engaged);
+  }, [gameState]);
 
   return (
     <>
@@ -50,6 +40,7 @@ function ChargeScoring({
               fontSize: "20px",
             },
           }}
+          size="xl"
           label="Docked"
           value="docked"
         />
@@ -64,6 +55,7 @@ function ChargeScoring({
               fontSize: "20px",
             },
           }}
+          size="xl"
           label="Engaged"
           value="engaged"
         />
@@ -73,30 +65,7 @@ function ChargeScoring({
 }
 
 //returns a drop down menu so the user can choose how many users are docked or engaged (only useful during AutoOP)
-function NumPartners({
-  setChargingStation,
-  chargingStation,
-}: {
-  setChargingStation: Function;
-  chargingStation: ChargingStation;
-}) {
-  //variable used to track number of partners due to a drop down
-  const [value, setValue] = useState(0);
-
-  function updateState(partners: number) {
-    setValue(partners);
-    setChargingStation({
-      auto: {
-        dock: chargingStation.auto.dock,
-        engage: chargingStation.auto.engage,
-      },
-      teleop: {
-        dock: chargingStation.teleop.dock,
-        engage: chargingStation.teleop.engage,
-        numPartners: value,
-      },
-    });
-  }
+function NumPartners({ setNumPartners }: { setNumPartners: Function }) {
   return (
     <>
       <div
@@ -111,9 +80,10 @@ function NumPartners({
           # of Alliance Members are Docked/Engaged?
         </Text>
         <NativeSelect
-          value={value}
-          onChange={(event) => updateState(parseInt(event.currentTarget.value))}
-          data={["1", "2", "3"]}
+          onChange={(event) =>
+            setNumPartners(parseInt(event.currentTarget.value))
+          }
+          data={["0", "1", "2", "3"]}
         />
       </div>
     </>
@@ -121,13 +91,13 @@ function NumPartners({
 }
 
 export default function ChargeStation({
-  auto,
-  setChargingStation,
-  chargingStation,
+  gameState,
+  setNumPartners,
+  chargeStationScore,
 }: {
-  auto: String;
-  setChargingStation: Function;
-  chargingStation: ChargingStation;
+  gameState: String;
+  setNumPartners: Function;
+  chargeStationScore: Function;
 }) {
   //old points of auto so it carries over to teleop
   return (
@@ -141,16 +111,12 @@ export default function ChargeStation({
       >
         <div style={{ margin: "20px+50px+15px" }}>
           <ChargeScoring
-            isAuto={auto}
-            setChargingStation={setChargingStation}
-            chargingStation={chargingStation}
+            gameState={gameState}
+            chargeStationScore={chargeStationScore}
           />
         </div>
-        {auto == "auto" ? null : (
-          <NumPartners
-            setChargingStation={setChargingStation}
-            chargingStation={chargingStation}
-          />
+        {gameState == "auto" ? null : (
+          <NumPartners setNumPartners={setNumPartners} />
         )}
       </div>
     </>

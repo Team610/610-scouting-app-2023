@@ -41,3 +41,5 @@ google-cred.json
 
 .vscode
 .next
+
+.env

@@ -1,5 +1,4 @@
 import Image, { StaticImageData } from "next/image";
-import field from "../styles/img/field.png";
 import cone from "../styles/img/cone.png";
 import cube from "../styles/img/cube.png";
 import styles from "../styles/Field.module.css";
@@ -7,9 +6,14 @@ import { Popover, Text, Button, Container, Grid } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useDetectClickOutside } from "react-detect-click-outside";
-import { GamePiece } from "./match";
 
-export default function Field({ addGamePiece }: { addGamePiece: Function }) {
+export default function ScoringGrid({
+  addGamePiece,
+  pickedupGamePiece,
+}: {
+  addGamePiece: Function;
+  pickedupGamePiece: String;
+}) {
   //score, auto vs teleop for scores
   const coneCol = [0, 2, 3, 5, 6, 8];
   return (
@@ -30,7 +34,7 @@ export default function Field({ addGamePiece }: { addGamePiece: Function }) {
                   gamePiece = "cone";
                 }
                 if (col > 5) {
-                  gamePiece = "any";
+                  gamePiece = pickedupGamePiece + "";
                 }
                 return (
                   <div>
@@ -39,6 +43,7 @@ export default function Field({ addGamePiece }: { addGamePiece: Function }) {
                       level={3 - Math.floor(col / 3)}
                       grid={item}
                       addGamePiece={addGamePiece}
+                      pickedupGamePiece={pickedupGamePiece}
                     ></Box>
                   </div>
                 );
@@ -57,9 +62,16 @@ interface BoxProps {
   level: number;
   addGamePiece: Function;
   grid: number;
+  pickedupGamePiece: String;
 }
 
-function Box({ gamePiece, level, addGamePiece, grid }: BoxProps) {
+function Box({
+  pickedupGamePiece,
+  gamePiece,
+  level,
+  addGamePiece,
+  grid,
+}: BoxProps) {
   const [content, setContent] = useState<StaticImageData>();
   const [opened, { close, open }] = useDisclosure(false);
   const ref = useDetectClickOutside({ onTriggered: close });
@@ -75,15 +87,15 @@ function Box({ gamePiece, level, addGamePiece, grid }: BoxProps) {
             //if cell is empty
             if (content == undefined) {
               //if gamepiece can be anything, open up the option menu
-              if (gamePiece == "any") {
+              if (gamePiece == "any" && pickedupGamePiece != "nothing") {
                 opened ? close() : open();
               }
               //if gamepiece is a cone place a cone in the box
               else {
-                if (gamePiece == "cone") {
+                if (gamePiece == "cone" && pickedupGamePiece == "cone") {
                   setContent(cone);
                   addGamePiece(level, true, grid);
-                } else {
+                } else if (gamePiece == "cube" && pickedupGamePiece == "cube") {
                   setContent(cube);
                   addGamePiece(level, false, grid);
                 }

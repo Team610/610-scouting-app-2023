@@ -127,6 +127,7 @@ export default function MatchScreen() {
         </div>
       </div>
       <ScoringGrid addGamePiece={addGamePiece} pickedupGamePiece={gamePiece} />
+      {gameState == "teleop" ? <Button>Submit Match</Button> : null}
     </div>
   );
 }

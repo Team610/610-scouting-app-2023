@@ -1,5 +1,4 @@
 import Image, { StaticImageData } from "next/image";
-import field from "../styles/img/field.png";
 import cone from "../styles/img/cone.png";
 import cube from "../styles/img/cube.png";
 import styles from "../styles/Field.module.css";
@@ -7,9 +6,14 @@ import { Popover, Text, Button, Container, Grid } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useDetectClickOutside } from "react-detect-click-outside";
-import { GamePiece } from "./match";
 
-export default function Field({ addGamePiece, pickedupGamePiece}: { addGamePiece: Function, pickedupGamePiece: String}) {
+export default function ScoringGrid({
+  addGamePiece,
+  pickedupGamePiece,
+}: {
+  addGamePiece: Function;
+  pickedupGamePiece: String;
+}) {
   //score, auto vs teleop for scores
   const coneCol = [0, 2, 3, 5, 6, 8];
   return (
@@ -61,7 +65,13 @@ interface BoxProps {
   pickedupGamePiece: String;
 }
 
-function Box({ pickedupGamePiece, gamePiece, level, addGamePiece, grid }: BoxProps) {
+function Box({
+  pickedupGamePiece,
+  gamePiece,
+  level,
+  addGamePiece,
+  grid,
+}: BoxProps) {
   const [content, setContent] = useState<StaticImageData>();
   const [opened, { close, open }] = useDisclosure(false);
   const ref = useDetectClickOutside({ onTriggered: close });
@@ -71,13 +81,11 @@ function Box({ pickedupGamePiece, gamePiece, level, addGamePiece, grid }: BoxPro
         style={{ width: "fit-content", display: "flex", flexDirection: "row" }}
         ref={ref}
       >
-      
         <div
           className={styles.box}
           onClick={() => {
             //if cell is empty
             if (content == undefined) {
-              
               //if gamepiece can be anything, open up the option menu
               if (gamePiece == "any" && pickedupGamePiece != "nothing") {
                 opened ? close() : open();
@@ -87,7 +95,7 @@ function Box({ pickedupGamePiece, gamePiece, level, addGamePiece, grid }: BoxPro
                 if (gamePiece == "cone" && pickedupGamePiece == "cone") {
                   setContent(cone);
                   addGamePiece(level, true, grid);
-                } else if(gamePiece == "cube" && pickedupGamePiece == "cube"){
+                } else if (gamePiece == "cube" && pickedupGamePiece == "cube") {
                   setContent(cube);
                   addGamePiece(level, false, grid);
                 }

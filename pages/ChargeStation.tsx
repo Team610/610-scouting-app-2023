@@ -7,10 +7,10 @@ import { ChargingStation, deafultChargingStation } from "./match";
 //returns checkboxes so the user can see if the robot is docked or engaged
 function ChargeScoring({
   gameState,
-  chargeStationScore
+  chargeStationScore,
 }: {
-  gameState: String
-  chargeStationScore: Function
+  gameState: String;
+  chargeStationScore: Function;
 }) {
   //see if the robot is docked
   const [docked, setDocked] = useState(false);
@@ -19,14 +19,13 @@ function ChargeScoring({
   //sees if first time switching to teleop
   const [firstTime, setFirstTime] = useState(true);
   useEffect(() => {
-    if(gameState != "auto" && firstTime == true) {
+    if (gameState != "auto") {
       setFirstTime(false);
       setDocked(false);
       setEngaged(false);
     }
     chargeStationScore(docked, engaged);
-
-  });
+  }, [gameState]);
 
   return (
     <>
@@ -66,12 +65,7 @@ function ChargeScoring({
 }
 
 //returns a drop down menu so the user can choose how many users are docked or engaged (only useful during AutoOP)
-function NumPartners({
-  setNumPartners
-}: {
-  setNumPartners: Function
-}) {
-
+function NumPartners({ setNumPartners }: { setNumPartners: Function }) {
   return (
     <>
       <div
@@ -86,7 +80,9 @@ function NumPartners({
           # of Alliance Members are Docked/Engaged?
         </Text>
         <NativeSelect
-          onChange={(event) => setNumPartners(parseInt(event.currentTarget.value))}
+          onChange={(event) =>
+            setNumPartners(parseInt(event.currentTarget.value))
+          }
           data={["0", "1", "2", "3"]}
         />
       </div>
@@ -97,11 +93,11 @@ function NumPartners({
 export default function ChargeStation({
   gameState,
   setNumPartners,
-  chargeStationScore
+  chargeStationScore,
 }: {
-  gameState: String,
+  gameState: String;
   setNumPartners: Function;
-  chargeStationScore: Function
+  chargeStationScore: Function;
 }) {
   //old points of auto so it carries over to teleop
   return (
@@ -120,9 +116,7 @@ export default function ChargeStation({
           />
         </div>
         {gameState == "auto" ? null : (
-          <NumPartners
-            setNumPartners={setNumPartners}
-          />
+          <NumPartners setNumPartners={setNumPartners} />
         )}
       </div>
     </>

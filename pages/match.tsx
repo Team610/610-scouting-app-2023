@@ -1,11 +1,9 @@
-import { useEffect, useState } from "react";
-import Field from "./field";
+import { useState } from "react";
 import TimerFunction from "./TimerFunction";
 import { Button } from "@mantine/core";
 import ChargeStation from "./ChargeStation";
-import { IconDentalBroken } from "@tabler/icons";
-import { Text } from "@mantine/core";
 import Intake from "./intake";
+import ScoringGrid from "./scoringGrid";
 
 export interface GamePiece {
   auto: boolean;
@@ -23,13 +21,11 @@ export interface ChargingStation {
   auto: {
     dock: boolean;
     engage: boolean;
-    points: number;
   };
   teleop: {
     dock: boolean;
     engage: boolean;
     numPartners: number;
-    points: number;
   };
 }
 
@@ -37,39 +33,24 @@ export let deafultChargingStation = {
   auto: {
     dock: false,
     engage: false,
-    points: 0,
   },
   teleop: {
     dock: false,
     engage: false,
     numPartners: 0,
-    points: 0,
   },
 };
 
 export default function MatchScreen() {
   const [gamePieces, setGamePieces] = useState<GamePiece[]>([]);
-  const [score, setScore] = useState(0);
-  const [gameState, setGameState] = useState("auto");
+  const [gameState, setGameState] = useState<string>("auto");
   const [chargingStation, setChargingStation] = useState(
     deafultChargingStation
   );
   const [gamePiece, setGamePiece] = useState("nothing");
 
+  //after 15 seconds, switch from auto to teleop
   TimerFunction(15, setGameState, setChargingStation);
-
-  const scores = {
-    lvl1: 2,
-    lvl2: 3,
-    lvl3: 5,
-  };
-
-  const chargeScores = {
-    autoDock: 8,
-    autoEngage: 12,
-    teleopDock: 6,
-    teleopEngage: 10
-  }
 
   function addGamePiece(
     level: number,
@@ -83,94 +64,69 @@ export default function MatchScreen() {
       cone: cone,
       grid: grid,
     };
-    let addScore =
-      scores[level === 1 ? "lvl1" : level === 2 ? "lvl2" : "lvl3"] +
-      (gameState ? 1 : 0);
+    // if we the game piece has been scored, add it to the cycles
     if (!remove) {
       setGamePieces([...gamePieces, obj]);
-      setScore(score + addScore);
-    } else {
-      setScore(score - addScore);
+      setGamePiece("nothing");
     }
-    setGamePiece("nothing");
-    
+    // only want to set game piece to nothing if it has been scored
+    else {
+      setGamePiece(gamePieces[gamePieces.length - 1].cone ? "cone" : "cube");
+    }
   }
 
-  const [chargePoints, setChargePoints] = useState(0);
-  function chargeStationScore(
-    docked: boolean,
-    engaged: boolean
-  ) {
-    
-    if(gameState == "auto") {
-      setChargingStation({
-        auto: {
-          dock: docked,
-          engage: docked && engaged,
-          points: chargingStation.auto.dock ? chargingStation.auto.dock && chargingStation.auto.engage ? 12 : 8 : 0,
-        },
-        teleop: {
-          dock: chargingStation.teleop.dock,
-          engage: chargingStation.teleop.engage,
-          numPartners: chargingStation.teleop.numPartners,
-          points: chargingStation.teleop.points,
-        },
-      })
+  function updateChargeStation(docked: boolean, engaged: boolean) {
+    let obj = { ...chargingStation };
+    if (gameState == "auto") {
+      obj.auto.dock = docked;
+      obj.auto.engage = engaged;
     } else {
-      setChargingStation({
-        auto: {
-          dock: chargingStation.auto.dock,
-          engage: chargingStation.auto.engage,
-         points: chargingStation.auto.points
-        },
-        teleop: {
-          dock: docked,
-          engage: docked && engaged,
-          numPartners: chargingStation.teleop.numPartners,
-          points: chargingStation.teleop.dock ? chargingStation.teleop.dock && chargingStation.teleop.engage ? 10 : 6 : 0,
-        },
-      })
-    }  
-    
+      obj.teleop.dock = docked;
+      obj.teleop.engage = engaged;
+    }
+    setChargingStation(obj);
   }
 
   function setNumPartners(partners: number) {
-    setChargingStation({
-      auto: {
-        dock: chargingStation.auto.dock,
-        engage: chargingStation.auto.engage,
-        points: chargingStation.auto.points
-      },
-      teleop: {
-        dock: chargingStation.teleop.dock,
-        engage: chargingStation.teleop.engage,
-        numPartners: partners,
-        points: chargingStation.teleop.points
-      },
-    })
+    let obj = { ...chargingStation };
+    obj.teleop.numPartners = partners;
+    setChargingStation(obj);
   }
 
   return (
-    <>
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        <div style={{ margin: "0px 0px 500px 10px" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      <div style={{ display: "flex", flexDirection: "row", gap: "20px" }}>
+        <>
           <Intake gamePiece={gamePiece} setGamePiece={setGamePiece} />
+        </>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <p
+            style={{
+              fontSize: "24px",
+              color: "white",
+            }}
+          >
+            You have {gamePiece}
+          </p>
+          {gamePiece != "nothing" ? (
+            <Button size="md" onClick={() => setGamePiece("nothing")}>
+              Robot dropped the {gamePiece}
+            </Button>
+          ) : null}
+          <ChargeStation
+            gameState={gameState}
+            setNumPartners={setNumPartners}
+            chargeStationScore={updateChargeStation}
+          />
         </div>
-        <div style={{display: "flex", flexDirection: "column", alignItems: "flex-end", margin: "50px 0px 0px 50px", gap:"50px"}}>
-          <Text style={{ margin: "0px 0px 0px 625px", fontFamily: "initial", fontSize: "56px" }}>You have {gamePiece}</Text>
-          {gamePiece != "nothing" ? <Button size="xl" onClick={() => setGamePiece("nothing") }>Robot dropped the {gamePiece}</Button> : null}
-        </div>
-        
       </div>
-      <p> Score: {score + chargingStation.auto.points + chargingStation.teleop.points} </p>
-      <Field addGamePiece={addGamePiece} pickedupGamePiece={gamePiece} />
-      <ChargeStation
-        gameState={gameState}
-        setNumPartners={setNumPartners}
-        chargeStationScore={chargeStationScore}
-      />
-      <p>{chargingStation.teleop.numPartners}</p>
-
-    </>
+      <ScoringGrid addGamePiece={addGamePiece} pickedupGamePiece={gamePiece} />
+    </div>
   );
 }

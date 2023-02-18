@@ -7,6 +7,11 @@ import { Button } from "@mantine/core";
 import sampleMatch from "../data/sampleMatch.json";
 import SignIn from "./signIn";
 import Link from "next/link";
+import { getSession, useSession } from "next-auth/react";
+import { Context, useEffect, useState } from "react";
+import { GetServerSidePropsContext } from "next";
+import neo4j from "neo4j-driver";
+import { addUser } from "../neo4j/User";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -25,4 +30,13 @@ export default function Home() {
       </div>
     </>
   );
+}
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const user = await getSession(context);
+  if (user) {
+    await addUser(user);
+  }
+
+  return { props: {} };
 }

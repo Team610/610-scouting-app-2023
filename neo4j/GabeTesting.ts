@@ -5,13 +5,11 @@ import neo4j from 'neo4j-driver'
 
 const uri = "bolt://localhost:7687"
 const driver = neo4j.driver(uri, neo4j.auth.basic("neo4j", "robotics"))
-const session = driver.session()
-const personName = 'Alice'
 
 //create 100 teams with names 0-99 to test with 
-export async function create100Teams() {
+export async function createNTeams(n: number) {
   const session = getNeoSession()
-  for (let index = 0; index < 100; index++) {
+  for (let index = 0; index < n; index++) {
     const tx = session.beginTransaction()
     try {
       const result = await tx.run(
@@ -194,33 +192,17 @@ export async function getAmountCube({ team }: { team: number }) {
   }
 }
 
-export async function friends() {
+export async function query(qt: string){
   const session = getNeoSession()
   const tx = session.beginTransaction()
-  try {
-    const result = await tx.run(
-      'MATCH (a:Person), (b:Person) WHERE a.name = $name1 AND b.name = $name2 CREATE (a)-[:FRIENDS_WITH{since: $since}]->(b)',
-      { name1: 'BOB', name2: 'JEF', since: '2017' },
-    )
 
-    await tx.commit()
+  try{
+    const result = await tx.run(qt)
+    console.log(result)
   } catch (error) {
     console.error(error)
   }
-}
-
-export async function edit() {
-  const session = getNeoSession()
-  const tx = session.beginTransaction()
-  try {
-    const result = await tx.run(
-      'MATCH (a:Person{name: $nameOG}) SET a.name = $nameNew',
-      { nameOG: 'DAN', nameNew: 'BOB' },
-    )
-    await tx.commit()
-  } catch (error) {
-    console.error(error)
-  }
+  await tx.close()
 }
 
 export async function addUser(user: Session){

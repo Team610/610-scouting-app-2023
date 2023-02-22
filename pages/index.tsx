@@ -2,7 +2,10 @@ import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "@next/font/google";
 import styles from "../styles/Home.module.css";
-import { climb, createNTeams, score, query } from "../neo4j/GabeTesting";
+import { getTeam } from "../neo4j/Aggregate";
+import { climb, createNTeams, score, mobility } from "../neo4j/AddData";
+import { allies, enemies } from "../neo4j/Relationships";
+import { query } from "../neo4j/Miscellaneous";
 import { Button } from "@mantine/core";
 import sampleMatch from "../data/sampleMatch.json";
 import SignIn from "./signIn";
@@ -22,10 +25,13 @@ export default function Home() {
     <>
       <Button onClick={async () => await createNTeams(10)}>CREATE</Button>
       <Button onClick={async () => await score({ data: sampleMatch })}>
-        Scored
+        Add dummy data
       </Button>
       <Button onClick={async () => await climb({ data: sampleMatch })}>
         Climb
+      </Button>
+      <Button onClick={async () => await getTeam({team : 16})}>
+        Get team aggregate data
       </Button>
       <Input
         placeholder="Run query"

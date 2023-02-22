@@ -20,7 +20,7 @@ export default function Home() {
   const [queryText, setQueryText] = useState("");
   return (
     <>
-      <Button onClick={async () => await createNTeams(2)}>CREATE</Button>
+      <Button onClick={async () => await createNTeams(10)}>CREATE</Button>
       <Button onClick={async () => await score({ data: sampleMatch })}>
         Scored
       </Button>

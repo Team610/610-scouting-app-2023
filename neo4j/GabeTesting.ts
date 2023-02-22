@@ -204,31 +204,3 @@ export async function query(qt: string){
   }
   await tx.close()
 }
-
-export async function addUser(user: Session){
-  const session = getNeoSession()
-  const tx = session.beginTransaction()
-
-  try {
-      const result = await tx.run(
-        'MATCH (a:User{ name: $name, email: $email}) RETURN a',
-        { name: user.user?.name, email: user.user?.email },
-      )
-
-      console.log(result.records[0])
-
-      if(result.records[0] == undefined){
-          if(user.user?.email?.includes("@crescentschool.org")){
-              const result = await tx.run(
-                  'MERGE (a:User{ name: $name, email: $email}) RETURN a',
-                  { name: user.user?.name, email: user.user?.email },
-                )
-          }
-      }
-
-      await tx.commit()
-    } catch (error) {
-      console.error(error)
-    }
-    await tx.close()
-}

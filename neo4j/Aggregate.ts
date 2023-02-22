@@ -13,7 +13,7 @@ export async function getTeam({ team }: { team: number }) {
             const tx = session.beginTransaction()
             const result = await tx.run(
                 'MATCH (t:Team {name: $name})--(c:Cycle)-[]->(s:ScoringPosition) WHERE s.name/9 = 0 AND c.teleop = false RETURN count(*)',
-                { name: team, },
+                {name: team},
             )
             autoPoints += result.records[0].get(0).low * 3;
 

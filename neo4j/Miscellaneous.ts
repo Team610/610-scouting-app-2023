@@ -6,7 +6,7 @@ import neo4j from 'neo4j-driver'
 const uri = "bolt://localhost:7687"
 const driver = neo4j.driver(uri, neo4j.auth.basic("neo4j", "robotics"))
 
-
+//takes a string as a parameter that will be executed as a querry in neo4j
 export async function query(qt: string){
   const session = getNeoSession()
   const tx = session.beginTransaction()

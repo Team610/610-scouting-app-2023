@@ -2,7 +2,7 @@ import { Session } from "next-auth";
 import { getNeoSession } from "./Session";
 import neo4j from 'neo4j-driver'
 
-//create 100 teams with names 0-99 to test with 
+//create teams to test with takes a number as parameter for number of teams, returns nothing
 export async function createNTeams(n: number) {
     const session = getNeoSession()
     for (let index = 0; index < n; index++) {
@@ -21,7 +21,7 @@ export async function createNTeams(n: number) {
 }
 
 
-// climb
+// adds the climbing data from a team from a match, takes the json with the match data as paramter, returns nothing
 export async function climb({ data }: { data: any }) {
     const session = getNeoSession()
     let id: any;
@@ -99,7 +99,7 @@ export async function climb({ data }: { data: any }) {
 }
 
 
-// score
+// adds the cones and cube data from a team from a match, takes the json with the match data as parameter, returns nothing
 export async function score({ data }: { data: any }) {
     const session = getNeoSession()
     //climb
@@ -172,6 +172,7 @@ export async function score({ data }: { data: any }) {
     }
 }
 
+//adds the mobility data from a team from a match, takes the json with the match data as parameter, returns nothing
 export async function mobility({ data }: { data: any }) {
     const session = getNeoSession()
     let id: any

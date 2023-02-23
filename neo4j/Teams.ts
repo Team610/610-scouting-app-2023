@@ -1,5 +1,6 @@
 import { getNeoSession } from "./Session";
 
+//returns the number of teams
 export async function getTeams(){
     const session = getNeoSession()
     const tx = session.beginTransaction()

@@ -2,6 +2,15 @@ import { Session } from "next-auth";
 import { getNeoSession } from "./Session";
 import neo4j from 'neo4j-driver'
 
+//takes the team number as a parameter, returns an object with the following format
+/*
+    team: team,
+    autoPoints: autoPoints,
+    points: points,
+    autoPointsPerGame: autoPointsPerGame,
+    pointsPerGame: pointsPerGame,
+    matchesPlayed: matchesPlayed
+ */
 export async function getTeam({ team }: { team: number }) {
     const session = getNeoSession()
     let autoPoints: number = 0
@@ -118,6 +127,24 @@ export async function getTeam({ team }: { team: number }) {
     )
 }
 
+//takes the team and match numbers as paramters, returns object  in the following format
+/*
+team: team,
+    match: match,
+    mobility: mobility,
+    teleopClimb: teleopClimb,
+    autoClimb: autoClimb,
+    numPartners: numPartners,
+    allies: allies,
+    enemies: enemies,
+    cycles: cycles,
+    cubesPickedUp: cubesPickedUp,
+    conesPickedUp: conesPickedUp,
+    autoPoints: autoPoints,
+    points: points,
+    piecesScored: piecesScored,
+    scoringAccuracy: scoring accuracy
+    */
 export async function getMatch({ team, match }: { team: number, match: number }) {
     const session = getNeoSession()
 
@@ -340,6 +367,8 @@ export async function getMatch({ team, match }: { team: number, match: number })
     )
 }
 
+//a useless function used for testing
+//takes the team number as paramete, returns number of cubes scored
 export async function getAmountCube({ team }: { team: number }) {
     const session = getNeoSession()
     const tx = session.beginTransaction()

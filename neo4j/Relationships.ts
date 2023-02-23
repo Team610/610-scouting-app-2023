@@ -2,6 +2,7 @@ import { Session } from "next-auth";
 import { getNeoSession } from "./Session";
 import neo4j from 'neo4j-driver'
 
+//takes the match data for a team as the parameter, creates the ally relaitionships for the team
 export async function allies({ data }: { data: any }) {
     const session = getNeoSession()
     for (let index = 0; index < data.allies.length; index++) {
@@ -18,6 +19,8 @@ export async function allies({ data }: { data: any }) {
       }
     }
   }
+//takes the match data for a team as the parameter, creates the enemy relaitionships for the team
+
   export async function enemies({ data }: { data: any }) {
     const session = getNeoSession()
     for (let index = 0; index < data.enemies.length; index++) {

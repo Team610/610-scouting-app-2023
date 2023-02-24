@@ -26,8 +26,12 @@ for i in range(N_ROUNDS):
             t['y'] = random.randint(0, 90)
             t['teleop'] = False if j < auto_cycles else True
             t['scoringPosition'] = blue_pos.pop(random.randint(0, len(blue_pos) - 1)) if a < 3 else red_pos.pop(random.randint(0, len(red_pos) - 1))
+            t['link'] = False
+            t['object'] = "CUBE" if random.randint(0, 2) == 0 else "CONE"
             cycles.append(t)
         m['cycles'] = cycles
+        m['enemies'] = [teams[x] for x in [3, 4, 5]] if a < 3 else [teams[x] for x in [0, 1, 2]]
+        m['allies'] = [teams[x] for x in [3, 4, 5] if x != a] if a > 2 else [teams[x] for x in [0, 1, 2] if x != a]
         data.append(m)
 
 with open("data/sampleMatch.json",'w') as fw:

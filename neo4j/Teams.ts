@@ -7,8 +7,11 @@ export async function getTeams(){
     try{
 
         const res = await tx.run('MATCH (n:Team) return (n)')
-        return res.records[2].get(0).properties.name
+        
+        await tx.commit()
+        await tx.close()
 
+        return res.records[2].get(0).properties.name
     }catch(e){
         console.log(e)
     }

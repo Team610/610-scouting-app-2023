@@ -1,11 +1,12 @@
 import { Session } from "next-auth";
 import { getNeoSession } from "./Session";
 import neo4j from 'neo4j-driver'
+import { allies, enemies } from "./Relationships";
 
 //create teams to test with takes a number as parameter for number of teams, returns nothing
 export async function createNTeams(n: number) {
     const session = getNeoSession()
-    for (let index = 0; index < n; index++) {
+    for (let index = 1; index <= n; index++) {
         const tx = session.beginTransaction()
         try {
             const result = await tx.run(
@@ -14,6 +15,7 @@ export async function createNTeams(n: number) {
             )
 
             await tx.commit()
+            
         } catch (error) {
             console.error(error)
         }
@@ -42,6 +44,7 @@ export async function climb({ data }: { data: any }) {
             )
             id = result.records[0].get(0).toNumber()
             await tx.commit()
+            
         } catch (error) {
             console.error(error)
         }
@@ -57,6 +60,7 @@ export async function climb({ data }: { data: any }) {
                 },
             )
             await tx.commit()
+            
         } catch (error) {
             console.error(error)
         }
@@ -78,6 +82,7 @@ export async function climb({ data }: { data: any }) {
             )
             id = result.records[0].get(0).toNumber()
             await tx.commit()
+            
         } catch (error) {
             console.error(error)
         }
@@ -92,22 +97,35 @@ export async function climb({ data }: { data: any }) {
                 },
             )
             await tx.commit()
+            
         } catch (error) {
             console.error(error)
         }
     }
 }
 
+export async function addDummyData({data}: {data: any}){
+    for(var i = 0; i < data.length; i++){
+        // console.log("added dummy data " + (i + 1) + "/" + (data.length + 1))
+        score(data[i])
+        allies(data[i])
+        enemies(data[i])
+    }
+}
+
 
 // adds the cones and cube data from a team from a match, takes the json with the match data as parameter, returns nothing
-export async function score({ data }: { data: any }) {
+export async function score(data: any) {
     const session = getNeoSession()
+
+    // try
+
     //climb
-    let id: any;
+
     for (var i = 0; i < data.cycles.length; i++) {
         try {
-            //create the cycle node for the current cycle
             const tx = session.beginTransaction()
+            //create the cycle node for the current cycle
             const result = await tx.run(
                 'CREATE (a:Cycle{x:$x,y:$y,match:toInteger($match),teleop:$teleop}) RETURN  ID(a)',
                 {
@@ -118,11 +136,10 @@ export async function score({ data }: { data: any }) {
                     teleop: data.cycles[i].teleop,
                 },
             )
-            id = result.records[0].get(0).toNumber()
-            await tx.commit()
+            const id = result.records[0].get(0).toNumber()
+
             //create the relationship between the team and the cycle
-            const tx1 = session.beginTransaction()
-            const result1 = await tx1.run(
+            const result1 = await tx.run(
                 'MATCH (t:Team),(a:Cycle) WHERE t.name = toInteger($team) AND ID(a) = $id CREATE (t)-[r:' + data.cycles[i].object + '{match:toInteger($match),teleop:$teleop}]->(a) ',
                 {
                     id: id,
@@ -132,28 +149,20 @@ export async function score({ data }: { data: any }) {
                     match: data.match,
                     teleop: data.cycles[i].teleop,
                     object: data.cycles[i].object
-                },
+                }
             )
-            await tx1.commit()
-        } catch (error) {
-            console.error(error)
-        }
-        //if the piece is scored merge the node with the name of the position, and then create the relationship from the cycle to the scoringposition
-        if (data.cycles[i].scoringPosition != null) {
-            let scoringId: any;
-            try {
-                const tx2 = session.beginTransaction()
-                const result2 = await tx2.run(
+
+            //if the piece is scored merge the node with the name of the position, and then create the relationship from the cycle to the scoringposition
+            if (data.cycles[i].scoringPosition != null) {
+                const result2 = await tx.run(
                     'MERGE (z:ScoringPosition{name: toInteger($name), team:toInteger($team)}) RETURN ID(z)',
                     {
                         name: data.cycles[i].scoringPosition,
                         team: data.team
                     },
                 )
-                scoringId = result2.records[0].get(0).toNumber()
-                await tx2.commit()
-                const tx3 = session.beginTransaction()
-                const result3 = await tx3.run(
+                const scoringId = result2.records[0].get(0).toNumber()
+                const result3 = await tx.run(
                     'MATCH (c:Cycle), (s:ScoringPosition) WHERE ID(c) = $id AND ID(s) = $scoringId CREATE (c)-[r:SCORED{teleop:$teleop, match:toInteger($match),link:$link}]->(s)',
                     {
                         link: data.cycles[i].link,
@@ -163,11 +172,11 @@ export async function score({ data }: { data: any }) {
                         match: data.match
                     }
                 )
-                await tx3.commit()
-            } catch (error) {
-                console.error(error)
-            }
 
+            }
+            await tx.commit()
+        }catch(error){
+            console.error(error)
         }
     }
 }
@@ -187,6 +196,7 @@ export async function mobility({ data }: { data: any }) {
             )
             id = result.records[0].get(0).toNumber()
             await tx.commit()
+
         } catch (error) {
             console.error(error)
         }
@@ -201,6 +211,8 @@ export async function mobility({ data }: { data: any }) {
                 },
             )
             await tx.commit()
+            
+
         } catch (error) {
             console.error(error)
         }

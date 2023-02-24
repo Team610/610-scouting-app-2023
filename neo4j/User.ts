@@ -23,7 +23,7 @@ export async function addUser(user: Session){
         }
 
         await tx.commit()
-        await tx.close()
+        
 
         return true
   

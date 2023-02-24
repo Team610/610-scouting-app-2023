@@ -17,5 +17,20 @@ export async function query(qt: string){
   } catch (error) {
     console.error(error)
   }
-  await tx.close()
+  await tx.commit()
+  
+}
+
+// wipes database
+export async function wipe(){
+  const session = getNeoSession()
+  const tx = session.beginTransaction()
+
+  try{
+    const result = await tx.run("MATCH (n) DETACH DELETE n")
+  } catch (error) {
+    console.error(error)
+  }
+  await tx.commit()
+  
 }

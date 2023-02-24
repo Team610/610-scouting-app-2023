@@ -3,9 +3,9 @@ import Image from "next/image";
 import { Inter } from "@next/font/google";
 import styles from "../styles/Home.module.css";
 import { getTeam } from "../neo4j/Aggregate";
-import { climb, createNTeams, score, mobility } from "../neo4j/AddData";
+import { climb, createNTeams, score, mobility, addDummyData } from "../neo4j/AddData";
 import { allies, enemies } from "../neo4j/Relationships";
-import { query } from "../neo4j/Miscellaneous";
+import { query, wipe } from "../neo4j/Miscellaneous";
 import { Button } from "@mantine/core";
 import sampleMatch from "../data/sampleMatch.json";
 import SignIn from "./signIn";
@@ -23,8 +23,8 @@ export default function Home() {
   const [queryText, setQueryText] = useState("");
   return (
     <>
-      <Button onClick={async () => await createNTeams(10)}>CREATE</Button>
-      <Button onClick={async () => await score({ data: sampleMatch })}>
+      <Button onClick={async () => await createNTeams(20)}>Create dummy teams</Button>
+      <Button onClick={async () => await addDummyData({ data: sampleMatch })}>
         Add dummy data
       </Button>
       <Button onClick={async () => await climb({ data: sampleMatch })}>
@@ -32,6 +32,9 @@ export default function Home() {
       </Button>
       <Button onClick={async () => await getTeam({team : 16})}>
         Get team aggregate data
+      </Button>
+      <Button onClick={async () => await wipe()}>
+        wipe
       </Button>
       <Input
         placeholder="Run query"

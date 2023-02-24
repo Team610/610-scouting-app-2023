@@ -37,17 +37,7 @@ export async function getMatchNodes(team: number, match: number, tx: any){
 export async function getPiecesPickedUp(team: number, match:number, piece: string, tx:any){
     //cones picked up
     const result = await tx.run(
-        'MATCH (t:Team {name: $name})-[:$piece{match: $match}]->(c:Cycle) RETURN count(*)',
-        { name: team, match: match, piece: piece},
-    )
-    return result.records[0].get(0).low;
-}
-
-// get where team picked up pieces in a match
-export async function getPiecesScored(team: number, match:number, piece: string, tx:any){
-    //cones picked up
-    const result = await tx.run(
-        'MATCH (t:Team {name: $name})-[:$piece{match: $match}]->(c:Cycle) RETURN count(*)',
+        'MATCH (t:Team {name: $name})-[:' + piece + '{match: $match}]->(c:Cycle) RETURN count(*)',
         { name: team, match: match, piece: piece},
     )
     return result.records[0].get(0).low;
@@ -143,7 +133,7 @@ export async function getTeam({ team }: { team: number }) {
     scoringAccuracy: scoring accuracy
     */
 
-export async function getMatch({ team, match }: { team: number, match: number }) {
+export async function getMatch(team: number, match: number) {
     const session = getNeoSession()
 
     let matchNodes: any
@@ -245,6 +235,8 @@ export async function getMatch({ team, match }: { team: number, match: number })
         piecesScored: piecesScored,
         scoringAccuracy: piecesScored / (cubesPickedUp + conesPickedUp)
     }
+
+    console.log(matchData)
     return (
         matchData
     )

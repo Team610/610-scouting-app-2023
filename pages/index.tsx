@@ -2,7 +2,7 @@ import Head from "next/head";
 import Image from "next/image";
 import { Inter } from "@next/font/google";
 import styles from "../styles/Home.module.css";
-import { getTeam } from "../neo4j/Aggregate";
+import { getMatch, getTeam } from "../neo4j/Aggregate";
 import { climb, createNTeams, score, mobility, addDummyData } from "../neo4j/AddData";
 import { allies, enemies } from "../neo4j/Relationships";
 import { query, wipe } from "../neo4j/Miscellaneous";
@@ -27,14 +27,14 @@ export default function Home() {
       <Button onClick={async () => await addDummyData({ data: sampleMatch })}>
         Add dummy data
       </Button>
-      <Button onClick={async () => await climb({ data: sampleMatch })}>
-        Climb
-      </Button>
       <Button onClick={async () => await getTeam({team : 16})}>
         Get team aggregate data
       </Button>
+      <Button onClick={async () => await getMatch(10, 10)}>
+        Get match aggregate data
+      </Button>
       <Button onClick={async () => await wipe()}>
-        wipe
+        Wipe
       </Button>
       <Input
         placeholder="Run query"

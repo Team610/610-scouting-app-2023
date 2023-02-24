@@ -110,6 +110,7 @@ export async function addDummyData({data}: {data: any}){
         score(data[i])
         allies(data[i])
         enemies(data[i])
+        park(data[i])
     }
 }
 
@@ -213,6 +214,39 @@ export async function mobility({ data }: { data: any }) {
             await tx.commit()
             
 
+        } catch (error) {
+            console.error(error)
+        }
+    }
+}
+export async function park({ data }: { data: any }) {
+    const session = getNeoSession()
+    let id: any
+    if (data.park == true) {
+        try {
+            const tx = session.beginTransaction()
+            const result = await tx.run(
+                'MERGE (c:Park{team: toInteger($team)}) return ID(c)',
+                {
+                    team: data.team,
+                },
+            )
+            id = result.records[0].get(0).toNumber()
+            await tx.commit()
+        } catch (error) {
+            console.error(error)
+        }
+        try {
+            const tx = session.beginTransaction()
+            const result = await tx.run(
+                'MATCH (t:Team), (c:Park) WHERE t.name = toInteger($team) AND ID(c) = $id CREATE (t)-[r:MOVED{match:toInteger($match)}]->(c)',
+                {
+                    match: data.match,
+                    team: data.team,
+                    id: id,
+                },
+            )
+            await tx.commit()
         } catch (error) {
             console.error(error)
         }

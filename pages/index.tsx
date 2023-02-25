@@ -13,6 +13,7 @@ import { GetServerSidePropsContext } from "next";
 import neo4j from "neo4j-driver";
 import { addUser } from "../neo4j/User";
 import { Input } from '@mantine/core';
+import { getTeams } from "../neo4j/teams";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,6 +24,7 @@ export default function Home() {
       <Button onClick={async () => await createNTeams(30)}>CREATE</Button>
       <Button onClick={async () => await score({ data : sampleMatch })}>Scored</Button>
       <Button onClick={async () => await climb({ data : sampleMatch})}>Climb</Button>
+      <Button onClick={async () => await getTeams()}>get teams</Button>
       <Input placeholder = "Run query" onChange = {e => {setQueryText(e.currentTarget.value);}} />
       <Button onClick={async () => await query(queryText)}>Query</Button>
       

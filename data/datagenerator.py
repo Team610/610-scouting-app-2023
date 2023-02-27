@@ -7,6 +7,7 @@ N_ROUNDS = 30
 for i in range(N_ROUNDS):
     teams = random.sample(range(1, 21), 6)
     cp = lambda : random.randint(0, 2)
+    ranBoolean = lambda : random.randint(0,1)
     climb_pts = [cp(), cp(), cp(), cp(), cp(), cp()]
     for a, team in enumerate(teams):
         m = {}
@@ -15,11 +16,13 @@ for i in range(N_ROUNDS):
         m['autoClimb'] = cp()
         m['teleopClimb'] = climb_pts[a]
         m['numPartners'] = sum([x for x in climb_pts[0:3] if x > 0]) if a < 3 else sum([x for x in climb_pts[3:6] if x > 0])
+        m['park'] = ranBoolean()
+        m['mobility'] = ranBoolean()
         cycle_count = random.randint(1, 5)
         auto_cycles = random.randint(0, 2)
         cycles = []
-        blue_pos = range(27)
-        red_pos = range(27)
+        blue_pos = list(range(27))
+        red_pos = list(range(27))
         for j in range(cycle_count):
             t = {}
             t['x'] = random.randint(0, 90)
@@ -34,5 +37,5 @@ for i in range(N_ROUNDS):
         m['allies'] = [teams[x] for x in [3, 4, 5] if x != a] if a > 2 else [teams[x] for x in [0, 1, 2] if x != a]
         data.append(m)
 
-with open("data/sampleMatch.json",'w') as fw:
+with open("sampleMatch.json",'w') as fw:
     json.dump(data,fw) 

@@ -41,7 +41,7 @@ export let deafultChargingStation = {
   },
 };
 
-export default function MatchScreen() {
+export default async function MatchScreen() {
   const [gamePieces, setGamePieces] = useState<GamePiece[]>([]);
   const [gameState, setGameState] = useState<string>("auto");
   const [chargingStation, setChargingStation] = useState(
@@ -127,7 +127,9 @@ export default function MatchScreen() {
         </div>
       </div>
       <ScoringGrid addGamePiece={addGamePiece} pickedupGamePiece={gamePiece} />
-      {gameState == "teleop" ? <Button>Submit Match</Button> : null}
+      {gameState == "teleop" ? (
+        <Button onClick={async () => {}}>Submit Match</Button>
+      ) : null}
     </div>
   );
 }

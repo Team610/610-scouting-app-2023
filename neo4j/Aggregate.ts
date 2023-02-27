@@ -15,11 +15,42 @@ export async function getTeamScoreLocation(team : number, row : number, teleop: 
     }
 }
 
+// get where team picked up pieces in all matches
+export async function getPiecesScoredAllMatches(team: number, piece: string, tx:any){
+    //cones picked up
+    const result = await tx.run(
+        'MATCH (t:Team {name: $name})-[:' + piece + ']->() - [:SCORED] -> () RETURN count(*)',
+        { name: team, piece: piece},
+    )
+    return result.records[0].get(0).low;
+}
+
+
+// get where team picked up pieces in a match, given what piece
+export async function getPiecesScored(team: number, match:number, piece: string, tx:any){
+    //cones picked up
+    const result = await tx.run(
+        'MATCH (t:Team {name: $name})-[:' + piece + '{match: $match}]->(c:Cycle) - [:SCORED] -> () RETURN count(*)',
+        { name: team, match: match, piece: piece},
+    )
+    return result.records[0].get(0).low;
+}
+
+
 // get the number of cycles a team did in a match
 export async function getNumberCycles(team: number, match: number, tx: any){
     const result = await tx.run(
         'MATCH (t:Team {name: $name})-[{match: $match}]->(c:Cycle) RETURN count(*)',
         { name: team, match: match },
+    )
+    return result.records[0].get(0).low;
+}
+
+// get the number of cycles a team did in all matches
+export async function getNumberCyclesAllMatches(team: number, tx: any){
+    const result = await tx.run(
+        'MATCH (t:Team {name: $name})-[]->(c:Cycle) RETURN count(*)',
+        { name: team},
     )
     return result.records[0].get(0).low;
 }
@@ -33,7 +64,7 @@ export async function getMatchNodes(team: number, match: number, tx: any){
     return result;
 }
 
-// get where team picked up pieces in a match
+// get where team picked up pieces in a match, given what piece
 export async function getPiecesPickedUp(team: number, match:number, piece: string, tx:any){
     //cones picked up
     const result = await tx.run(
@@ -43,12 +74,22 @@ export async function getPiecesPickedUp(team: number, match:number, piece: strin
     return result.records[0].get(0).low;
 }
 
+// get where team picked up pieces in all matches
+export async function getPiecesPickedUpAllMatches(team: number, piece: string, tx:any){
+    //cones picked up
+    const result = await tx.run(
+        'MATCH (t:Team {name: $name})-[:' + piece + ']->(c:Cycle) RETURN count(*)',
+        { name: team, piece: piece}
+    )
+    return result.records[0].get(0).low;
+}
+
 // returns how many game pieces the robot scored in that row IN A MATCH: 1 is bottom, 3 is top
 export async function getTeamMatchScoreLocation(team : number, row : number, match: number, teleop: boolean, tx:any){
     try{
         const result = await tx.run(
             'MATCH (t:Team {name: $name})--(c:Cycle)-[{match: $match}]->(s:ScoringPosition) WHERE s.name/9 = $row AND c.teleop = $teleTrue RETURN count(*)',
-                {name: team, row: row - 1, teleTrue: teleop, match: match},
+                {name: team, row: row - 1, teleTrue: teleop, match: match}
         )
         return result.records[0].get(0).low
     }catch(error){
@@ -56,14 +97,26 @@ export async function getTeamMatchScoreLocation(team : number, row : number, mat
     }
 }
 
+// returns how many games a certain team played
+export async function getMatchesPlayed(team : number, tx: any){
+    const result = await tx.run(
+        'MATCH (t:Team {name: $name})-[r]->(n) RETURN COUNT(DISTINCT r.match)',
+        { name: team },
+    )
+    return result.records[0].get(0).low
+}
+
 //takes the team number as a parameter, returns an object with the following format
 /*
     team: team,
-    autoPoints: autoPoints,
-    points: points,
-    autoPointsPerGame: autoPointsPerGame,
-    pointsPerGame: pointsPerGame,
-    matchesPlayed: matchesPlayed
+    matchesPlayed: matchesPlayed,
+    autoPPG: auto points per game,
+    PPG: points per game,
+    scoring accuracy: pieces scored / pieces picked up
+    cone accuracy: cones scored / cones picked up
+    cube accuracy: cubes scored / cubes picked up
+    cycles per game: cycles per game
+    scoring positions: [scored in lower, scored in middle, scored in higher]
  */
 export async function getTeam({ team }: { team: number }) {
     const session = getNeoSession()
@@ -71,6 +124,12 @@ export async function getTeam({ team }: { team: number }) {
     let autoPoints: number = 0
     let points: number = 0
     let matchesPlayed: number = 0
+    let conesPickedUp: number = 0
+    let cubesPickedUp: number = 0
+    let conesScored: number = 0
+    let cubesScored: number = 0
+    let ncycles: number = 0
+    let scoringPositions = Array(3)
 
     try{
         const tx = session.beginTransaction()
@@ -85,25 +144,37 @@ export async function getTeam({ team }: { team: number }) {
         points += 3 * await getTeamScoreLocation(team, 2, true, tx)
         points += 5 * await getTeamScoreLocation(team, 3, true, tx)
 
-        const tmp = await tx.run(
-            'MATCH (t:Team {name: $name})-[r]->(n) RETURN COUNT(DISTINCT r.match)',
-            { name: team, },
-        )
-        matchesPlayed = tmp.records[0].get(0).low
-        await tx.commit()
-        
+        scoringPositions[0] = await getTeamScoreLocation(team, 1, false, tx) + await getTeamScoreLocation(team, 1, false, tx)
+        scoringPositions[1] = await getTeamScoreLocation(team, 2, false, tx) + await getTeamScoreLocation(team, 2, false, tx)
+        scoringPositions[2] = await getTeamScoreLocation(team, 3, false, tx) + await getTeamScoreLocation(team, 3, false, tx)
 
+        conesPickedUp = await getPiecesPickedUpAllMatches(team, "CONE", tx)
+        cubesPickedUp = await getPiecesPickedUpAllMatches(team, "CUBE", tx)
+
+        conesScored = await getPiecesScoredAllMatches(team, 'CONE', tx)
+        cubesScored = await getPiecesScoredAllMatches(team, 'CONE', tx)
+
+        ncycles = await getNumberCyclesAllMatches(team, tx)
+
+
+        matchesPlayed = await getMatchesPlayed(team, tx);
+        
     }catch(error){
         console.error(error)
     }
 
     let matchData: Object = {
         team: team,
+        matchesPlayed: matchesPlayed,
+        autoPointsPerGame: autoPoints / matchesPlayed,
         autoPoints: autoPoints,
         points: points,
-        autoPointsPerGame: autoPoints / matchesPlayed,
         pointsPerGame: points / matchesPlayed,
-        matchesPlayed: matchesPlayed
+        cyclesPerGame: ncycles / matchesPlayed,
+        scoringAccuracy: (conesScored + cubesScored) / (conesPickedUp + cubesPickedUp),
+        coneAccuracy: conesScored / conesPickedUp,
+        cubeAccuracy: cubesScored / cubesPickedUp,
+        scoringPositions: scoringPositions
     }
 
     console.log(matchData)

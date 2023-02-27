@@ -111,6 +111,7 @@ export async function addDummyData({data}: {data: any}){
         allies(data[i])
         enemies(data[i])
         park(data[i])
+        mobility(data[i])
     }
 }
 
@@ -183,7 +184,7 @@ export async function score(data: any) {
 }
 
 //adds the mobility data from a team from a match, takes the json with the match data as parameter, returns nothing
-export async function mobility({ data }: { data: any }) {
+export async function mobility(data:any) {
     const session = getNeoSession()
     let id: any
     if (data.mobility == true) {
@@ -219,9 +220,10 @@ export async function mobility({ data }: { data: any }) {
         }
     }
 }
-export async function park({ data }: { data: any }) {
+export async function park(data:any) {
     const session = getNeoSession()
     let id: any
+    console.log(data)
     if (data.park == true) {
         try {
             const tx = session.beginTransaction()

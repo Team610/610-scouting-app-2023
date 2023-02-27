@@ -40,8 +40,9 @@ async function addCycle(cycle: cycle, team: number, match: number){
           }        
         )
 
-        if(cycle.scoringPosition){
-        }
+        // if(cycle.scoringPosition){
+        // }
+        console.log(result)
         await tx.commit();
         
     } catch(e){

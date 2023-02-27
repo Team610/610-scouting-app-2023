@@ -29,7 +29,7 @@ for i in range(N_ROUNDS):
             t['y'] = random.randint(0, 90)
             t['teleop'] = False if j < auto_cycles else True
             t['scoringPosition'] = blue_pos.pop(random.randint(0, len(blue_pos) - 1)) if a < 3 else red_pos.pop(random.randint(0, len(red_pos) - 1))
-            t['link'] = False
+            t['link'] = ranBoolean()
             t['object'] = "CUBE" if random.randint(0, 2) == 0 else "CONE"
             cycles.append(t)
         m['cycles'] = cycles

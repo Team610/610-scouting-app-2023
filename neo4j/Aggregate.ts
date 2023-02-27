@@ -32,6 +32,28 @@ export async function getMatchNodes(team: number, match: number, tx: any){
     )
     return result;
 }
+export async function getnumberOfLinksMatch(team: number, match: number, tx: any){
+    const result = await tx.run(
+        'MATCH (t:Team {name: $name})-[r{match: $match}]-(c:Cycle)-[o{link:true}]-(s:ScoringPosition) RETURN *',
+        { name: team, match: match },
+    )
+    let returnValue:number = 0;
+    if(result.records.length>0) {
+        returnValue = result.records.length-1
+    }
+    return returnValue;
+}
+export async function getnumberOfLinks(team: number, tx: any){
+    const result = await tx.run(
+        'MATCH (t:Team {name: $name})--(c:Cycle)-[o{link:true}]-(s:ScoringPosition) RETURN *',
+        { name: team},
+    )
+    let returnValue:number = 0;
+    if(result.records.length>0) {
+        returnValue = result.records.length-1
+    }
+    return returnValue;
+}
 
 // get where team picked up pieces in a match
 export async function getPiecesPickedUp(team: number, match:number, piece: string, tx:any){
@@ -119,6 +141,7 @@ export async function getTeam({ team }: { team: number }) {
         points += 2 * await getTeamScoreLocation(team, 1, true, tx)
         points += 3 * await getTeamScoreLocation(team, 2, true, tx)
         points += 5 * await getTeamScoreLocation(team, 3, true, tx)
+        points += 5 * await getnumberOfLinks(team,tx);
 
         try {
             const tx = session.beginTransaction()
@@ -290,9 +313,10 @@ export async function getMatch(team: number, match: number) {
         autoPoints += 4 * await getTeamMatchScoreLocation(team, 2, match, false, tx)
         autoPoints += 6 * await getTeamMatchScoreLocation(team, 3, match, false, tx)
         points += autoPoints
-        autoPoints += 2 * await getTeamMatchScoreLocation(team, 1, match, true, tx)
-        autoPoints += 3 * await getTeamMatchScoreLocation(team, 2, match, true, tx)
-        autoPoints += 5 * await getTeamMatchScoreLocation(team, 3, match, true, tx)
+        points += 2 * await getTeamMatchScoreLocation(team, 1, match, true, tx)
+        points += 3 * await getTeamMatchScoreLocation(team, 2, match, true, tx)
+        points += 5 * await getTeamMatchScoreLocation(team, 3, match, true, tx)
+        points += 5 * await getnumberOfLinksMatch(team,match,tx)
 
         const result = await tx.run(
             'MATCH (t:Team {name: $name})-[{match: $match}]-(c:Cycle)-[]->(s:ScoringPosition) RETURN count(*)',

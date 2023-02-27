@@ -3,7 +3,6 @@ import { SessionProvider, useSession } from "next-auth/react";
 import Layout from "./layout";
 import { MantineProvider } from "@mantine/core";
 import { useEffect, useState } from "react";
-import { addUser } from "../neo4j/GabeTesting";
 import neo4j from "neo4j-driver";
 
 export default function App({

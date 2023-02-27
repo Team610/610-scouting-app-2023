@@ -15,7 +15,8 @@ import { Context, useEffect, useState } from "react";
 import { GetServerSidePropsContext } from "next";
 import neo4j from "neo4j-driver";
 import { addUser } from "../neo4j/User";
-import { Input } from "@mantine/core";
+import { Input } from '@mantine/core';
+import { getTeams } from "../neo4j/teams";
 
 const inter = Inter({ subsets: ["latin"] });
 

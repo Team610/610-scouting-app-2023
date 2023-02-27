@@ -138,11 +138,120 @@ export async function getTeam({ team }: { team: number }) {
         autoPoints += 3 * await getTeamScoreLocation(team, 1, false, tx)
         autoPoints += 4 * await getTeamScoreLocation(team, 2, false, tx)
         autoPoints += 6 * await getTeamScoreLocation(team, 3, false, tx)
-        
+        try {
+            const tx = session.beginTransaction()
+            const result = await tx.run(
+                'MATCH (t:Team {name: $name})-[]-(c:Mobility) RETURN count(*)',
+                {name: team},
+            )
+            autoPoints += result.records[0].get(0).low * 3;
+
+            await tx.commit()
+        } catch (error) {
+            console.error(error)
+        }
+        try {
+            const tx = session.beginTransaction()
+            const result = await tx.run(
+                'MATCH (t:Team {name: $name})-[r:DOCKED]-(c:AutoClimb) RETURN count(*)',
+                {name: team},
+            )
+            autoPoints += result.records[0].get(0).low * 8;
+
+            await tx.commit()
+        } catch (error) {
+            console.error(error)
+        }
+        try {
+            const tx = session.beginTransaction()
+            const result = await tx.run(
+                'MATCH (t:Team {name: $name})-[r:ENGAGED]-(c:AutoClimb) RETURN count(*)',
+                {name: team},
+            )
+            autoPoints += result.records[0].get(0).low * 12;
+
+            await tx.commit()
+        } catch (error) {
+            console.error(error)
+        }
         points = autoPoints
         points += 2 * await getTeamScoreLocation(team, 1, true, tx)
         points += 3 * await getTeamScoreLocation(team, 2, true, tx)
         points += 5 * await getTeamScoreLocation(team, 3, true, tx)
+
+        try {
+            const tx = session.beginTransaction()
+            const result = await tx.run(
+                'MATCH (t:Team {name: $name})--(c:Park) RETURN count(*)',
+                {name: team},
+            )
+            points += result.records[0].get(0).low * 2;
+
+            await tx.commit()
+        } catch (error) {
+            console.error(error)
+        }
+        try {
+            const tx = session.beginTransaction()
+            const result = await tx.run(
+                'MATCH (t:Team {name: $name})-[r:DOCKED]-(c:TeleopClimb) RETURN count(*)',
+                {name: team},
+            )
+            points += result.records[0].get(0).low * 6;
+
+            await tx.commit()
+        } catch (error) {
+            console.error(error)
+        }
+        try {
+            const tx = session.beginTransaction()
+            const result = await tx.run(
+                'MATCH (t:Team {name: $name})-[r:ENGAGED]-(c:TeleopClimb) RETURN count(*)',
+                {name: team},
+            )
+            points += result.records[0].get(0).low * 10;
+
+            await tx.commit()
+        } catch (error) {
+            console.error(error)
+        }
+
+        try {
+            const tx = session.beginTransaction()
+            const result = await tx.run(
+                'MATCH (t:Team {name: $name})--(c:Park) RETURN count(*)',
+                {name: team},
+            )
+            points += result.records[0].get(0).low * 2;
+
+            await tx.commit()
+        } catch (error) {
+            console.error(error)
+        }
+        try {
+            const tx = session.beginTransaction()
+            const result = await tx.run(
+                'MATCH (t:Team {name: $name})-[r:DOCKED]-(c:TeleopClimb) RETURN count(*)',
+                {name: team},
+            )
+            points += result.records[0].get(0).low * 6;
+
+            await tx.commit()
+        } catch (error) {
+            console.error(error)
+        }
+        try {
+            const tx = session.beginTransaction()
+            const result = await tx.run(
+                'MATCH (t:Team {name: $name})-[r:ENGAGED]-(c:TeleopClimb) RETURN count(*)',
+                {name: team},
+            )
+            points += result.records[0].get(0).low * 10;
+
+            await tx.commit()
+        } catch (error) {
+            console.error(error)
+        }
 
         scoringPositions[0] = await getTeamScoreLocation(team, 1, false, tx) + await getTeamScoreLocation(team, 1, false, tx)
         scoringPositions[1] = await getTeamScoreLocation(team, 2, false, tx) + await getTeamScoreLocation(team, 2, false, tx)
@@ -188,6 +297,7 @@ export async function getTeam({ team }: { team: number }) {
     team: team,
     match: match,
     mobility: mobility,
+    park: park,
     teleopClimb: teleopClimb,
     autoClimb: autoClimb,
     numPartners: numPartners,
@@ -216,6 +326,7 @@ export async function getMatch(team: number, match: number) {
     let allies: number[] = new Array(2)
     let enemies: number[] = new Array(3)
     let mobility: boolean = false;
+    let park: boolean = false;
     let autoPoints: number = 0
     let points: number = 0
     let piecesScored = 0
@@ -242,16 +353,20 @@ export async function getMatch(team: number, match: number) {
                 case "AutoClimb":
                     if (matchNodes.records[index]._fields[1].type == "DOCKED") {
                         autoClimb = 1
+                        autoPoints+=8
                     } else {
                         autoClimb = 2
+                        autoPoints+=12
                     }
                     break;
                 case "TeleopClimb":
                     numPartners = matchNodes.records[index]._fields[1].properties.numPartners.low
                     if (matchNodes.records[index]._fields[1].type == "DOCKED") {
                         teleopClimb = 1
+                        points+=6
                     } else {
                         teleopClimb = 2
+                        points+=10
                     }
                     break;
 
@@ -262,9 +377,13 @@ export async function getMatch(team: number, match: number) {
                         enemies.push(matchNodes.records[index]._fields[0].properties.name.low)
                     }
                     break;
-                //default is used for mobility
                 case "Mobility":
                     mobility = true;
+                    autoPoints+=3
+                    break;
+                case "Park":
+                    park = true;
+                    points +=2
                     break;
                 default:
                     break;
@@ -278,6 +397,10 @@ export async function getMatch(team: number, match: number) {
         autoPoints += 3 * await getTeamMatchScoreLocation(team, 1, match, false, tx)
         autoPoints += 4 * await getTeamMatchScoreLocation(team, 2, match, false, tx)
         autoPoints += 6 * await getTeamMatchScoreLocation(team, 3, match, false, tx)
+        points += autoPoints
+        autoPoints += 2 * await getTeamMatchScoreLocation(team, 1, match, true, tx)
+        autoPoints += 3 * await getTeamMatchScoreLocation(team, 2, match, true, tx)
+        autoPoints += 5 * await getTeamMatchScoreLocation(team, 3, match, true, tx)
 
         const result = await tx.run(
             'MATCH (t:Team {name: $name})-[{match: $match}]-(c:Cycle)-[]->(s:ScoringPosition) RETURN count(*)',
@@ -293,6 +416,7 @@ export async function getMatch(team: number, match: number) {
         team: team,
         match: match,
         mobility: mobility,
+        park:park,
         teleopClimb: teleopClimb,
         autoClimb: autoClimb,
         numPartners: numPartners,

@@ -22,7 +22,6 @@ import { GetServerSidePropsContext } from "next";
 import neo4j from "neo4j-driver";
 import { addUser } from "../neo4j/User";
 import { Input } from "@mantine/core";
-import { getTeams } from "../neo4j/teams";
 import SelectMatchDropBox from "./matches";
 
 const inter = Inter({ subsets: ["latin"] });

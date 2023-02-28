@@ -1,30 +1,38 @@
+import { mobility } from "./AddData";
 import { getNeoSession } from "./Session";
 
-interface cycle {
+export interface cycle {
     x: number,
     y: number,
-    teleop: boolean,
-    scoringPosition: number
+    auto: boolean,
+    grid: number,
+    level: number,
+    cone: boolean
 }
 
 interface match {
     team: number,
-    allies: [number],
-    enemies: [number],
-    match: string,
-    cycles: [cycle],
+    allies: Array<number>,
+    enemies: Array<number>,
+    match: number,
+    cycles: Array<cycle>,
     autoClimb: number, //0 -> none, 1 -> docked, 2 -> engaged
     teleopClimb: number,
     numPartners: number,
-    mobility: number
+    mobility: boolean
+    parked: boolean
 }
 
-function submitMatch(match: match){
+export async function submitMatch(match: match){
+
+    mobility({team: match.team, match: match.match, mobility: match.mobility})
 
 }
 
-async function addCycle(cycle: cycle, team: number, match: number){
+export async function addCycle(cycle: cycle, team: number, match: number){
     const session = getNeoSession();
+
+
 
     //add cycle
     try {
@@ -36,11 +44,12 @@ async function addCycle(cycle: cycle, team: number, match: number){
             x: cycle.x,
             y: cycle.y,
             match: match,
-            teleop: cycle.teleop,
+            teleop: !cycle.auto,
           }        
         )
 
         // if(cycle.scoringPosition){
+
         // }
         console.log(result)
         await tx.commit();

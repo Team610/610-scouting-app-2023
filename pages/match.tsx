@@ -6,7 +6,6 @@ import ScoringGrid from "./scoringGrid";
 import { clientCycle, submitMatch } from "../neo4j/SubmitMatch";
 import { convertCycleServer } from "../lib/clientCycleToServer";
 import { useRouter } from "next/router";
-import TimerFunction from "./components/TimerFunction";
 
 export interface Score {
   auto: number;

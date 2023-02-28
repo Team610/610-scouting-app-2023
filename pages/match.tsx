@@ -6,6 +6,7 @@ import Intake from "./intake";
 import ScoringGrid from "./scoringGrid";
 import { clientCycle, submitMatch } from "../neo4j/SubmitMatch";
 import { convertCycleServer } from "../lib/clientCycleToServer";
+import { useRouter } from "next/router";
 
 export interface Score {
   auto: number;
@@ -45,6 +46,7 @@ export default function MatchScreen() {
   const [gamePiece, setGamePiece] = useState("nothing");
   const [mobility, setMobility] = useState(false);
   const [parked, setParked] = useState(false);
+  const router = useRouter();
 
   //after 15 seconds, switch from auto to teleop
   TimerFunction(15, setGameState, setChargingStation);
@@ -92,13 +94,9 @@ export default function MatchScreen() {
     }
   }
 
-  function updateChargeStation(
-    docked: boolean,
-    engaged: boolean,
-    auto: boolean
-  ) {
+  function updateChargeStation(docked: boolean, engaged: boolean) {
     let obj = { ...chargingStation };
-    if (auto) {
+    if (gameState == "auto") {
       obj.auto.dock = docked;
       obj.auto.engage = engaged;
     } else {
@@ -200,7 +198,7 @@ export default function MatchScreen() {
       />
       {gameState == "teleop" ? (
         <Button
-          onClick={async () =>
+          onClick={async () => {
             await submitMatch({
               team: 610,
               allies: [1, 2],
@@ -220,8 +218,9 @@ export default function MatchScreen() {
               numPartners: chargingStation.teleop.numPartners,
               mobility: mobility,
               park: parked,
-            })
-          }
+            });
+            router.push("/");
+          }}
         >
           Submit Match
         </Button>

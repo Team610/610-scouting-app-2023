@@ -19,16 +19,13 @@ function ChargeScoring({
   //sees if first time switching to teleop
   const [firstTime, setFirstTime] = useState(true);
   useEffect(() => {
-    if (gameState != "auto") {
+    if (gameState != "auto" && firstTime) {
       setFirstTime(false);
-      if (firstTime) {
-        chargeStationScore(docked, engaged, true);
-      }
       setDocked(false);
       setEngaged(false);
     }
-    chargeStationScore(docked, engaged, false);
-  }, [gameState]);
+    chargeStationScore(docked, engaged);
+  }, [gameState, docked, engaged]);
 
   return (
     <>

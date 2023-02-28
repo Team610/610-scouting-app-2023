@@ -148,6 +148,7 @@ export async function addDummyData({data}: {data: Array<matchData>}){
         score(data[i])
         allies(data[i])
         enemies(data[i])
+        climb(data[i])
         park(data[i])
         mobility(data[i])
     }
@@ -273,7 +274,7 @@ export async function mobility(data: matchData) {
 export async function park(data:any) {
     const session = getNeoSession()
     let id: any
-    console.log(data)
+    // console.log(data)
     if (data.park == true) {
         try {
             const tx = session.beginTransaction()

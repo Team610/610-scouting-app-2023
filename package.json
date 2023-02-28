@@ -27,6 +27,7 @@
     "next": "13.1.2",
     "next-auth": "^4.18.10",
     "next-images": "^1.8.4",
+    "nextjs-cors": "^2.1.2",
     "react": "18.2.0",
     "react-aria": "^3.22.0",
     "react-detect-click-outside": "^1.1.7",

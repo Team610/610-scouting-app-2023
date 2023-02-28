@@ -7,7 +7,8 @@ export interface cycle {
     auto: boolean,
     grid: number,
     level: number,
-    cone: boolean
+    cone: boolean,
+    link: boolean
 }
 
 interface match {

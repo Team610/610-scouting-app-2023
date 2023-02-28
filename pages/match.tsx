@@ -56,6 +56,7 @@ export default function MatchScreen() {
       auto: gameState == "auto",
       grid: 0,
       level: 0,
+      link: false,
     };
     let temp = [...gamePieces, obj];
     setGamePieces(temp);
@@ -102,6 +103,29 @@ export default function MatchScreen() {
     setChargingStation(obj);
   }
 
+  function linkGamePiece() {
+    gamePieces[gamePieces.length - 1].link = true;
+  }
+
+  function LinkScored() {
+    const [isVisible, setIsVisible] = useState(true);
+
+    return (
+      <div>
+        {isVisible && gamePiece == "nothing" && gamePieces.length > 0 && (
+          <Button
+            onClick={() => {
+              setIsVisible(false);
+              linkGamePiece();
+            }}
+          >
+            Score Link?
+          </Button>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div style={{ display: "flex", flexDirection: "row", gap: "20px" }}>
@@ -132,6 +156,7 @@ export default function MatchScreen() {
               Robot dropped the {gamePiece}
             </Button>
           ) : null}
+          <LinkScored />
           <ChargeStation
             gameState={gameState}
             setNumPartners={setNumPartners}
@@ -154,7 +179,11 @@ export default function MatchScreen() {
           )}
         </div>
       </div>
-      <ScoringGrid addGamePiece={addGamePiece} pickedupGamePiece={gamePiece} />
+      <ScoringGrid
+        addGamePiece={addGamePiece}
+        pickedupGamePiece={gamePiece}
+        scoreGamePiece={scoreGamePiece}
+      />
       {gameState == "teleop" ? (
         <Button
           onClick={async () =>

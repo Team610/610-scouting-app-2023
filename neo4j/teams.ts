@@ -1,30 +1,18 @@
-import { Anybody } from "@next/font/google";
-import { resourceLimits } from "worker_threads";
 import { getNeoSession } from "./Session";
 
-
-
-export async function getTeams() {
-
-    const session = getNeoSession();
+//returns the number of teams
+export async function getTeams(){
+    const session = getNeoSession()
     const tx = session.beginTransaction()
-    let tempResult:any;
-    let finalResult = new Array;
-    try {
-        const result = await tx.run(
-          'MATCH (t:Team) RETURN t',
-        )
-        tempResult = result;
+    try{
 
-        for (let index = 0; index < tempResult.records.length; index++) {
-          // console.log(tempResult.records[index]._fields[0].identity.low);
-          finalResult.push(tempResult.records[index]._fields[0].identity.low);
-        }
+        const res = await tx.run('MATCH (n:Team) return (n)')
+        
+        await tx.commit()
+        await tx.close()
 
-        return finalResult;
+        return res.records[2].get(0).properties.name
+    }catch(e){
+        console.log(e)
     }
-    catch (error) {
-        console.error(error)
-      }
-
 }

@@ -2,7 +2,7 @@ import { Anybody } from "@next/font/google";
 import { useRouter } from "next/router";
 // import { getTeams } from "../neo4j/teams";
 
-function Home({ data }: any) {
+export function Home({ data }: any) {
   // const router = useRouter();
   // let element = [];
   // element.push(<div style={{ border: "1px solid grey" }}>Teams</div>);

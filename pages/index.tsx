@@ -15,7 +15,8 @@ import { Context, useEffect, useState } from "react";
 import { GetServerSidePropsContext } from "next";
 import neo4j from "neo4j-driver";
 import { addUser } from "../neo4j/User";
-import { Input } from "@mantine/core";
+import { Input } from '@mantine/core';
+import { getTeams } from "../neo4j/teams";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,7 +31,7 @@ export default function Home() {
       <Button onClick={async () => await getTeam({team : 16})}>
         Get team aggregate data
       </Button>
-      <Button onClick={async () => await getMatch(10, 10)}>
+      <Button onClick={async () => await getMatch(5,22)}>
         Get match aggregate data
       </Button>
       <Button onClick={async () => await wipe()}>

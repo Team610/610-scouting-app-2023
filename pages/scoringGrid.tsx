@@ -6,13 +6,16 @@ import { Popover, Text, Button, Container, Grid } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useDetectClickOutside } from "react-detect-click-outside";
+import { score } from "../neo4j/AddData";
 
 export default function ScoringGrid({
   addGamePiece,
   pickedupGamePiece,
+  scoreGamePiece,
 }: {
   addGamePiece: Function;
   pickedupGamePiece: String;
+  scoreGamePiece: Function;
 }) {
   //score, auto vs teleop for scores
   const coneCol = [0, 2, 3, 5, 6, 8];
@@ -44,6 +47,7 @@ export default function ScoringGrid({
                       grid={item}
                       addGamePiece={addGamePiece}
                       pickedupGamePiece={pickedupGamePiece}
+                      scoreGamePiece={scoreGamePiece}
                     ></Box>
                   </div>
                 );
@@ -63,6 +67,7 @@ interface BoxProps {
   addGamePiece: Function;
   grid: number;
   pickedupGamePiece: String;
+  scoreGamePiece: Function;
 }
 
 function Box({
@@ -71,6 +76,7 @@ function Box({
   level,
   addGamePiece,
   grid,
+  scoreGamePiece,
 }: BoxProps) {
   const [content, setContent] = useState<StaticImageData>();
   const [opened, { close, open }] = useDisclosure(false);
@@ -94,10 +100,10 @@ function Box({
               else {
                 if (gamePiece == "cone" && pickedupGamePiece == "cone") {
                   setContent(cone);
-                  addGamePiece(level, true, grid);
+                  scoreGamePiece(level, true, grid);
                 } else if (gamePiece == "cube" && pickedupGamePiece == "cube") {
                   setContent(cube);
-                  addGamePiece(level, false, grid);
+                  scoreGamePiece(level, false, grid);
                 }
               }
             }
@@ -108,7 +114,7 @@ function Box({
                 //open up menu to change selection
                 open();
               }
-              addGamePiece(level, gamePiece, grid, true);
+              scoreGamePiece(level, gamePiece, grid, true);
               setContent(undefined);
             }
           }}
@@ -134,11 +140,11 @@ function Box({
               width={30}
               onClick={() => {
                 if (content == cone) {
-                  addGamePiece(level, gamePiece == "cone", grid, true);
+                  scoreGamePiece(level, gamePiece == "cone", grid, true);
                   setContent(undefined);
                 } else {
                   setContent(cone);
-                  addGamePiece(level, gamePiece == "cone", grid, false);
+                  scoreGamePiece(level, gamePiece == "cone", grid, false);
                 }
                 close();
               }}
@@ -150,10 +156,10 @@ function Box({
               onClick={() => {
                 if (content == cube) {
                   setContent(undefined);
-                  addGamePiece(level, gamePiece == "cube", grid, true);
+                  scoreGamePiece(level, gamePiece == "cube", grid, true);
                 } else {
                   setContent(cube);
-                  addGamePiece(level, gamePiece == "cube", grid, false);
+                  scoreGamePiece(level, gamePiece == "cube", grid, false);
                 }
                 close();
               }}

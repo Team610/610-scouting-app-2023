@@ -184,11 +184,17 @@ export async function score(data: any) {
     }
 }
 
+interface mobilityData {
+    team: number,
+    match: number,
+    mobility: boolean
+}
+
 //adds the mobility data from a team from a match, takes the json with the match data as parameter, returns nothing
-export async function mobility(data:any) {
+export async function mobility(data: mobilityData) {
     const session = getNeoSession()
     let id: any
-    if (data.mobility == true) {
+    if (data.mobility) {
         try {
             const tx = session.beginTransaction()
             const result = await tx.run(

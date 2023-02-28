@@ -4,7 +4,8 @@ import { Button, Checkbox } from "@mantine/core";
 import ChargeStation from "./ChargeStation";
 import Intake from "./intake";
 import ScoringGrid from "./scoringGrid";
-import { addCycle, cycle, submitMatch } from "../neo4j/SubmitMatch";
+import { clientCycle, submitMatch } from "../neo4j/SubmitMatch";
+import { convertCycleServer } from "../lib/clientCycleToServer";
 
 export interface Score {
   auto: number;
@@ -36,7 +37,7 @@ export let deafultChargingStation = {
 };
 
 export default function MatchScreen() {
-  const [gamePieces, setGamePieces] = useState<cycle[]>([]);
+  const [gamePieces, setGamePieces] = useState<clientCycle[]>([]);
   const [gameState, setGameState] = useState<string>("auto");
   const [chargingStation, setChargingStation] = useState(
     deafultChargingStation
@@ -49,13 +50,14 @@ export default function MatchScreen() {
   TimerFunction(15, setGameState, setChargingStation);
 
   function addGamePiece(x: number, y: number, cone: boolean) {
-    let obj: cycle = {
+    let obj: clientCycle = {
       x: x,
       y: y,
       cone: cone,
       auto: gameState == "auto",
       grid: 0,
       level: 0,
+      position: 0,
       link: false,
     };
     let temp = [...gamePieces, obj];
@@ -66,17 +68,22 @@ export default function MatchScreen() {
     level: number,
     cone: boolean,
     grid: number,
-    remove: boolean | undefined
+    remove: boolean | undefined,
+    position: number
   ) {
-    let obj = gamePieces[gamePieces.length - 1];
+    let temp = gamePieces;
+    let obj = temp[gamePieces.length - 1];
     obj.auto = gameState == "auto";
     obj.cone = cone;
     obj.grid = grid;
     obj.level = level;
+    obj.position = position;
 
     // if we the game piece has been scored, add it to the cycles
     if (!remove) {
-      setGamePieces([...gamePieces, obj]);
+      temp[temp.length - 1] = obj;
+
+      setGamePieces(temp);
       setGamePiece("nothing");
     }
     // only want to set game piece to nothing if it has been scored
@@ -85,9 +92,13 @@ export default function MatchScreen() {
     }
   }
 
-  function updateChargeStation(docked: boolean, engaged: boolean) {
+  function updateChargeStation(
+    docked: boolean,
+    engaged: boolean,
+    auto: boolean
+  ) {
     let obj = { ...chargingStation };
-    if (gameState == "auto") {
+    if (auto) {
       obj.auto.dock = docked;
       obj.auto.engage = engaged;
     } else {
@@ -112,16 +123,19 @@ export default function MatchScreen() {
 
     return (
       <div>
-        {isVisible && gamePiece == "nothing" && gamePieces.length > 0 && (
-          <Button
-            onClick={() => {
-              setIsVisible(false);
-              linkGamePiece();
-            }}
-          >
-            Score Link?
-          </Button>
-        )}
+        {isVisible &&
+          gamePiece == "nothing" &&
+          gamePieces.length > 0 &&
+          !gamePieces[gamePieces.length - 1].link && (
+            <Button
+              onClick={() => {
+                setIsVisible(!isVisible);
+                linkGamePiece();
+              }}
+            >
+              Link Scored
+            </Button>
+          )}
       </div>
     );
   }
@@ -192,7 +206,7 @@ export default function MatchScreen() {
               allies: [1, 2],
               enemies: [3, 4],
               match: 37,
-              cycles: gamePieces,
+              cycles: convertCycleServer(gamePieces),
               autoClimb: chargingStation.auto.engage
                 ? 2
                 : chargingStation.auto.dock
@@ -205,7 +219,7 @@ export default function MatchScreen() {
                 : 0,
               numPartners: chargingStation.teleop.numPartners,
               mobility: mobility,
-              parked: parked,
+              park: parked,
             })
           }
         >

@@ -79,7 +79,8 @@ export default function Home({
     let curr = locations[locations.length - 1];
     locations[locations.length - 1].gamePiece = x;
     setLocations(temp);
-    addGamePiece(curr.left, curr.top, x);
+    addGamePiece(curr.left, curr.top, x == "cone");
+    console.log(1);
     close();
   }
 

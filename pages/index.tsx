@@ -3,7 +3,13 @@ import Image from "next/image";
 import { Inter } from "@next/font/google";
 import styles from "../styles/Home.module.css";
 import { getMatch, getTeam } from "../neo4j/Aggregate";
-import { climb, createNTeams, score, mobility, addDummyData } from "../neo4j/AddData";
+import {
+  climb,
+  createNTeams,
+  score,
+  mobility,
+  addDummyData,
+} from "../neo4j/AddData";
 import { allies, enemies } from "../neo4j/Relationships";
 import { query, wipe } from "../neo4j/Miscellaneous";
 import { Button } from "@mantine/core";
@@ -15,8 +21,7 @@ import { Context, useEffect, useState } from "react";
 import { GetServerSidePropsContext } from "next";
 import neo4j from "neo4j-driver";
 import { addUser } from "../neo4j/User";
-import { Input } from '@mantine/core';
-import { getTeams } from "../neo4j/teams";
+import { Input } from "@mantine/core";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,7 +29,7 @@ export default function Home() {
   const [queryText, setQueryText] = useState("");
   return (
     <>
-      <Button onClick={async () => await createNTeams(20)}>Create dummy teams</Button>
+      {/* <Button onClick={async () => await createNTeams(20)}>Create dummy teams</Button>
       <Button onClick={async () => await addDummyData({ data: sampleMatch })}>
         Add dummy data
       </Button>
@@ -36,14 +41,14 @@ export default function Home() {
       </Button>
       <Button onClick={async () => await wipe()}>
         Wipe
-      </Button>
-      <Input
+      </Button> */}
+      {/* <Input
         placeholder="Run query"
         onChange={(e) => {
           setQueryText(e.currentTarget.value);
         }}
       />
-      <Button onClick={async () => await query(queryText)}>Query</Button>
+      <Button onClick={async () => await query(queryText)}>Query</Button> */}
 
       <div className={styles.center}>
         <h2>

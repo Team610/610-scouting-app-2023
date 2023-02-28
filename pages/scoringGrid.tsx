@@ -48,6 +48,7 @@ export default function ScoringGrid({
                       addGamePiece={addGamePiece}
                       pickedupGamePiece={pickedupGamePiece}
                       scoreGamePiece={scoreGamePiece}
+                      position={item2}
                     ></Box>
                   </div>
                 );
@@ -68,6 +69,7 @@ interface BoxProps {
   grid: number;
   pickedupGamePiece: String;
   scoreGamePiece: Function;
+  position: number;
 }
 
 function Box({
@@ -77,10 +79,19 @@ function Box({
   addGamePiece,
   grid,
   scoreGamePiece,
+  position,
 }: BoxProps) {
   const [content, setContent] = useState<StaticImageData>();
   const [opened, { close, open }] = useDisclosure(false);
   const ref = useDetectClickOutside({ onTriggered: close });
+
+  let pos = 1;
+  if (position % 3 == 0) {
+    pos = 0;
+  } else if ((position + 1) % 3 == 0) {
+    pos = 2;
+  }
+
   return (
     <>
       <div
@@ -100,10 +111,10 @@ function Box({
               else {
                 if (gamePiece == "cone" && pickedupGamePiece == "cone") {
                   setContent(cone);
-                  scoreGamePiece(level, true, grid);
+                  scoreGamePiece(level, true, grid, pos);
                 } else if (gamePiece == "cube" && pickedupGamePiece == "cube") {
                   setContent(cube);
-                  scoreGamePiece(level, false, grid);
+                  scoreGamePiece(level, false, grid, pos);
                 }
               }
             }
@@ -114,7 +125,7 @@ function Box({
                 //open up menu to change selection
                 open();
               }
-              scoreGamePiece(level, gamePiece, grid, true);
+              scoreGamePiece(level, gamePiece, grid, true, pos);
               setContent(undefined);
             }
           }}
@@ -140,11 +151,11 @@ function Box({
               width={30}
               onClick={() => {
                 if (content == cone) {
-                  scoreGamePiece(level, gamePiece == "cone", grid, true);
+                  scoreGamePiece(level, gamePiece == "cone", grid, true, pos);
                   setContent(undefined);
                 } else {
                   setContent(cone);
-                  scoreGamePiece(level, gamePiece == "cone", grid, false);
+                  scoreGamePiece(level, gamePiece == "cone", grid, false, pos);
                 }
                 close();
               }}
@@ -156,10 +167,10 @@ function Box({
               onClick={() => {
                 if (content == cube) {
                   setContent(undefined);
-                  scoreGamePiece(level, gamePiece == "cube", grid, true);
+                  scoreGamePiece(level, gamePiece == "cube", grid, true, pos);
                 } else {
                   setContent(cube);
-                  scoreGamePiece(level, gamePiece == "cube", grid, false);
+                  scoreGamePiece(level, gamePiece == "cube", grid, false, pos);
                 }
                 close();
               }}

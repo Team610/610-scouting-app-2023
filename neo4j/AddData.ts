@@ -3,6 +3,28 @@ import { getNeoSession } from "./Session";
 import neo4j from 'neo4j-driver'
 import { allies, enemies } from "./Relationships";
 
+export interface cycleData {
+    x: number,
+    y: number,
+    teleop: boolean,
+    scoringPosition: number,
+    link: boolean,
+    object: string
+}
+
+export interface matchData {
+    team: number,
+    match: number,
+    autoClimb: number,
+    teleopClimb: number,
+    numPartners: number,
+    park: boolean,
+    mobility: boolean,
+    cycles: Array<cycleData>,
+    enemies: Array<number>,
+    allies: Array<number>
+}
+
 //create teams to test with takes a number as parameter for number of teams, returns nothing
 export async function createNTeams(n: number) {
     const session = getNeoSession()
@@ -22,9 +44,25 @@ export async function createNTeams(n: number) {
     }
 }
 
+export async function makeTeam(team: number){
+    const session = getNeoSession()
+    const tx = session.beginTransaction()
+    try {
+        const result = await tx.run(
+            'MERGE (a:Team{ name: toInteger($name)}) RETURN a',
+            { name: team }
+        )
+
+        await tx.commit()
+        
+    } catch (error) {
+        console.error(error)
+    }
+}
+
 
 // adds the climbing data from a team from a match, takes the json with the match data as paramter, returns nothing
-export async function climb({ data }: { data: any }) {
+export async function climb(data: matchData) {
     const session = getNeoSession()
     let id: any;
     if (data.teleopClimb != 0) {
@@ -104,7 +142,7 @@ export async function climb({ data }: { data: any }) {
     }
 }
 
-export async function addDummyData({data}: {data: any}){
+export async function addDummyData({data}: {data: Array<matchData>}){
     for(var i = 0; i < data.length; i++){
         // console.log("added dummy data " + (i + 1) + "/" + (data.length + 1))
         score(data[i])
@@ -115,9 +153,21 @@ export async function addDummyData({data}: {data: any}){
     }
 }
 
+//scores a single match
+export async function scoreMatch(match: matchData){
+    makeTeam(match.team)
+    score(match)
+    allies(match)
+    enemies(match)
+    park(match)
+    mobility(match)
+    climb(match)
+
+}
+
 
 // adds the cones and cube data from a team from a match, takes the json with the match data as parameter, returns nothing
-export async function score(data: any) {
+export async function score(data: matchData) {
     const session = getNeoSession()
 
     // try
@@ -183,14 +233,8 @@ export async function score(data: any) {
     }
 }
 
-interface mobilityData {
-    team: number,
-    match: number,
-    mobility: boolean
-}
-
 //adds the mobility data from a team from a match, takes the json with the match data as parameter, returns nothing
-export async function mobility(data: mobilityData) {
+export async function mobility(data: matchData) {
     const session = getNeoSession()
     let id: any
     if (data.mobility) {

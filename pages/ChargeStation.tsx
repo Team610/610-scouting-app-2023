@@ -21,10 +21,13 @@ function ChargeScoring({
   useEffect(() => {
     if (gameState != "auto") {
       setFirstTime(false);
+      if (firstTime) {
+        chargeStationScore(docked, engaged, true);
+      }
       setDocked(false);
       setEngaged(false);
     }
-    chargeStationScore(docked, engaged);
+    chargeStationScore(docked, engaged, false);
   }, [gameState]);
 
   return (

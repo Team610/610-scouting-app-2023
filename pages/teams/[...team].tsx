@@ -1,5 +1,4 @@
 import { Anybody } from "@next/font/google";
-import { getTeams } from "../../neo4j/Teams";
 import { useRouter } from "next/router";
 
 export default function Home() {

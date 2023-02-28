@@ -17,6 +17,7 @@ import neo4j from "neo4j-driver";
 import { addUser } from "../neo4j/User";
 import { Input } from '@mantine/core';
 import { getTeams } from "../neo4j/teams";
+import SelectMatchDropBox from "./matches";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,10 +29,10 @@ export default function Home() {
       <Button onClick={async () => await addDummyData({ data: sampleMatch })}>
         Add dummy data
       </Button>
-      <Button onClick={async () => await getTeam({team : 16})}>
+      <Button onClick={async () => await getTeam({ team: 17 })}>
         Get team aggregate data
       </Button>
-      <Button onClick={async () => await getMatch(5,22)}>
+      <Button onClick={async () => await getMatch(5, 2)}>
         Get match aggregate data
       </Button>
       <Button onClick={async () => await wipe()}>
@@ -51,6 +52,9 @@ export default function Home() {
             Start
           </Link>
         </h2>
+      </div>
+      <div>
+        <SelectMatchDropBox></SelectMatchDropBox>
       </div>
     </>
   );

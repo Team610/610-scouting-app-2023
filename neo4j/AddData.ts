@@ -24,7 +24,7 @@ export async function createNTeams(n: number) {
 
 
 // adds the climbing data from a team from a match, takes the json with the match data as paramter, returns nothing
-export async function climb({ data }: { data: any }) {
+export async function climb(data : any) {
     const session = getNeoSession()
     let id: any;
     if (data.teleopClimb != 0) {
@@ -110,6 +110,7 @@ export async function addDummyData({data}: {data: any}){
         score(data[i])
         allies(data[i])
         enemies(data[i])
+        climb(data[i])
         park(data[i])
         mobility(data[i])
     }
@@ -223,7 +224,7 @@ export async function mobility(data:any) {
 export async function park(data:any) {
     const session = getNeoSession()
     let id: any
-    console.log(data)
+    // console.log(data)
     if (data.park == true) {
         try {
             const tx = session.beginTransaction()

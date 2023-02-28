@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import ChargeStation from "../ChargeStation";
 import { deafultChargingStation } from "../match";
 
-export function timerFunction(
+export default function TimerFunction(
   count: number,
   setGameState: Function,
   setChargingStation: Function

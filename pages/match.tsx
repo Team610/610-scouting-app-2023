@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Checkbox } from "@mantine/core";
 import ChargeStation from "./ChargeStation";
 import Intake from "./intake";
@@ -6,7 +6,7 @@ import ScoringGrid from "./scoringGrid";
 import { clientCycle, submitMatch } from "../neo4j/SubmitMatch";
 import { convertCycleServer } from "../lib/clientCycleToServer";
 import { useRouter } from "next/router";
-import { timerFunction } from "./components/TimerFunction";
+import TimerFunction from "./components/TimerFunction";
 
 export interface Score {
   auto: number;
@@ -48,8 +48,19 @@ export default function MatchScreen() {
   const [parked, setParked] = useState(false);
   const router = useRouter();
 
-  //after 15 seconds, switch from auto to teleop
-  timerFunction(15, setGameState, setChargingStation);
+  const [time, setTime] = useState(15);
+
+  // redirect page to "TeleOp" after 10 seconds while displaying remaining time on page
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setTime(time - 1);
+    }, 1000);
+    if (time === 0) {
+      setGameState("teleop");
+      setChargingStation(deafultChargingStation);
+    }
+    return () => clearTimeout(timer);
+  }, [time]);
 
   function addGamePiece(x: number, y: number, cone: boolean) {
     let obj: clientCycle = {

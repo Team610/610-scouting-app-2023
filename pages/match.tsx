@@ -1,5 +1,4 @@
 import { useState } from "react";
-import TimerFunction from "./TimerFunction";
 import { Button, Checkbox } from "@mantine/core";
 import ChargeStation from "./ChargeStation";
 import Intake from "./intake";
@@ -7,6 +6,7 @@ import ScoringGrid from "./scoringGrid";
 import { clientCycle, submitMatch } from "../neo4j/SubmitMatch";
 import { convertCycleServer } from "../lib/clientCycleToServer";
 import { useRouter } from "next/router";
+import { timerFunction } from "./components/TimerFunction";
 
 export interface Score {
   auto: number;
@@ -49,7 +49,7 @@ export default function MatchScreen() {
   const router = useRouter();
 
   //after 15 seconds, switch from auto to teleop
-  TimerFunction(15, setGameState, setChargingStation);
+  timerFunction(15, setGameState, setChargingStation);
 
   function addGamePiece(x: number, y: number, cone: boolean) {
     let obj: clientCycle = {

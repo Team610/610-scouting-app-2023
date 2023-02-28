@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import ChargeStation from "./ChargeStation";
-import { deafultChargingStation } from "./match";
+import ChargeStation from "../ChargeStation";
+import { deafultChargingStation } from "../match";
 
-export default function TimerFunction(
+export function timerFunction(
   count: number,
   setGameState: Function,
   setChargingStation: Function

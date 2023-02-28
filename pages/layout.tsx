@@ -102,7 +102,7 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export default function Layout({ children }: { children: ReactNode }) {
-  let auth = checkAccount();
+  // let auth = checkAccount();
   return (
     <>
       <HeaderMegaMenu />

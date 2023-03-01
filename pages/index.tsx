@@ -30,10 +30,10 @@ export default function Home() {
   const [queryText, setQueryText] = useState("");
   return (
     <>
-      {/* <Button onClick={async () => await createNTeams(20)}>Create dummy teams</Button>
-      <Button onClick={async () => await addDummyData({ data: sampleMatch })}>
+       <Button onClick={async () => await createNTeams(20)}>Create dummy teams</Button>
+      {/* <Button onClick={async () => await addDummyData(sampleMatch)}>
         Add dummy data
-      </Button>
+      </Button> */}
       <Button onClick={async () => await getTeam({ team: 17 })}>
         Get team aggregate data
       </Button>
@@ -42,14 +42,14 @@ export default function Home() {
       </Button>
       <Button onClick={async () => await wipe()}>
         Wipe
-      </Button> */}
-      {/* <Input
+      </Button> 
+      <Input
         placeholder="Run query"
         onChange={(e) => {
           setQueryText(e.currentTarget.value);
         }}
       />
-      <Button onClick={async () => await query(queryText)}>Query</Button> */}
+      <Button onClick={async () => await query(queryText)}>Query</Button> 
 
       <div className={styles.center}>
         <h2>

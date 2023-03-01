@@ -3,7 +3,7 @@ export default function Home() {
 
     return (
         <>
-            <Text size="xl">hi</Text>
+            <Text size="xl">do /stats/"team number" or /stats/"team number"/"match number"</Text>
         </>
     )
 } 

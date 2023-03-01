@@ -167,6 +167,25 @@ export async function getClimbAllMatches(team : number, teleop: boolean, tx : an
     return climbs
 }
 
+export interface TeamAggData {
+    team: number,
+    matchesPlayed: number,
+    autoPointsPerGame: number,
+    autoPoints: number,
+    points: number,
+    pointsPerGame: number,
+    cyclesPerGame: number,
+    scoringAccuracy: number,
+    coneAccuracy: number,
+    cubeAccuracy: number,
+    scoringPositions: Array<number>,
+    autoClimbPPG: number,
+    teleopClimbPPG: number,
+    climbPPG: number,
+    linkPG: number
+
+}
+
 //takes the team number as a parameter, returns an object with the following format
 /*
     team: team,
@@ -238,7 +257,7 @@ export async function getTeam({ team }: { team: number }) {
         console.error(error)
     }
 
-    let matchData: Object = {
+    let matchData: TeamAggData = {
         team: team,
         matchesPlayed: matchesPlayed,
         autoPointsPerGame: autoPoints / matchesPlayed,
@@ -255,8 +274,7 @@ export async function getTeam({ team }: { team: number }) {
         climbPPG: (autoClimbPoints + teleopClimbPoints) / matchesPlayed,
         linkPG: links / matchesPlayed
     }
-
-    console.log(matchData)
+    console.log(matchData.coneAccuracy);
     return matchData
 }
 

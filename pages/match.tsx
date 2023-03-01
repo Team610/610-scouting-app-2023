@@ -213,7 +213,7 @@ export default function MatchScreen() {
               team: 610,
               allies: [1, 2],
               enemies: [3, 4],
-              match: 37,
+              match: 'Q37',
               cycles: convertCycleServer(gamePieces),
               autoClimb: chargingStation.auto.engage
                 ? 2

@@ -1,66 +1,86 @@
-import { Select } from "@mantine/core";
+import { NumberInput, Select } from "@mantine/core";
 import React, { useState, useEffect } from "react";
 export default function SelectMatchDropBox() {
-  const [jsonData, setJsonData] = useState("");
-  const [matchNumbers, setMatchNumbers] = useState([]);
+  const [jsonData, setJsonData] = useState<any>();
+  const [matchNumbers, setMatchNumbers] = useState<any>([]);
   const [match, setMatch] = useState<string>()
   const [team, setTeam] = useState<string>()
 
   useEffect(() => {
-    async function fetchData() {
-      let eventName = "2023week0";
-      const headers = {
-        "X-TBA-Auth-Key": process.env.NEXT_PUBLIC_TBA_KEY!,
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
-        "Access-Control-Allow-Headers":
-          "Content-Type, Authorization, X-Requested-With",
-      };
-      const response = await fetch(
-        `https://www.thebluealliance.com/api/v3/event/${eventName}/matches`,
-        { headers: headers }
-      );
-      const data = await response.json();
-      console.log(data)
-      setJsonData(data);
-      setMatchNumbers(
-        data.map((item: { match_number: any }) => item.match_number)
-      );
+    let data = fetchBlueAllaince(match).then(data => setJsonData(data))
+    if(jsonData){
+      jsonData.map((match: any) => {
+        if (match.comp_level != 'sf' && match.comp_level != 'f'){
+          // setMatchNumbers([...matchNumbers, 
+          // {
+          //   value: match.comp_level + match.match_number,
+          //   label: `Match ${ match.comp_level + match.match_number}`,
+          // }])
+          setMatchNumbers([matchNumbers, {
+            value: match.comp_level + match.match_number,
+            label: `Match ${match.comp_level}${match.match_number}`,
+          }])
+        }
+      })
     }
-    fetchData();
+    console.log(matchNumbers)
   }, []);
 
+
   const handleMatchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log(event.currentTarget.value)
+    //console.log(event.currentTarget.value)
     setMatch(event.target.value);
   };
   const handleTeamChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTeam(event.target.value);
   };
 
-  const options = matchNumbers.map((number) => ({
-    value: number,
-    label: `Match #${number}`,
-  }));
 
+  
   return (
     <div>
-      <Select
-        label="Choose an event in progress"
+
+      {matchNumbers ? <Select
+        label="Choose the match number that is being played"
         placeholder="Select"
-        data={options}
+        data={matchNumbers}
         searchable
         value={match}
-        onChange={(e: any) => handleMatchChange(e)}
-      />
+        onChange={(e: any) => setMatch(e)}
+      /> : null }
+      {/* {match && <Select
+        label="Choose the team playing the match"
+        placeholder="Select"
+        data={matchNumbers}
+        searchable
+        value={team}
+        onChange={(e: any) => setTeam(e)}
+      />}
       {match && <Select
-        label="Choose an event in progress"
+        label="Choose the level of match being played"
         placeholder="Select"
         data={options}
         searchable
         value={team}
-        onChange={(e: any) => handleTeamChange(e)}
-      />}
+        onChange={(e: any) => setTeam(e)} */}
+  
     </div>
   );
+}
+
+function fetchBlueAllaince(matchNumbers: any){
+  let eventName = "2023week0";
+  const headers = {
+    "X-TBA-Auth-Key": process.env.NEXT_PUBLIC_TBA_KEY!,
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "DELETE, POST, GET, OPTIONS",
+    "Access-Control-Allow-Headers":
+      "Content-Type, Authorization, X-Requested-With",
+  };
+  const response = fetch(
+    `https://www.thebluealliance.com/api/v3/event/${eventName}/matches`,
+    { headers: headers }
+  ).then(res => res.json()).then(data => data)
+  return response
+
 }

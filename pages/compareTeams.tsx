@@ -87,6 +87,12 @@ export default function CompareTeams() {
                 Add dummy data
             </Button> */}
       <Button onClick={async () => await wipe()}>Wipe</Button>
+      <Button onClick={async () => {
+          await fetch("/api/create-team", {
+            method: "POST",
+            body: JSON.stringify({team_number: 5})
+          })
+      }}>create teams</Button>
 
       <CompareTeamData teams={[1, 2, 3, 4, 5, 6]} />
     </div>

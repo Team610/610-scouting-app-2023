@@ -49,7 +49,7 @@ export default function MatchScreen() {
   const [parked, setParked] = useState(false);
   const router = useRouter();
 
-  const [time, setTime] = useState(1);
+  const [time, setTime] = useState(18);
 
   const queryParams = router.query;
   const matchID = queryParams.match?.toString()!;

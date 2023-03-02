@@ -51,13 +51,6 @@ export default function Home() {
       />
       <Button onClick={async () => await query(queryText)}>Query</Button> */}
 
-      <div className={styles.center}>
-        <h2>
-          <Link href="/match" className={styles.center}>
-            Start
-          </Link>
-        </h2>
-      </div>
       <div>
         <SelectMatchDropBox></SelectMatchDropBox>
       </div>

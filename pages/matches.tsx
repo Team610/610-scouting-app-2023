@@ -1,11 +1,17 @@
-import { Select } from "@mantine/core";
+import { Button, Select } from "@mantine/core";
 import React, { use, useState, useEffect } from "react";
+import styles from "../styles/Home.module.css";
 import NextCors from 'nextjs-cors';
 import { match } from "assert";
+import { useRouter } from "next/router";
+import Link from "next/link";
 export default function SelectMatchDropBox() {
-    const [jsonData, setJsonData] = useState("");
+    const [jsonData, setJsonData] = useState([]);
+    const [selectedMatch, setSelectedMatch] = useState("");
     const [matchNumbers, setMatchNumbers] = useState([]);
-
+    const [teamNumbers, setTeamNumbers] = useState([]);
+    const [selectedTeam, setSelectedTeam] = useState("")
+    const router = useRouter()
 
     useEffect(() => {
         async function fetchData() {
@@ -15,9 +21,7 @@ export default function SelectMatchDropBox() {
             const response = await fetch("https://www.thebluealliance.com/api/v3/event/2023isde1/matches", { headers: headers });
             const data = await response.json();
             setJsonData(data);
-            setMatchNumbers(data.map((item: { match_number: number, key: any; }) => item.key));
-
-
+            setMatchNumbers(data.map((item: { match_number: number, comp_level: any; }) => item.comp_level + item.match_number));
         }
         fetchData();
     }, []);
@@ -27,13 +31,45 @@ export default function SelectMatchDropBox() {
         label: `Match #${number}`,
       }));
 
+    const selectMatch = (match: any) => {
+        setSelectedMatch(match);
+        jsonData.forEach((item:any) => {
+            if(item.comp_level+item.match_number == match)
+                setTeamNumbers(item.alliances.red.team_keys.concat(item.alliances.blue.team_keys));
+
+        });
+    }
+
     return (
-        <Select
-            label="Choose an event in progress"
-            placeholder="Select"
-            data={options}
-            searchable
-        />
+        <div>
+            <Select
+                label="Choose an event in progress"
+                placeholder="Select"
+                data={options}
+                searchable
+                onChange={(e:any) => selectMatch(e)}
+            />
+            {
+                selectedMatch != "" ? 
+                <Select
+                label="Choose an event in progress"
+                placeholder="Select"
+                data={teamNumbers}
+                searchable
+                onChange={(e:any) => setSelectedTeam(e)}
+            /> : null
+            }
+            {
+                selectedTeam != ""? 
+                <div className={styles.center}>
+        <h2>
+          <Link href={"/match?match="+selectedMatch+"&team="+selectedTeam} className={styles.center}>
+            Start
+          </Link>
+        </h2>
+      </div> : null
+            }
+        </div>
     );
 
 }

@@ -50,6 +50,10 @@ export default function MatchScreen() {
 
   const [time, setTime] = useState(1);
 
+  const queryParams = router.query;
+  const matchID = queryParams.match;
+  const teamID = queryParams.team;
+
   // redirect page to "TeleOp" after 10 seconds while displaying remaining time on page
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -209,8 +213,32 @@ export default function MatchScreen() {
       />
       {gameState == "teleop" ? (
         <Button
-          onClick={async () => {
-            await getNeoSession()}}
+        onClick={async () => {
+          await fetch("/api/submitMatch", {
+            method: "POST",
+            body: JSON.stringify({
+              team: {teamID},
+              allies: [1, 2],
+              enemies: [3, 4],
+              match: {matchID},
+              cycles: convertCycleServer(gamePieces),
+              autoClimb: chargingStation.auto.engage
+                ? 2
+                : chargingStation.auto.dock
+                ? 1
+                : 0,
+              teleopClimb: chargingStation.teleop.engage
+                ? 2
+                : chargingStation.teleop.dock
+                ? 1
+                : 0,
+              numPartners: chargingStation.teleop.numPartners,
+              mobility: mobility,
+              park: parked,
+            }),
+          });
+          router.push("/");
+        }}
         >
           Submit Match
         </Button>

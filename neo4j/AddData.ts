@@ -18,8 +18,8 @@ export interface matchData {
     autoClimb: number,
     teleopClimb: number,
     numPartners: number,
-    park: number,
-    mobility: number,
+    park: boolean,
+    mobility: boolean,
     cycles: Array<cycleData>,
     enemies: Array<number>,
     allies: Array<number>

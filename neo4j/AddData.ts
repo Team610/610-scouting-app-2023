@@ -14,12 +14,12 @@ export interface cycleData {
 
 export interface matchData {
     team: number,
-    match: number,
+    match: String,
     autoClimb: number,
     teleopClimb: number,
     numPartners: number,
-    park: boolean,
-    mobility: boolean,
+    park: number,
+    mobility: number,
     cycles: Array<cycleData>,
     enemies: Array<number>,
     allies: Array<number>
@@ -89,7 +89,7 @@ export async function climb(data: matchData) {
         try {
             const tx = session.beginTransaction()
             const result = await tx.run(
-                'MATCH (t:Team), (c:TeleopClimb) WHERE t.name = toInteger($team) AND ID(c) = $id CREATE (t)-[r:' + climbStatus + '{match:toInteger($match), numPartners:toInteger($numPartners)}]->(c)',
+                'MATCH (t:Team), (c:TeleopClimb) WHERE t.name = toInteger($team) AND ID(c) = $id CREATE (t)-[r:' + climbStatus + '{match:toString($match), numPartners:toInteger($numPartners)}]->(c)',
                 {
                     match: data.match,
                     team: data.team,
@@ -127,7 +127,7 @@ export async function climb(data: matchData) {
         try {
             const tx = session.beginTransaction()
             const result = await tx.run(
-                'MATCH (t:Team), (c:AutoClimb) WHERE t.name = toInteger($team) AND ID(c) = $id CREATE (t)-[r:' + climbStatus + '{match:toInteger($match)}]->(c)',
+                'MATCH (t:Team), (c:AutoClimb) WHERE t.name = toInteger($team) AND ID(c) = $id CREATE (t)-[r:' + climbStatus + '{match:toString($match)}]->(c)',
                 {
                     match: data.match,
                     team: data.team,
@@ -180,7 +180,7 @@ export async function score(data: matchData) {
             const tx = session.beginTransaction()
             //create the cycle node for the current cycle
             const result = await tx.run(
-                'CREATE (a:Cycle{x:$x,y:$y,match:toInteger($match),teleop:$teleop}) RETURN  ID(a)',
+                'CREATE (a:Cycle{x:$x,y:$y,match:toString($match),teleop:$teleop}) RETURN  ID(a)',
                 {
                     team: data.team,
                     x: data.cycles[i].x,
@@ -193,7 +193,7 @@ export async function score(data: matchData) {
 
             //create the relationship between the team and the cycle
             const result1 = await tx.run(
-                'MATCH (t:Team),(a:Cycle) WHERE t.name = toInteger($team) AND ID(a) = $id CREATE (t)-[r:' + data.cycles[i].object + '{match:toInteger($match),teleop:$teleop}]->(a) ',
+                'MATCH (t:Team),(a:Cycle) WHERE t.name = toInteger($team) AND ID(a) = $id CREATE (t)-[r:' + data.cycles[i].object + '{match:toString($match),teleop:$teleop}]->(a) ',
                 {
                     id: id,
                     team: data.team,
@@ -216,7 +216,7 @@ export async function score(data: matchData) {
                 )
                 const scoringId = result2.records[0].get(0).toNumber()
                 const result3 = await tx.run(
-                    'MATCH (c:Cycle), (s:ScoringPosition) WHERE ID(c) = $id AND ID(s) = $scoringId CREATE (c)-[r:SCORED{teleop:$teleop, match:toInteger($match),link:$link}]->(s)',
+                    'MATCH (c:Cycle), (s:ScoringPosition) WHERE ID(c) = $id AND ID(s) = $scoringId CREATE (c)-[r:SCORED{teleop:$teleop, match:toString($match),link:$link}]->(s)',
                     {
                         link: data.cycles[i].link,
                         id: id,
@@ -256,7 +256,7 @@ export async function mobility(data: matchData) {
         try {
             const tx = session.beginTransaction()
             const result = await tx.run(
-                'MATCH (t:Team), (c:Mobility) WHERE t.name = toInteger($team) AND ID(c) = $id CREATE (t)-[r:MOVED{match:toInteger($match)}]->(c)',
+                'MATCH (t:Team), (c:Mobility) WHERE t.name = toInteger($team) AND ID(c) = $id CREATE (t)-[r:MOVED{match:toString($match)}]->(c)',
                 {
                     match: data.match,
                     team: data.team,
@@ -292,7 +292,7 @@ export async function park(data:any) {
         try {
             const tx = session.beginTransaction()
             const result = await tx.run(
-                'MATCH (t:Team), (c:Park) WHERE t.name = toInteger($team) AND ID(c) = $id CREATE (t)-[r:MOVED{match:toInteger($match)}]->(c)',
+                'MATCH (t:Team), (c:Park) WHERE t.name = toInteger($team) AND ID(c) = $id CREATE (t)-[r:MOVED{match:toString($match)}]->(c)',
                 {
                     match: data.match,
                     team: data.team,

@@ -4,6 +4,7 @@ import ChargeStation from "./ChargeStation";
 import Intake from "./intake";
 import ScoringGrid from "./scoringGrid";
 import { clientCycle, submitMatch } from "../neo4j/SubmitMatch";
+import { getNeoSession } from "../neo4j/Session";
 import { convertCycleServer } from "../lib/clientCycleToServer";
 import { useRouter } from "next/router";
 
@@ -47,7 +48,7 @@ export default function MatchScreen() {
   const [parked, setParked] = useState(false);
   const router = useRouter();
 
-  const [time, setTime] = useState(15);
+  const [time, setTime] = useState(1);
 
   // redirect page to "TeleOp" after 10 seconds while displaying remaining time on page
   useEffect(() => {
@@ -209,28 +210,7 @@ export default function MatchScreen() {
       {gameState == "teleop" ? (
         <Button
           onClick={async () => {
-            await submitMatch({
-              team: 610,
-              allies: [1, 2],
-              enemies: [3, 4],
-              match: 37,
-              cycles: convertCycleServer(gamePieces),
-              autoClimb: chargingStation.auto.engage
-                ? 2
-                : chargingStation.auto.dock
-                ? 1
-                : 0,
-              teleopClimb: chargingStation.teleop.engage
-                ? 2
-                : chargingStation.teleop.dock
-                ? 1
-                : 0,
-              numPartners: chargingStation.teleop.numPartners,
-              mobility: mobility,
-              park: parked,
-            });
-            router.push("/");
-          }}
+            await getNeoSession()}}
         >
           Submit Match
         </Button>

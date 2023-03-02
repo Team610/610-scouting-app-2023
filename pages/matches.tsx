@@ -63,7 +63,7 @@ export default function SelectMatchDropBox() {
                 selectedTeam != ""? 
                 <div className={styles.center}>
         <h2>
-          <Link href={"/match?match="+selectedMatch+"&team="+selectedTeam} className={styles.center}>
+          <Link href={"/match?match="+selectedMatch+"&team="+selectedTeam.substring(3)} className={styles.center}>
             Start
           </Link>
         </h2>

@@ -17,8 +17,8 @@ export async function query(qt: string){
   } catch (error) {
     console.error(error)
   }
+
   await tx.commit()
-  
 }
 
 // wipes database

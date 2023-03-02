@@ -22,7 +22,10 @@ import { GetServerSidePropsContext } from "next";
 import neo4j from "neo4j-driver";
 import { addUser } from "../neo4j/User";
 import { Input } from "@mantine/core";
+import React from "react";
 import SelectMatchDropBox from "./matches";
+
+//import SelectMatchDropBox from "./matches";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,19 +33,19 @@ export default function Home() {
   const [queryText, setQueryText] = useState("");
   return (
     <>
-      {/* <Button onClick={async () => await createNTeams(20)}>Create dummy teams</Button>
-      <Button onClick={async () => await addDummyData({ data: sampleMatch })}>
+       {/* <Button onClick={async () => await createNTeams(20)}>Create dummy teams</Button>
+      <Button onClick={async () => await addDummyData({ data: sampleMatch })}> 
         Add dummy data
-      </Button>
+  </Button>
       <Button onClick={async () => await getTeam({ team: 17 })}>
         Get team aggregate data
       </Button>
-      <Button onClick={async () => await getMatch(5, 2)}>
+      <Button onClick={async () => await getMatch(3, "06")}>
         Get match aggregate data
       </Button>
       <Button onClick={async () => await wipe()}>
         Wipe
-      </Button> */}
+      </Button>  */}
       {/* <Input
         placeholder="Run query"
         onChange={(e) => {

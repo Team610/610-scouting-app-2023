@@ -15,7 +15,7 @@ export async function allies(data: matchData) {
         )
   
         const result = await tx.run(
-          'MATCH (t:Team),(ot:Team) WHERE t.name = $name AND ot.name = $otherName CREATE (t)-[:ALLY{match: toInteger($match)}]->(ot)',
+          'MATCH (t:Team),(ot:Team) WHERE t.name = $name AND ot.name = $otherName CREATE (t)-[:ALLY{match: toString($match)}]->(ot)',
           { name: data.team, otherName: data.allies[index], match: data.match },
         )
   
@@ -40,7 +40,7 @@ export async function allies(data: matchData) {
         )
 
         const result = await tx.run(
-          'MATCH (t:Team),(ot:Team) WHERE t.name = $name AND ot.name = $otherName CREATE (t)-[:ENEMY{match: toInteger($match)}]->(ot)',
+          'MATCH (t:Team),(ot:Team) WHERE t.name = $name AND ot.name = $otherName CREATE (t)-[:ENEMY{match: toString($match)}]->(ot)',
           { name: data.team, otherName: data.enemies[index], match: data.match },
         )
   

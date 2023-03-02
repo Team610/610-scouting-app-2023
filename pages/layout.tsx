@@ -102,29 +102,31 @@ const useStyles = createStyles((theme) => ({
 }));
 
 export default function Layout({ children }: { children: ReactNode }) {
-  // let auth = checkAccount();
-  // if (!auth) {
-  return (
-    <>
-      <HeaderMegaMenu />
-      {children}
-    </>
-  );
-  // } else {
-  //   return (
-  //     <div
-  //       style={{
-  //         display: "flex",
-  //         alignItems: "center",
-  //         flexDirection: "column",
-  //         justifyContent: "center",
-  //       }}
-  //     >
-  //       <h1>Please Sign in With a Crescent School Email</h1>
-  //       <Button onClick={() => signIn("google")}>Sign In</Button>
-  //     </div>
-  //   );
-  // }
+  let auth = checkAccount();
+  if (auth) {
+    return (
+      <>
+        <HeaderMegaMenu />
+        {children}
+      </>
+    );
+  } else {
+    return (
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <h1>
+          Please Sign in With a Crescent School Email or Contact Us for Access
+        </h1>
+        <Button onClick={() => signIn("google")}>Sign In</Button>
+      </div>
+    );
+  }
 }
 
 export function HeaderMegaMenu() {

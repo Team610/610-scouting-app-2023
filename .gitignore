@@ -37,9 +37,9 @@ yarn-error.log*
 next-env.d.ts
 
 google-cred.json
-google-cred.json
 
 .vscode
 .next
 
-.env
+.env.local
+package-lock.json

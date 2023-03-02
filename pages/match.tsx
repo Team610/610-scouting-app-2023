@@ -210,7 +210,28 @@ export default function MatchScreen() {
       {gameState == "teleop" ? (
         <Button
           onClick={async () => {
-            await getNeoSession()}}
+            await submitMatch({
+              team: 610,
+              allies: [1, 2],
+              enemies: [3, 4],
+              match: 'Q37',
+              cycles: convertCycleServer(gamePieces),
+              autoClimb: chargingStation.auto.engage
+                ? 2
+                : chargingStation.auto.dock
+                ? 1
+                : 0,
+              teleopClimb: chargingStation.teleop.engage
+                ? 2
+                : chargingStation.teleop.dock
+                ? 1
+                : 0,
+              numPartners: chargingStation.teleop.numPartners,
+              mobility: mobility,
+              park: parked,
+            });
+            router.push("/");
+          }}
         >
           Submit Match
         </Button>

@@ -22,5 +22,10 @@ export default function SignIn() {
 
 export function checkAccount() {
   const { data: session, status } = useSession();
-  return session?.user?.email?.includes("@crescentschool.org");
+  const allowEmails = ["adamomarali37@gmail.com"];
+  return (
+    session?.user?.email
+      ?.substring(session?.user?.email?.lastIndexOf("@"))
+      .includes("@crescentschool.org") || session?.user?.email! in allowEmails
+  );
 }

@@ -27,20 +27,20 @@ export async function getPiecesScoredAllMatches(team: number, piece: string, tx:
 
 
 // get where team picked up pieces in a match, given what piece
-export async function getPiecesScored(team: number, match: number, piece: string, tx: any) {
+export async function getPiecesScored(team: number, match:String, piece: string, tx:any){
     //cones picked up
     const result = await tx.run(
-        'MATCH (t:Team {name: $name})-[:' + piece + '{match: $match}]->(c:Cycle) - [:SCORED] -> () RETURN count(*)',
-        { name: team, match: match, piece: piece },
+        'MATCH (t:Team {name: $name})-[:' + piece + '{match: toString($match)}]->(c:Cycle) - [:SCORED] -> () RETURN count(*)',
+        { name: team, match: match, piece: piece},
     )
     return result.records[0].get(0).low;
 }
 
 
 // get the number of cycles a team did in a match
-export async function getNumberCycles(team: number, match: number, tx: any) {
+export async function getNumberCycles(team: number, match: String, tx: any){
     const result = await tx.run(
-        'MATCH (t:Team {name: $name})-[{match: $match}]->(c:Cycle) RETURN count(*)',
+        'MATCH (t:Team {name: $name})-[{match: toString($match)}]->(c:Cycle) RETURN count(*)',
         { name: team, match: match },
     )
     return result.records[0].get(0).low;
@@ -56,16 +56,17 @@ export async function getNumberCyclesAllMatches(team: number, tx: any) {
 }
 
 // returns nodes connected to a team node in a given match
-export async function getMatchNodes(team: number, match: number, tx: any) {
+export async function getMatchNodes(team: number, match: String, tx: any){
     const result = await tx.run(
-        'MATCH (t:Team {name: $name})-[r{match: $match}]-(c) RETURN *',
-        { name: team, match: match },
+        'MATCH (t:Team {name: $name})-[r{match: toString($match)}]-(c) RETURN *',
+        { name: team, match:match},
     )
+    console.log(result)
     return result;
 }
-export async function getnumberOfLinksMatch(team: number, match: number, tx: any) {
+export async function getnumberOfLinksMatch(team: number, match: String, tx: any){
     const result = await tx.run(
-        'MATCH (t:Team {name: $name})-[r{match: $match}]-(c:Cycle)-[o{link:true}]-(s:ScoringPosition) RETURN *',
+        'MATCH (t:Team {name: $name})-[r{match: toString($match)}]-(c:Cycle)-[o{link:true}]-(s:ScoringPosition) RETURN *',
         { name: team, match: match },
     )
     let returnValue: number = 0;
@@ -87,11 +88,11 @@ export async function getnumberOfLinks(team: number, tx: any) {
 }
 
 // get where team picked up pieces in a match, given what piece
-export async function getPiecesPickedUp(team: number, match: number, piece: string, tx: any) {
+export async function getPiecesPickedUp(team: number, match:String, piece: string, tx:any){
     //cones picked up
     const result = await tx.run(
-        'MATCH (t:Team {name: $name})-[:' + piece + '{match: $match}]->(c:Cycle) RETURN count(*)',
-        { name: team, match: match, piece: piece },
+        'MATCH (t:Team {name: $name})-[:' + piece + '{match: toString($match)}]->(c:Cycle) RETURN count(*)',
+        { name: team, match: match, piece: piece},
     )
     return result.records[0].get(0).low;
 }
@@ -118,11 +119,11 @@ export async function getLinks(team: number, tx: any) {
 
 
 // returns how many game pieces the robot scored in that row IN A MATCH: 1 is bottom, 3 is top
-export async function getTeamMatchScoreLocation(team: number, row: number, match: number, teleop: boolean, tx: any) {
-    try {
+export async function getTeamMatchScoreLocation(team : number, row : number, match: String, teleop: boolean, tx:any){
+    try{
         const result = await tx.run(
-            'MATCH (t:Team {name: $name})--(c:Cycle)-[{match: $match}]->(s:ScoringPosition) WHERE s.name/9 = $row AND c.teleop = $teleTrue RETURN count(*)',
-            { name: team, row: row - 1, teleTrue: teleop, match: match }
+            'MATCH (t:Team {name: $name})--(c:Cycle)-[{match: toString($match)}]->(s:ScoringPosition) WHERE s.name/9 = $row AND c.teleop = $teleTrue RETURN count(*)',
+                {name: team, row: row - 1, teleTrue: teleop, match: match}
         )
         return result.records[0].get(0).low
     } catch (error) {
@@ -296,7 +297,7 @@ export async function getTeam(team: number) {
     scoringAccuracy: scoring accuracy
     */
 
-export async function getMatch(team: number, match: number) {
+export async function getMatch(team: number, match: String) {
     const session = getNeoSession()
 
     let matchNodes: any
@@ -387,7 +388,7 @@ export async function getMatch(team: number, match: number) {
         points += 5 * await getnumberOfLinksMatch(team, match, tx)
 
         const result = await tx.run(
-            'MATCH (t:Team {name: $name})-[{match: $match}]-(c:Cycle)-[]->(s:ScoringPosition) RETURN count(*)',
+            'MATCH (t:Team {name: $name})-[{match: toString($match)}]-(c:Cycle)-[]->(s:ScoringPosition) RETURN count(*)',
             { name: team, match: match },
         )
         piecesScored = result.records[0].get(0).low;
@@ -445,4 +446,22 @@ export async function getAmountCube({ team }: { team: number }) {
     } catch (error) {
         console.error(error)
     }
+  }
+  
+export async function getMatchByValueAndRelatoinship(amount: number, relationship: String, team: number) {
+    const session = getNeoSession()
+    const tx = session.beginTransaction()
+    try {
+        if (relationship != "SCORED") {
+            const result = await tx.run(
+                'MATCH (t:Team{name: $name})-[:' + relationship + '{match}]->(n) RETURN n.match',
+                {name:team,relationship:relationship}
+            )
+            console.log(result)
+        }
+    } catch (error) {
+        console.error(error)
+    }
+
+
 }

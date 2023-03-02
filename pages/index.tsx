@@ -22,7 +22,8 @@ import { GetServerSidePropsContext } from "next";
 import neo4j from "neo4j-driver";
 import { addUser } from "../neo4j/User";
 import { Input } from "@mantine/core";
-import SelectMatchDropBox from "./matches";
+
+//import SelectMatchDropBox from "./matches";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,19 +31,19 @@ export default function Home() {
   const [queryText, setQueryText] = useState("");
   return (
     <>
-      {/* <Button onClick={async () => await createNTeams(20)}>Create dummy teams</Button>
-      <Button onClick={async () => await addDummyData({ data: sampleMatch })}>
+       {/* <Button onClick={async () => await createNTeams(20)}>Create dummy teams</Button>
+      <Button onClick={async () => await addDummyData({ data: sampleMatch })}> 
         Add dummy data
-      </Button>
+  </Button>
       <Button onClick={async () => await getTeam({ team: 17 })}>
         Get team aggregate data
       </Button>
-      <Button onClick={async () => await getMatch(5, 2)}>
+      <Button onClick={async () => await getMatch(3, "06")}>
         Get match aggregate data
       </Button>
       <Button onClick={async () => await wipe()}>
         Wipe
-      </Button> */}
+      </Button>  */}
       {/* <Input
         placeholder="Run query"
         onChange={(e) => {
@@ -51,15 +52,15 @@ export default function Home() {
       />
       <Button onClick={async () => await query(queryText)}>Query</Button> */}
 
-      <div className={styles.center}>
+      {/* <div className={styles.center}>
         <h2>
           <Link href="/match" className={styles.center}>
             Start
           </Link>
         </h2>
-      </div>
+      </div> */}
       <div>
-        <SelectMatchDropBox></SelectMatchDropBox>
+        {/*<SelectMatchDropBox></SelectMatchDropBox>*/}
       </div>
     </>
   );

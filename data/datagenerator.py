@@ -12,7 +12,7 @@ for i in range(N_ROUNDS):
     for a, team in enumerate(teams):
         m = {}
         m['team'] = team
-        m['match'] = i
+        m['match'] = str(i)
         m['autoClimb'] = cp()
         m['teleopClimb'] = climb_pts[a]
         m['numPartners'] = sum([x for x in climb_pts[0:3] if x > 0]) if a < 3 else sum([x for x in climb_pts[3:6] if x > 0])

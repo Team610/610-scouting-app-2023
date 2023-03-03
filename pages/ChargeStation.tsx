@@ -20,9 +20,9 @@ function ChargeScoring({
   const [firstTime, setFirstTime] = useState(true);
   useEffect(() => {
     if (gameState != "auto" && firstTime) {
-      setFirstTime(false);
-      setDocked(false);
-      setEngaged(false);
+      // setFirstTime(false);
+      // setDocked(false);
+      // setEngaged(false);
     }
     chargeStationScore(docked, engaged);
   }, [gameState, docked, engaged]);

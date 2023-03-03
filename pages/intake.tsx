@@ -80,7 +80,6 @@ export default function Home({
     locations[locations.length - 1].gamePiece = x;
     setLocations(temp);
     addGamePiece(curr.left, curr.top, x == "cone");
-    console.log(1);
     close();
   }
 
@@ -134,7 +133,7 @@ export default function Home({
             gamePiece == "nothing" ? handleClick(e) : null;
           }}
           src={myPic}
-          width={800}
+          width={500}
           alt="image"
         />
       </div>
@@ -155,7 +154,7 @@ export default function Home({
                 top: coord.top,
                 position: "absolute",
               }}
-              width={30}
+              width={20}
             ></Image>
           );
         }
@@ -196,7 +195,7 @@ function GamePieceSelect({
       <Image
         src={cone}
         alt="gamepiece"
-        width={30}
+        width={20}
         onClick={() => {
           setGamePiece("cone");
           pieceSelected("cone");
@@ -205,7 +204,7 @@ function GamePieceSelect({
       <Image
         src={cube}
         alt="gamepiece"
-        width={30}
+        width={20}
         onClick={() => {
           setGamePiece("cube");
           pieceSelected("cube");

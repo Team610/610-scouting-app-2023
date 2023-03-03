@@ -86,8 +86,8 @@ export default function MatchScreen() {
     level: number,
     cone: boolean,
     grid: number,
+    position: number,
     remove: boolean | undefined,
-    position: number
   ) {
     let temp = gamePieces;
     let obj = temp[gamePieces.length - 1];
@@ -96,6 +96,9 @@ export default function MatchScreen() {
     obj.grid = grid;
     obj.level = level;
     obj.position = position;
+
+    console.log(obj)
+    console.log(remove)
 
     // if we the game piece has been scored, add it to the cycles
     if (!remove) {
@@ -130,6 +133,7 @@ export default function MatchScreen() {
 
   function linkGamePiece() {
     gamePieces[gamePieces.length - 1].link = true;
+    console.log("asdfgskld;ghjsldkfjsd")
   }
 
   function LinkScored() {
@@ -137,14 +141,16 @@ export default function MatchScreen() {
 
     return (
       <div>
-        {isVisible &&
+        {
+        // isVisible &&
           gamePiece == "nothing" &&
           gamePieces.length > 0 &&
           !gamePieces[gamePieces.length - 1].link && (
             <Button
               onClick={() => {
-                setIsVisible(!isVisible);
-                linkGamePiece();
+                // setIsVisible(!isVisible);
+                // linkGamePiece();
+                console.log("sdfkajsdfjkf")
               }}
             >
               Link Scored
@@ -154,42 +160,38 @@ export default function MatchScreen() {
     );
   }
 
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-      <div style={{ display: "flex", flexDirection: "row", gap: "20px" }}>
-        <>
-          <Intake
-            gamePiece={gamePiece}
-            setGamePiece={setGamePiece}
-            addGamePiece={addGamePiece}
-          />
-        </>
-        <div
+  function ClimbDisplay(){
+    return(
+      <div>
+
+      <div
           style={{
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
           }}
         >
-          <p
-            style={{
-              fontSize: "24px",
-              color: "white",
-            }}
-          >
-            You have {gamePiece}
-          </p>
-          {gamePiece != "nothing" ? (
-            <Button size="md" onClick={() => setGamePiece("nothing")}>
-              Robot dropped the {gamePiece}
-            </Button>
-          ) : null}
-          <LinkScored />
+          <div style={{display: "flex", alignItems: "center", gap: '10px'}}>
+            <p
+              style={{
+                fontSize: "16px",
+                color: "white",
+              }}
+            >
+              You have {gamePiece}
+            </p>
+            {gamePiece != "nothing" ? (
+              <Button size="md" onClick={() => setGamePiece("nothing")}>
+                Robot dropped the {gamePiece}
+              </Button>
+            ) : null}
+            <LinkScored />
+          </div>
           <ChargeStation
             gameState={gameState}
             setNumPartners={setNumPartners}
             chargeStationScore={updateChargeStation}
-          />
+          /> 
           {gameState == "auto" ? (
             <Checkbox
               checked={mobility}
@@ -207,11 +209,29 @@ export default function MatchScreen() {
           )}
         </div>
       </div>
-      <ScoringGrid
-        addGamePiece={addGamePiece}
-        pickedupGamePiece={gamePiece}
-        scoreGamePiece={scoreGamePiece}
-      />
+    )
+
+  }
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+      <div style={{ display: "flex", flexDirection: "row", gap: "20px" }}>
+        <>
+          <div>
+            <Intake
+              gamePiece={gamePiece}
+              setGamePiece={setGamePiece}
+              addGamePiece={addGamePiece}
+            />
+            <ClimbDisplay />
+          </div>
+          <ScoringGrid
+            addGamePiece={addGamePiece}
+            pickedupGamePiece={gamePiece}
+            scoreGamePiece={scoreGamePiece}
+          />
+        </>
+      </div>
       {gameState == "teleop" ? (
         <Button
         onClick={async () => {

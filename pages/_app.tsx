@@ -4,11 +4,13 @@ import Layout from "./layout";
 import { MantineProvider } from "@mantine/core";
 import { useEffect, useState } from "react";
 import neo4j from "neo4j-driver";
+import { useRouter } from "next/router";
 
 export default function App({
   Component,
   pageProps: { session, ...pageProps },
 }: AppProps) {
+  const router = useRouter();
   return (
     <>
       <SessionProvider session={pageProps.session}>
@@ -17,9 +19,9 @@ export default function App({
           withNormalizeCSS
           theme={{ colorScheme: "dark" }}
         >
-          <Layout>
+          {!router.asPath.includes('match') ? <Layout>
             <Component {...pageProps} />
-          </Layout>
+          </Layout> : <Component {...pageProps} />}
         </MantineProvider>
       </SessionProvider>
     </>

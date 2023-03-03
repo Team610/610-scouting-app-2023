@@ -8,6 +8,20 @@ import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useDetectClickOutside } from "react-detect-click-outside";
 import { score } from "../neo4j/AddData";
 
+function getLevel(col){
+  let pos = 1;
+  if (col % 3 == 0) {
+    pos = 0;
+  } else if ((col + 1) % 3 == 0) {
+    pos = 2;
+  }
+  return pos
+}
+
+function getPosition(pos){
+  return Math.floor(pos / 3) + 1
+}
+
 export default function ScoringGrid({
   addGamePiece,
   pickedupGamePiece,
@@ -18,12 +32,12 @@ export default function ScoringGrid({
   scoreGamePiece: Function;
 }) {
   //score, auto vs teleop for scores
-  const coneCol = [0, 2, 3, 5, 6, 8];
+  const coneCol = [0, 1, 2, 6, 7, 8];
   return (
-    <div style={{ display: "flex", justifyContent: "space-evenly" }}>
-      {new Array(0, 1, 2).map((item, row) => {
+    <div style={{ display: "flex", flexDirection: "column", gap: "10px"}}>
+      {new Array(0, 1, 2).map((grid) => {
         return (
-          <>
+          <div key={grid}>
             <div
               style={{
                 display: "grid",
@@ -31,31 +45,31 @@ export default function ScoringGrid({
                 height: "max-content",
               }}
             >
-              {new Array(9).fill(0).map((item2, col) => {
-                let gamePiece = "cube";
-                if (coneCol.includes(col)) {
-                  gamePiece = "cone";
-                }
-                if (col > 5) {
+              {new Array(0, 1, 2, 3, 4, 5, 6, 7, 8).map((pos) => {
+                let gamePiece = coneCol.includes(pos) ? "cone" : "cube";
+
+                // hybrid nodes
+                if (pos % 3 ==  0) {
                   gamePiece = pickedupGamePiece + "";
                 }
+
                 return (
-                  <div>
+                  <div key={pos}>
                     <Box
                       gamePiece={gamePiece}
-                      level={3 - Math.floor(col / 3)}
-                      grid={item}
+                      level={getLevel(pos)}
+                      grid={grid}
                       addGamePiece={addGamePiece}
                       pickedupGamePiece={pickedupGamePiece}
                       scoreGamePiece={scoreGamePiece}
-                      position={item2}
+                      position={pos}
                     ></Box>
                   </div>
                 );
               })}
             </div>
             {/* {row < 2 ? <hr style={{borderLeft: "6px solid white", height: 'fit-content'}}></hr> : null} */}
-          </>
+          </div>
         );
       })}
     </div>
@@ -85,12 +99,7 @@ function Box({
   const [opened, { close, open }] = useDisclosure(false);
   const ref = useDetectClickOutside({ onTriggered: close });
 
-  let pos = 1;
-  if (position % 3 == 0) {
-    pos = 0;
-  } else if ((position + 1) % 3 == 0) {
-    pos = 2;
-  }
+  let pos = getPosition(position)
 
   return (
     <>
@@ -111,10 +120,10 @@ function Box({
               else {
                 if (gamePiece == "cone" && pickedupGamePiece == "cone") {
                   setContent(cone);
-                  scoreGamePiece(level, true, grid, pos);
+                  scoreGamePiece(level, true, grid, pos, false);
                 } else if (gamePiece == "cube" && pickedupGamePiece == "cube") {
                   setContent(cube);
-                  scoreGamePiece(level, false, grid, pos);
+                  scoreGamePiece(level, false, grid, pos, false);
                 }
               }
             }
@@ -131,7 +140,7 @@ function Box({
           }}
         >
           {content ? (
-            <Image src={content} alt="game piece" width={30}></Image>
+            <Image src={content} alt="game piece" width={18}></Image>
           ) : null}
         </div>
       </div>
@@ -148,7 +157,7 @@ function Box({
             <Image
               src={cone}
               alt="gamepiece"
-              width={30}
+              width={20}
               onClick={() => {
                 if (content == cone) {
                   scoreGamePiece(level, gamePiece == "cone", grid, true, pos);
@@ -163,7 +172,7 @@ function Box({
             <Image
               src={cube}
               alt="gamepiece"
-              width={30}
+              width={20}
               onClick={() => {
                 if (content == cube) {
                   setContent(undefined);

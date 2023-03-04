@@ -86,7 +86,7 @@ export default function CompareTeams() {
       {/* <Button onClick={async () => await addDummyData({ data: sampleMatch })}>
                 Add dummy data
             </Button> */}
-      <Button onClick={async () => await wipe()}>Wipe</Button>
+      {/* <Button onClick={async () => await wipe()}>Wipe</Button> */}
       <Button onClick={async () => {
           await fetch("/api/create-team", {
             method: "POST",

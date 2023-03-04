@@ -1,5 +1,6 @@
 import { convertCycleServer } from "../lib/clientCycleToServer";
-import { matchData, mobility, scoreMatch } from "./AddData";
+import { matchData } from "../utils";
+import { mobility, scoreMatch } from "./AddData";
 import { getNeoSession } from "./Session";
 
 export interface clientCycle {

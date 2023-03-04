@@ -104,3 +104,28 @@ export function revPegPosition(grid: number, row: number, column: number){
 
    return (r - 1) * 9 + (c - 1);
 }
+export function standardDeviation(arr:Array<number>){
+    let mean = arr.reduce((acc, curr)=>{
+	return acc + curr
+}, 0) / arr.length;
+
+
+arr = arr.map((el)=>{
+	return (el - mean) ** 2
+})
+
+let total = arr.reduce((acc, curr)=> acc + curr, 0);
+
+return Math.sqrt(total / arr.length)
+}
+export function arrayAverage(arr:Array<number>){
+    //Find the sum
+    let sum = 0;
+    for(let i in arr) {
+        sum += arr[i];
+    }
+    //Get the length of the array
+    let numbersCnt = arr.length;
+    //Return the average / mean.
+    return (sum / numbersCnt);
+}

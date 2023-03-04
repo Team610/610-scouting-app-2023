@@ -1,7 +1,7 @@
 import { Session } from "next-auth";
 import { getNeoSession } from "./Session";
 import neo4j from 'neo4j-driver'
-import { defaultTeam, teamAggData } from "../utils";
+import { defaultTeam, teamAggData, arrayAverage, standardDeviation } from "../utils";
 
 // returns how many game pieces the robot scored in that row: 1 is bottom, 3 is top
 export async function getTeamScoreLocation(team: number, row: number, teleop: boolean, tx: any) {
@@ -209,6 +209,8 @@ export async function getClimbAllMatches(team: number, teleop: boolean, tx: any)
     cycles per game: cycles per game
     scoring positions: [scored in lower, scored in middle, scored in higher]
     links per game: links per game
+    teleopClimbPPG: teleopClimb,
+    autoClimbPPG: autoClimb,
  */
 export async function getTeam({team}: {team: number}) {
     const session = getNeoSession()
@@ -298,7 +300,52 @@ export async function getTeam({team}: {team: number}) {
     return teamdata.matchesPlayed > 0 ? teamdata : defaultTeam
 }
 
+interface teamRelativeStatistics {
+    autoScoring:number,
+    teleopScoring:number, 
+    scoringAccuracy: number,
+    autoClimbPoints: number,
+    teleopClimbPoints: number,
+    cyclesPerGame: number
+}
 
+export async function getTeamStandardizedScores(team:number) {
+    let teams: Array<number> = await getAllTeamNumbers()
+
+    let autoScoring = []
+    let teleopScoring = []
+    let scoringAccuracy = []
+    let autoClimbPoints = []
+    let teleopClimbPoints = []
+    let cyclesPerGame = []
+    let foundTeam:number = 0
+
+    for (let index = 0; index < teams.length; index++) {
+        let thisTeam: any = await getTeam({ team: teams[index] })
+    
+        if(thisTeam.team == team) {
+            foundTeam = index
+        }
+
+        autoScoring.push( thisTeam.autoPPG - thisTeam.autoClimbPPG)
+        teleopScoring.push(thisTeam.PPG - thisTeam.autoPPG - thisTeam.teleopClimbPPG)
+        scoringAccuracy.push(thisTeam.scoringAccuracy)
+        autoClimbPoints.push(thisTeam.autoClimbPPG)
+        teleopClimbPoints.push(thisTeam.teleopClimbPPG)
+        cyclesPerGame.push(thisTeam.cyclesPG)
+
+    }
+
+    let ret:teamRelativeStatistics = {
+        autoScoring:(autoScoring[foundTeam] - arrayAverage(autoScoring))/standardDeviation(autoScoring),
+        teleopScoring:(teleopScoring[foundTeam] - arrayAverage(teleopScoring))/standardDeviation(teleopScoring),
+        scoringAccuracy:(scoringAccuracy[foundTeam] - arrayAverage(scoringAccuracy))/standardDeviation(scoringAccuracy),
+        autoClimbPoints:(autoClimbPoints[foundTeam] - arrayAverage(autoClimbPoints))/standardDeviation(autoClimbPoints),
+        teleopClimbPoints:(teleopClimbPoints[foundTeam] - arrayAverage(teleopClimbPoints))/standardDeviation(teleopClimbPoints),
+        cyclesPerGame:(cyclesPerGame[foundTeam] - arrayAverage(cyclesPerGame))/standardDeviation(cyclesPerGame)
+    }
+    return ret
+}
 //takes the team and match numbers as paramters, returns object  in the following format
 /*
     team: team,
@@ -490,6 +537,23 @@ export async function getMatchByValueAndRelatoinship(amount: number, relationshi
 
 }
 
+// returns how many games a certain team played
+export async function getMatchList(team : number){
+    const session = getNeoSession()
+    const tx = session.beginTransaction()
+    try{
+        const result = await tx.run(
+            'MATCH (t:Team {name: $name})-[r]->(n) RETURN DISTINCT r.match',
+            { name: team },
+        )
+        console.log(result.records.map((record: any) => record._fields[0].low))
+        let ret:Array<number> = result.records.map((record: any) => record._fields[0].low)
+        return ret
+    }catch(error){
+        console.error(error)
+    }
+    await tx.commit()
+}
 export async function getAllTeamNumbers() {
     const session = getNeoSession()
     let tempResult:any

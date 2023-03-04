@@ -87,7 +87,7 @@ export default function MatchScreen() {
     cone: boolean,
     grid: number,
     position: number,
-    remove: boolean | undefined,
+    remove: boolean | undefined
   ) {
     let temp = gamePieces;
     let obj = temp[gamePieces.length - 1];
@@ -97,8 +97,8 @@ export default function MatchScreen() {
     obj.level = level;
     obj.position = position;
 
-    console.log(obj)
-    console.log(remove)
+    console.log(obj);
+    console.log(remove);
 
     // if we the game piece has been scored, add it to the cycles
     if (!remove) {
@@ -133,7 +133,6 @@ export default function MatchScreen() {
 
   function linkGamePiece() {
     gamePieces[gamePieces.length - 1].link = true;
-    console.log("asdfgskld;ghjsldkfjsd")
   }
 
   function LinkScored() {
@@ -141,16 +140,14 @@ export default function MatchScreen() {
 
     return (
       <div>
-        {
-        // isVisible &&
+        {isVisible &&
           gamePiece == "nothing" &&
           gamePieces.length > 0 &&
           !gamePieces[gamePieces.length - 1].link && (
             <Button
               onClick={() => {
-                // setIsVisible(!isVisible);
-                // linkGamePiece();
-                console.log("sdfkajsdfjkf")
+                setIsVisible(!isVisible);
+                linkGamePiece();
               }}
             >
               Link Scored
@@ -158,59 +155,6 @@ export default function MatchScreen() {
           )}
       </div>
     );
-  }
-
-  function ClimbDisplay(){
-    return(
-      <div>
-
-      <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <div style={{display: "flex", alignItems: "center", gap: '10px'}}>
-            <p
-              style={{
-                fontSize: "16px",
-                color: "white",
-              }}
-            >
-              You have {gamePiece}
-            </p>
-            {gamePiece != "nothing" ? (
-              <Button size="md" onClick={() => setGamePiece("nothing")}>
-                Robot dropped the {gamePiece}
-              </Button>
-            ) : null}
-            <LinkScored />
-          </div>
-          <ChargeStation
-            gameState={gameState}
-            setNumPartners={setNumPartners}
-            chargeStationScore={updateChargeStation}
-          /> 
-          {gameState == "auto" ? (
-            <Checkbox
-              checked={mobility}
-              onChange={(e) => setMobility(e.target.checked)}
-              label="Moved off auto line"
-              size="xl"
-            />
-          ) : (
-            <Checkbox
-              checked={parked}
-              onChange={(e) => setParked(e.target.checked)}
-              label="Parked"
-              size="xl"
-            />
-          )}
-        </div>
-      </div>
-    )
-
   }
 
   return (
@@ -223,7 +167,54 @@ export default function MatchScreen() {
               setGamePiece={setGamePiece}
               addGamePiece={addGamePiece}
             />
-            <ClimbDisplay />
+            <div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
+              >
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "10px" }}
+                >
+                  <p
+                    style={{
+                      fontSize: "16px",
+                      color: "white",
+                    }}
+                  >
+                    You have {gamePiece}
+                  </p>
+                  <LinkScored />
+                  {gamePiece != "nothing" ? (
+                    <Button size="md" onClick={() => setGamePiece("nothing")}>
+                      Robot dropped the {gamePiece}
+                    </Button>
+                  ) : null}
+                </div>
+                <ChargeStation
+                  gameState={gameState}
+                  setNumPartners={setNumPartners}
+                  chargeStationScore={updateChargeStation}
+                />
+                {gameState == "auto" ? (
+                  <Checkbox
+                    checked={mobility}
+                    onChange={(e) => setMobility(e.target.checked)}
+                    label="Moved off auto line"
+                    size="xl"
+                  />
+                ) : (
+                  <Checkbox
+                    checked={parked}
+                    onChange={(e) => setParked(e.target.checked)}
+                    label="Parked"
+                    size="xl"
+                  />
+                )}
+              </div>
+            </div>
           </div>
           <ScoringGrid
             addGamePiece={addGamePiece}
@@ -234,29 +225,29 @@ export default function MatchScreen() {
       </div>
       {gameState == "teleop" ? (
         <Button
-        onClick={async () => {
-          await submitMatch({
-            team: teamID,
-            allies: [1, 2],
-            enemies: [3, 4],
-            match: matchID,
-            cycles: convertCycleServer(gamePieces),
-            autoClimb: chargingStation.auto.engage
-              ? 2
-              : chargingStation.auto.dock
-              ? 1
-              : 0,
-            teleopClimb: chargingStation.teleop.engage
-              ? 2
-              : chargingStation.teleop.dock
-              ? 1
-              : 0,
-            numPartners: chargingStation.teleop.numPartners,
-            mobility: mobility,
-            park: parked
-          });
-          router.push("/");
-        }}
+          onClick={async () => {
+            await submitMatch({
+              team: teamID,
+              allies: [1, 2],
+              enemies: [3, 4],
+              match: matchID,
+              cycles: convertCycleServer(gamePieces),
+              autoClimb: chargingStation.auto.engage
+                ? 2
+                : chargingStation.auto.dock
+                ? 1
+                : 0,
+              teleopClimb: chargingStation.teleop.engage
+                ? 2
+                : chargingStation.teleop.dock
+                ? 1
+                : 0,
+              numPartners: chargingStation.teleop.numPartners,
+              mobility: mobility,
+              park: parked,
+            });
+            router.push("/");
+          }}
         >
           Submit Match
         </Button>

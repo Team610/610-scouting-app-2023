@@ -155,6 +155,7 @@ export default function Home({
                 position: "absolute",
               }}
               width={20}
+              key={coord.left}
             ></Image>
           );
         }

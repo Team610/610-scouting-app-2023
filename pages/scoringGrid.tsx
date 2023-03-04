@@ -15,6 +15,7 @@ function getLevel({col, isBlue}:{col: number, isBlue: boolean}){
   } else if ((col + 1) % 3 == 0) {
     pos = isBlue ? 2 : 0;
   }
+  
   return pos
 }
 
@@ -51,7 +52,7 @@ export default function ScoringGrid({
                 let gamePiece = coneCol.includes(pos) ? "cone" : "cube";
 
                 // hybrid nodes
-                if (pos % 3 ==  0) {
+                if (pos % 3 ==  2) {
                   gamePiece = pickedupGamePiece + "";
                 }
 

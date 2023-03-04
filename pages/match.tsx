@@ -48,12 +48,17 @@ export default function MatchScreen() {
   const [mobility, setMobility] = useState(false);
   const [parked, setParked] = useState(false);
   const router = useRouter();
+  const [alliance, setAlliance] = useState("red");
 
   const [time, setTime] = useState(18);
 
   const queryParams = router.query;
   const matchID = queryParams.match?.toString()!;
   const teamID = parseInt(queryParams.team?.toString()!);
+  const red = queryParams.red?.toString().replaceAll('"', "").split(",");
+  const blue = queryParams.blue?.toString().replaceAll('"', "").split(",");
+
+  // console.log(teamID)
 
   // redirect page to "TeleOp" after 10 seconds while displaying remaining time on page
   useEffect(() => {
@@ -64,6 +69,14 @@ export default function MatchScreen() {
       setGameState("teleop");
       setChargingStation(deafultChargingStation);
     }
+
+    if (blue?.includes(teamID.toString())) {
+      setAlliance("blue");
+      blue.splice(blue.indexOf(teamID.toString()), 1);
+    } else {
+      red?.splice(red.indexOf(teamID.toString()), 1);
+    }
+
     return () => clearTimeout(timer);
   }, [time]);
 
@@ -161,13 +174,23 @@ export default function MatchScreen() {
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div style={{ display: "flex", flexDirection: "row", gap: "20px" }}>
         <>
-          <div>
-            <Intake
-              gamePiece={gamePiece}
-              setGamePiece={setGamePiece}
-              addGamePiece={addGamePiece}
-            />
+          <div style={{ display: "flex" }}>
+            {alliance == "red" ? (
+              <div style={{ display: "flex" }}>
+                <ScoringGrid
+                  addGamePiece={addGamePiece}
+                  pickedupGamePiece={gamePiece}
+                  scoreGamePiece={scoreGamePiece}
+                  isBlueAlliance={alliance == "blue"}
+                />
+              </div>
+            ) : null}
             <div>
+              <Intake
+                gamePiece={gamePiece}
+                setGamePiece={setGamePiece}
+                addGamePiece={addGamePiece}
+              />
               <div
                 style={{
                   display: "flex",
@@ -216,11 +239,13 @@ export default function MatchScreen() {
               </div>
             </div>
           </div>
-          <ScoringGrid
-            addGamePiece={addGamePiece}
-            pickedupGamePiece={gamePiece}
-            scoreGamePiece={scoreGamePiece}
-          />
+          {alliance == "blue" ? (
+            <ScoringGrid
+              addGamePiece={addGamePiece}
+              pickedupGamePiece={gamePiece}
+              scoreGamePiece={scoreGamePiece}
+            />
+          ) : null}
         </>
       </div>
       {gameState == "teleop" ? (

@@ -468,3 +468,27 @@ export async function getMatchByValueAndRelatoinship(amount: number, relationshi
 
 
 }
+
+export async function getAllTeamNumbers() {
+    const session = getNeoSession()
+    let tempResult:any
+    let toReturn = []
+
+    try {
+        const tx = session.beginTransaction()
+        const result = await tx.run(
+            'MATCH (t:Team) return distinct *'
+        )
+        tempResult = result
+        for (let index = 0; index < result.records.length; index++) {
+            toReturn.push(tempResult.records[index]._fields[0].properties.name.low)
+            console.log(toReturn[index])
+        }
+
+        await tx.commit()
+
+    } catch (error) {
+        console.error(error)
+    }
+    return toReturn
+}

@@ -120,7 +120,7 @@ export default function Home({
             gamePiece == "nothing" ? handleClick(e) : null;
           }}
           src={myPic}
-          width={500}
+          width={700}
           alt="image"
           style={{ transform: "rotate(180deg)" }}
           ref={ref}

@@ -169,10 +169,16 @@ export default function MatchScreen() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "20px",
+      }}
+    >
       <div style={{ display: "flex", flexDirection: "row", gap: "20px" }}>
         <>
-          <div style={{ display: "flex", gap: "10px" }}>
+          <div style={{ display: "flex", gap: "20px" }}>
             {!blueAllaince ? (
               <div style={{ display: "flex" }}>
                 <ScoringGrid

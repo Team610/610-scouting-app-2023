@@ -8,19 +8,19 @@ import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useDetectClickOutside } from "react-detect-click-outside";
 import { score } from "../neo4j/AddData";
 
-function getLevel({col, isBlue}:{col: number, isBlue: boolean}){
+function getLevel({ col, isBlue }: { col: number; isBlue: boolean }) {
   let pos = 1;
   if (col % 3 == 0) {
     pos = isBlue ? 0 : 2;
   } else if ((col + 1) % 3 == 0) {
     pos = isBlue ? 2 : 0;
   }
-  
-  return pos
+
+  return pos;
 }
 
-function getPosition({pos, isBlue} : {pos: number, isBlue: boolean}){
-  return isBlue ? Math.floor(pos / 3) + 1 : 3 - Math.floor(pos / 3)
+function getPosition({ pos, isBlue }: { pos: number; isBlue: boolean }) {
+  return isBlue ? Math.floor(pos / 3) + 1 : 3 - Math.floor(pos / 3);
 }
 
 export default function ScoringGrid({
@@ -37,7 +37,7 @@ export default function ScoringGrid({
   //score, auto vs teleop for scores
   const coneCol = [0, 1, 2, 6, 7, 8];
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "10px"}}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "30px" }}>
       {new Array(0, 1, 2).map((grid) => {
         return (
           <div key={grid}>
@@ -60,12 +60,15 @@ export default function ScoringGrid({
                   <div key={pos}>
                     <Box
                       gamePiece={gamePiece}
-                      level={getLevel({col: pos, isBlue: isBlueAlliance})}
+                      level={getLevel({ col: pos, isBlue: isBlueAlliance })}
                       grid={grid}
                       addGamePiece={addGamePiece}
                       pickedupGamePiece={pickedupGamePiece}
                       scoreGamePiece={scoreGamePiece}
-                      position={getPosition({pos: pos, isBlue: isBlueAlliance})}
+                      position={getPosition({
+                        pos: pos,
+                        isBlue: isBlueAlliance,
+                      })}
                       isBlueAlliance={isBlueAlliance}
                     ></Box>
                   </div>
@@ -99,7 +102,7 @@ function Box({
   grid,
   scoreGamePiece,
   position,
-  isBlueAlliance
+  isBlueAlliance,
 }: BoxProps) {
   const [content, setContent] = useState<StaticImageData>();
   const [opened, { close, open }] = useDisclosure(false);
@@ -164,11 +167,23 @@ function Box({
               width={20}
               onClick={() => {
                 if (content == cone) {
-                  scoreGamePiece(level, gamePiece == "cone", grid, true, position);
+                  scoreGamePiece(
+                    level,
+                    gamePiece == "cone",
+                    grid,
+                    true,
+                    position
+                  );
                   setContent(undefined);
                 } else {
                   setContent(cone);
-                  scoreGamePiece(level, gamePiece == "cone", grid, false, position);
+                  scoreGamePiece(
+                    level,
+                    gamePiece == "cone",
+                    grid,
+                    false,
+                    position
+                  );
                 }
                 close();
               }}
@@ -180,10 +195,22 @@ function Box({
               onClick={() => {
                 if (content == cube) {
                   setContent(undefined);
-                  scoreGamePiece(level, gamePiece == "cube", grid, true, position);
+                  scoreGamePiece(
+                    level,
+                    gamePiece == "cube",
+                    grid,
+                    true,
+                    position
+                  );
                 } else {
                   setContent(cube);
-                  scoreGamePiece(level, gamePiece == "cube", grid, false, position);
+                  scoreGamePiece(
+                    level,
+                    gamePiece == "cube",
+                    grid,
+                    false,
+                    position
+                  );
                 }
                 close();
               }}

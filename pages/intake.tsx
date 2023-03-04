@@ -23,14 +23,14 @@ export default function Home({
 }) {
   let [locations, setLocations] = useState<any>([[]]);
   let [mousePos, setMousePos] = useState<any>({});
-  let [clickOnField, setClickOnField] = useState(true)
+  let [clickOnField, setClickOnField] = useState(true);
 
   const [selectedOption, setSelectedOption] = useState("");
 
   const [opened, { close, open }] = useDisclosure(false);
 
-  function handleClickOutside(){
-    setClickOnField(false)
+  function handleClickOutside() {
+    setClickOnField(false);
   }
 
   const ref = useDetectClickOutside({ onTriggered: handleClickOutside });
@@ -156,7 +156,7 @@ export default function Home({
             justifyContent: "center",
             gap: "10px",
             paddingTop: "10px",
-            left: locations[locations.length - 1].left - 45,
+            left: locations[locations.length - 1].left - 43,
             top: locations[locations.length - 1].top - 40,
             position: "absolute",
           }}
@@ -185,7 +185,7 @@ function GamePieceSelect({
       <Image
         src={cone}
         alt="gamepiece"
-        width={20}
+        width={50}
         onClick={() => {
           setGamePiece("cone");
           pieceSelected("cone");
@@ -194,7 +194,7 @@ function GamePieceSelect({
       <Image
         src={cube}
         alt="gamepiece"
-        width={20}
+        width={50}
         onClick={() => {
           setGamePiece("cube");
           pieceSelected("cube");

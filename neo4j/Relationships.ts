@@ -1,7 +1,7 @@
 import { Session } from "next-auth";
 import { getNeoSession } from "./Session";
 import neo4j from 'neo4j-driver'
-import { matchData } from "./AddData";
+import { matchData } from "../utils";
 
 //takes the match data for a team as the parameter, creates the ally relaitionships for the team
 export async function allies(data: matchData) {

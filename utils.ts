@@ -30,6 +30,40 @@ export interface matchData {
     allies: Array<number>
 }
 
+export interface teamData {
+    team: number,
+    matchesPlayed: number,
+    autoPPG: number,
+    PPG: number,
+    cyclesPG: number,
+    scoringAccuracy: number,
+    coneAccuracy: number,
+    cubeAccuracy: number,
+    scoringPositions: Array<number>,
+    autoClimbPPG: number,
+    teleopClimbPPG: number,
+    climbPPG: number,
+    linkPG: number
+}
+
+export const defaultTeam : teamData ={
+    team: 0,
+    matchesPlayed: 0,
+    autoPPG: 0, 
+    PPG: 0,
+    cyclesPG: 0,
+    scoringAccuracy: 0,
+    coneAccuracy: 0,
+    cubeAccuracy: 0,
+    scoringPositions: [0, 0, 0],
+    autoClimbPPG: 0,
+    teleopClimbPPG: 0,
+    climbPPG: 0,
+    linkPG: 0
+}
+
+
+
 export const defaultMatch : matchData ={
     team: 9999,
     match: "X01",
@@ -65,4 +99,29 @@ export function revPegPosition(grid: number, row: number, column: number){
    let c = column
 
    return (r - 1) * 9 + (c - 1);
+}
+export function standardDeviation(arr:Array<number>){
+    let mean = arr.reduce((acc, curr)=>{
+	return acc + curr
+}, 0) / arr.length;
+
+
+arr = arr.map((el)=>{
+	return (el - mean) ** 2
+})
+
+let total = arr.reduce((acc, curr)=> acc + curr, 0);
+
+return Math.sqrt(total / arr.length)
+}
+export function arrayAverage(arr:Array<number>){
+    //Find the sum
+    let sum = 0;
+    for(let i in arr) {
+        sum += arr[i];
+    }
+    //Get the length of the array
+    let numbersCnt = arr.length;
+    //Return the average / mean.
+    return (sum / numbersCnt);
 }

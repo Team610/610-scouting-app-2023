@@ -1,7 +1,7 @@
 import { Session } from "next-auth";
 import { getNeoSession } from "./Session";
 import neo4j from 'neo4j-driver'
-import { arrayAverage, standardDeviation } from "./Utils";
+import { defaultTeam,arrayAverage, standardDeviation } from "../utils";
 
 // returns how many game pieces the robot scored in that row: 1 is bottom, 3 is top
 export async function getTeamScoreLocation(team: number, row: number, teleop: boolean, tx: any) {
@@ -146,7 +146,7 @@ export async function getClimbAllMatches(team: number, teleop: boolean, tx: any)
     let climbs = Array(3)
 
     let result = await tx.run(
-        'MATCH (t:Team {name: $name})-[]-(c:' + (teleop ? "Mobility" : "Park") + ') RETURN count(*)',
+        'MATCH (t:Team {name: $name})-[]-(c:' + (teleop ? "Park" : "Mobility") + ') RETURN count(*)',
         { name: team },
     )
 
@@ -274,7 +274,9 @@ export async function getTeam({team}: {team: number}) {
         linkPG: links / matchesPlayed
     }
 
-    return teamdata
+    console.log(teamdata)
+
+    return teamdata.matchesPlayed > 0 ? teamdata : defaultTeam
 }
 
 interface teamRelativeStatistics {
@@ -514,6 +516,23 @@ export async function getMatchByValueAndRelatoinship(amount: number, relationshi
 
 }
 
+// returns how many games a certain team played
+export async function getMatchList(team : number){
+    const session = getNeoSession()
+    const tx = session.beginTransaction()
+    try{
+        const result = await tx.run(
+            'MATCH (t:Team {name: $name})-[r]->(n) RETURN DISTINCT r.match',
+            { name: team },
+        )
+        console.log(result.records.map((record: any) => record._fields[0].low))
+        let ret:Array<number> = result.records.map((record: any) => record._fields[0].low)
+        return ret
+    }catch(error){
+        console.error(error)
+    }
+    await tx.commit()
+}
 export async function getAllTeamNumbers() {
     const session = getNeoSession()
     let tempResult:any

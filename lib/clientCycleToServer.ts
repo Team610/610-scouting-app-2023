@@ -1,6 +1,5 @@
-import { cycleData } from "../neo4j/AddData";
 import { clientCycle } from "../neo4j/SubmitMatch";
-import { revPegPosition } from "../neo4j/Utils";
+import { cycleData, revPegPosition } from "../utils";
 
 export function convertCycleServer(cycles: Array<clientCycle>){
     let serverCycles: Array<cycleData> = [];

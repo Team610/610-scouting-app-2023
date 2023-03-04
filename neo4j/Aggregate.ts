@@ -485,6 +485,7 @@ export async function getMatchList(team : number){
         console.error(error)
     }
     await tx.commit()
+}
 export async function getAllTeamNumbers() {
     const session = getNeoSession()
     let tempResult:any

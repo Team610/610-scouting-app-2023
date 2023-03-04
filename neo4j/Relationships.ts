@@ -10,12 +10,12 @@ export async function allies(data: matchData) {
       try {
         const tx = session.beginTransaction()
         const _ = await tx.run  (
-          'MERGE (:Team{name:$allyname})',
+          'MERGE (:Team{name:toInteger($allyname)})',
           { allyname: data.allies[index]}
         )
   
         const result = await tx.run(
-          'MATCH (t:Team),(ot:Team) WHERE t.name = $name AND ot.name = $otherName CREATE (t)-[:ALLY{match: toString($match)}]->(ot)',
+          'MATCH (t:Team),(ot:Team) WHERE t.name = toInteger($name) AND ot.name = toInteger($otherName) CREATE (t)-[:ALLY{match: toString($match)}]->(ot)',
           { name: data.team, otherName: data.allies[index], match: data.match },
         )
   
@@ -36,12 +36,12 @@ export async function allies(data: matchData) {
         const tx = session.beginTransaction()
         
         const _ = await tx.run  (
-          'MERGE (:Team{name:$allyname})',
-          { allyname: data.enemies[index]}
+          'MERGE (:Team{name:toInteger($enemyname)})',
+          { enemyname: data.enemies[index]}
         )
 
         const result = await tx.run(
-          'MATCH (t:Team),(ot:Team) WHERE t.name = $name AND ot.name = $otherName CREATE (t)-[:ENEMY{match: toString($match)}]->(ot)',
+          'MATCH (t:Team),(ot:Team) WHERE t.name = toInteger($name) AND ot.name = toInteger($otherName) CREATE (t)-[:ENEMY{match: toString($match)}]->(ot)',
           { name: data.team, otherName: data.enemies[index], match: data.match },
         )
   

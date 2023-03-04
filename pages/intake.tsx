@@ -135,6 +135,7 @@ export default function Home({
           src={myPic}
           width={500}
           alt="image"
+          style={{ transform: "rotate(180deg)" }}
         />
       </div>
       {locations.map((coord: IntakeLocation, idx: number) => {

@@ -55,14 +55,10 @@ export default function MatchScreen() {
   const queryParams = router.query;
   const matchID = queryParams.match?.toString()!;
   const teamID = parseInt(queryParams.team?.toString()!);
-  const red = queryParams.red?.toString().split(",");
-  const blue = queryParams.blue?.toString().split(",");
-  if (blue?.includes(teamID.toString())) {
-    setAlliance("blue");
-    blue.splice(blue.indexOf(teamID.toString()), 1);
-  } else {
-    red?.splice(red.indexOf(teamID.toString()), 1);
-  }
+  const red = queryParams.red?.toString().replaceAll('"', "").split(",");
+  const blue = queryParams.blue?.toString().replaceAll('"', "").split(",");
+
+  // console.log(teamID)
 
   // redirect page to "TeleOp" after 10 seconds while displaying remaining time on page
   useEffect(() => {
@@ -73,6 +69,14 @@ export default function MatchScreen() {
       setGameState("teleop");
       setChargingStation(deafultChargingStation);
     }
+
+    if (blue?.includes(teamID.toString())) {
+      setAlliance("blue");
+      blue.splice(blue.indexOf(teamID.toString()), 1);
+    } else {
+      red?.splice(red.indexOf(teamID.toString()), 1);
+    }
+
     return () => clearTimeout(timer);
   }, [time]);
 
@@ -170,20 +174,23 @@ export default function MatchScreen() {
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div style={{ display: "flex", flexDirection: "row", gap: "20px" }}>
         <>
-          <div>
+          <div style={{ display: "flex" }}>
             {alliance == "red" ? (
-              <ScoringGrid
-                addGamePiece={addGamePiece}
-                pickedupGamePiece={gamePiece}
-                scoreGamePiece={scoreGamePiece}
-              />
+              <div style={{ display: "flex" }}>
+                <ScoringGrid
+                  addGamePiece={addGamePiece}
+                  pickedupGamePiece={gamePiece}
+                  scoreGamePiece={scoreGamePiece}
+                  isBlueAlliance={alliance == "blue"}
+                />
+              </div>
             ) : null}
-            <Intake
-              gamePiece={gamePiece}
-              setGamePiece={setGamePiece}
-              addGamePiece={addGamePiece}
-            />
             <div>
+              <Intake
+                gamePiece={gamePiece}
+                setGamePiece={setGamePiece}
+                addGamePiece={addGamePiece}
+              />
               <div
                 style={{
                   display: "flex",

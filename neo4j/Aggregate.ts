@@ -197,7 +197,7 @@ export interface teamData {
     scoring positions: [scored in lower, scored in middle, scored in higher]
     links per game: links per game
  */
-export async function getTeam(team: number) {
+export async function getTeam({team}: {team: number}) {
     const session = getNeoSession()
 
     let autoPoints: number = 0
@@ -423,7 +423,7 @@ export async function getMatch(team: number, match: String) {
 }
 
 export async function getCompTeams(teams: number[]) {
-    const teamPromises = teams.map((team) => getTeam(team));
+    const teamPromises = teams.map((team) => getTeam({team:team}));
     const teamData = await Promise.all(teamPromises);
     return teamData;
 }

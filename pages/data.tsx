@@ -5,13 +5,17 @@ import { Button, Table, TextInput } from "@mantine/core";
 import sampleMatch from "../data/sampleMatch.json";
 import { Input } from "@mantine/core";
 import { useEffect, useState } from "react";
+import { defaultTeam } from "../utils";
+
 
 export function DisplayTeamData({ team }: { team: number }) {
-  const [data, setData] = useState<teamData>();
+  const [data, setData] = useState<teamData>(defaultTeam);
 
   useEffect(() => {
     async function getData() {
-      setData(await getTeam({ team: team }));
+      if (team != 0){
+        setData(await getTeam({ team: team }));
+      }
     }
     getData();
   }, [team]);
@@ -19,7 +23,6 @@ export function DisplayTeamData({ team }: { team: number }) {
   const ths = (
     <tr>
       <th>Team</th>
-      <th>In this game</th>
       <th>Matches Played</th>
       <th>Auto PPG</th>
       <th>PPG</th>
@@ -88,7 +91,7 @@ export default function singleTeamData() {
         placeholder="610"
         label="Team Number"
         withAsterisk
-        onChange={(e) => setTeamNo(parseInt(e.currentTarget.value))}
+        onChange={(e) => setTeamNo(e.currentTarget.value == "" ? 0 : parseInt(e.currentTarget.value))}
       ></TextInput>
 
       <DisplayTeamData team={teamNo} />

@@ -30,6 +30,40 @@ export interface matchData {
     allies: Array<number>
 }
 
+export interface teamData {
+    team: number,
+    matchesPlayed: number,
+    autoPPG: number,
+    PPG: number,
+    cyclesPG: number,
+    scoringAccuracy: number,
+    coneAccuracy: number,
+    cubeAccuracy: number,
+    scoringPositions: Array<number>,
+    autoClimbPPG: number,
+    teleopClimbPPG: number,
+    climbPPG: number,
+    linkPG: number
+}
+
+export const defaultTeam : teamData ={
+    team: 0,
+    matchesPlayed: 0,
+    autoPPG: 0, 
+    PPG: 0,
+    cyclesPG: 0,
+    scoringAccuracy: 0,
+    coneAccuracy: 0,
+    cubeAccuracy: 0,
+    scoringPositions: [0, 0, 0],
+    autoClimbPPG: 0,
+    teleopClimbPPG: 0,
+    climbPPG: 0,
+    linkPG: 0
+}
+
+
+
 export const defaultMatch : matchData ={
     team: 9999,
     match: "X01",

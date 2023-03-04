@@ -2,28 +2,8 @@ import { Session } from "next-auth";
 import { getNeoSession } from "./Session";
 import neo4j from 'neo4j-driver'
 import { allies, enemies } from "./Relationships";
+import { matchData } from "../utils";
 
-export interface cycleData {
-    x: number,
-    y: number,
-    teleop: boolean,
-    scoringPosition: number,
-    link: boolean,
-    object: string
-}
-
-export interface matchData {
-    team: number,
-    match: String,
-    autoClimb: number,
-    teleopClimb: number,
-    numPartners: number,
-    park: boolean,
-    mobility: boolean,
-    cycles: Array<cycleData>,
-    enemies: Array<number>,
-    allies: Array<number>
-}
 
 //create teams to test with takes a number as parameter for number of teams, returns nothing
 export async function createNTeams(n: number) {

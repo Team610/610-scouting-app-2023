@@ -16,5 +16,4 @@ export interface clientCycle {
 export async function submitMatch(match: matchData){
 
     scoreMatch(match)
-
 }

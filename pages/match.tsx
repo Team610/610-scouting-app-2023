@@ -8,6 +8,7 @@ import { getNeoSession } from "../neo4j/Session";
 import { convertCycleServer } from "../lib/clientCycleToServer";
 import { useRouter } from "next/router";
 import React from "react";
+import { matchRelationships } from "../neo4j/Relationships";
 
 export interface Score {
   auto: number;
@@ -251,6 +252,7 @@ export default function MatchScreen() {
       {gameState == "teleop" ? (
         <Button
           onClick={async () => {
+            await matchRelationships({redTeams: red, blueTeams: blue, matchNo: matchID})
             await submitMatch({
               team: teamID,
               allies: [1, 2],

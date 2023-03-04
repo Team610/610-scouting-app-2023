@@ -465,3 +465,22 @@ export async function getMatchByValueAndRelatoinship(amount: number, relationshi
 
 
 }
+
+
+// returns how many games a certain team played
+export async function getMatchList(team : number){
+    const session = getNeoSession()
+    const tx = session.beginTransaction()
+    try{
+        const result = await tx.run(
+            'MATCH (t:Team {name: $name})-[r]->(n) RETURN DISTINCT r.match',
+            { name: team },
+        )
+        console.log(result.records.map((record: any) => record._fields[0].low))
+        let ret:Array<number> = result.records.map((record: any) => record._fields[0].low)
+        return ret
+    }catch(error){
+        console.error(error)
+    }
+    await tx.commit()
+}

@@ -35,32 +35,7 @@ export function DisplayTeamData({ team }: { team: number }) {
     </tr>
   );
 
-  const rows = data ? (
-    <tr key={data.team}>
-      <td>{data.team}</td>
-      <td>{data.matchesPlayed}</td>
-      <td>{data.autoPPG.toFixed(2)}</td>
-      <td>{data.PPG.toFixed(2)}</td>
-      <td>{data.cyclesPG.toFixed(2)}</td>
-      <td>{data.scoringAccuracy.toFixed(2)}</td>
-      <td>{data.coneAccuracy.toFixed(2)}</td>
-      <td>{data.cubeAccuracy.toFixed(2)}</td>
-      <td>
-        {"Lower: " +
-          data.scoringPositions[0] +
-          " Middle: " +
-          data.scoringPositions[1] +
-          " Top: " +
-          data.scoringPositions[2]}
-      </td>
-      <td>{data.autoClimbPPG.toFixed(2)}</td>
-      <td>{data.teleopClimbPPG.toFixed(2)}</td>
-      <td>{data.climbPPG.toFixed(2)}</td>
-      <td>{data.linkPG.toFixed(2)}</td>
-    </tr>
-  ) : (
-    <></>
-  );
+  const rows = data ? <AggregateRow data={data} /> : <></>;
 
   return (
     <>
@@ -93,5 +68,32 @@ export default function singleTeamData() {
 
       <DisplayTeamData team={teamNo} />
     </div>
+  );
+}
+
+export function AggregateRow({ data }: { data: teamData }) {
+  return (
+    <tr key={data.team}>
+      <td>{data.team}</td>
+      <td>{data.matchesPlayed}</td>
+      <td>{data.autoPPG.toFixed(2)}</td>
+      <td>{data.PPG.toFixed(2)}</td>
+      <td>{data.cyclesPG.toFixed(2)}</td>
+      <td>{data.scoringAccuracy.toFixed(2)}</td>
+      <td>{data.coneAccuracy.toFixed(2)}</td>
+      <td>{data.cubeAccuracy.toFixed(2)}</td>
+      <td>
+        {"Lower: " +
+          data.scoringPositions[0] +
+          " Middle: " +
+          data.scoringPositions[1] +
+          " Top: " +
+          data.scoringPositions[2]}
+      </td>
+      <td>{data.autoClimbPPG.toFixed(2)}</td>
+      <td>{data.teleopClimbPPG.toFixed(2)}</td>
+      <td>{data.climbPPG.toFixed(2)}</td>
+      <td>{data.linkPG.toFixed(2)}</td>
+    </tr>
   );
 }

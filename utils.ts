@@ -30,12 +30,13 @@ export interface matchData {
     allies: Array<number>
 }
 
-export interface teamData {
+export interface teamAggData {
     team: number,
     matchesPlayed: number,
     autoPPG: number,
     PPG: number,
     cyclesPG: number,
+    weightedCyclesPG: number,
     scoringAccuracy: number,
     coneAccuracy: number,
     cubeAccuracy: number,
@@ -43,15 +44,17 @@ export interface teamData {
     autoClimbPPG: number,
     teleopClimbPPG: number,
     climbPPG: number,
-    linkPG: number
+    linkPG: number,
+    // powerRating: number
 }
 
-export const defaultTeam : teamData ={
+export const defaultTeam : teamAggData ={
     team: 0,
     matchesPlayed: 0,
     autoPPG: 0, 
     PPG: 0,
     cyclesPG: 0,
+    weightedCyclesPG: 0,
     scoringAccuracy: 0,
     coneAccuracy: 0,
     cubeAccuracy: 0,
@@ -59,7 +62,8 @@ export const defaultTeam : teamData ={
     autoClimbPPG: 0,
     teleopClimbPPG: 0,
     climbPPG: 0,
-    linkPG: 0
+    linkPG: 0,
+    // powerRating: 0
 }
 
 

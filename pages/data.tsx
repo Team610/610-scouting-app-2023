@@ -1,24 +1,13 @@
-import { getCompTeams, getMatch, getTeam, teamData } from "../neo4j/Aggregate";
+import { getAllTeamData, getCompTeams, getMatch, getTeam} from "../neo4j/Aggregate";
 import { createNTeams, addDummyData } from "../neo4j/AddData";
 import { query, wipe } from "../neo4j/Miscellaneous";
 import { Button, Table, TextInput } from "@mantine/core";
 import sampleMatch from "../data/sampleMatch.json";
 import { Input } from "@mantine/core";
 import { useEffect, useState } from "react";
-import { defaultTeam } from "../utils";
+import { defaultTeam, teamAggData } from "../utils";
 
-
-export function DisplayTeamData({ team }: { team: number }) {
-  const [data, setData] = useState<teamData>(defaultTeam);
-
-  useEffect(() => {
-    async function getData() {
-      if (team != 0){
-        setData(await getTeam({ team: team }));
-      }
-    }
-    getData();
-  }, [team]);
+export function DisplayTeamData({ data }: { data: teamAggData[] }) {
 
   const ths = (
     <tr>
@@ -26,7 +15,8 @@ export function DisplayTeamData({ team }: { team: number }) {
       <th>Matches Played</th>
       <th>Auto PPG</th>
       <th>PPG</th>
-      <th>Cycles per Game</th>
+      <th>Cycles PG</th>
+      <th>Weighted Cycles PG</th>
       <th>Scoring Accuracy</th>
       <th>Cone Accuracy</th>
       <th>Cube Accuracy</th>
@@ -38,13 +28,14 @@ export function DisplayTeamData({ team }: { team: number }) {
     </tr>
   );
 
-  const rows = data ? (
+  const rows = data ? data.map((data: teamAggData, index: number) => (
     <tr key={data.team}>
       <td>{data.team}</td>
       <td>{data.matchesPlayed}</td>
       <td>{data.autoPPG.toFixed(2)}</td>
       <td>{data.PPG.toFixed(2)}</td>
       <td>{data.cyclesPG.toFixed(2)}</td>
+      <td>{data.weightedCyclesPG.toFixed(2)}</td>
       <td>{data.scoringAccuracy.toFixed(2)}</td>
       <td>{data.coneAccuracy.toFixed(2)}</td>
       <td>{data.cubeAccuracy.toFixed(2)}</td>
@@ -61,7 +52,7 @@ export function DisplayTeamData({ team }: { team: number }) {
       <td>{data.climbPPG.toFixed(2)}</td>
       <td>{data.linkPG.toFixed(2)}</td>
     </tr>
-  ) : (
+  )) : (
     <></>
   );
 
@@ -75,8 +66,18 @@ export function DisplayTeamData({ team }: { team: number }) {
   );
 }
 
-export default function singleTeamData() {
+function singleTeamData() {
   const [teamNo, setTeamNo] = useState(0);
+  const [data, setData] = useState<teamAggData[]>([defaultTeam]);
+  useEffect(() => {
+    async function getData() {
+      if (teamNo != 0) {
+        setData([await getTeam({ team: teamNo })]);
+      }
+    }
+    getData();
+  }, [teamNo]);
+
   return (
     <div>
       <Button onClick={async () => await createNTeams(20)}>
@@ -94,7 +95,22 @@ export default function singleTeamData() {
         onChange={(e) => setTeamNo(e.currentTarget.value == "" ? 0 : parseInt(e.currentTarget.value))}
       ></TextInput>
 
-      <DisplayTeamData team={teamNo} />
+      <DisplayTeamData data={data} />
     </div>
   );
+}
+
+export default function allTeamData() {
+  const [data, setData] = useState<teamAggData[]>([defaultTeam]);
+  useEffect(() => {
+    async function getData(){
+      setData(await getAllTeamData())
+    }
+    getData()
+  }, [])
+  return (
+    <div>
+      <DisplayTeamData data={data} />
+    </div>
+  )
 }

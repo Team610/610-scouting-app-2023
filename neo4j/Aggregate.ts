@@ -1,7 +1,7 @@
 import { Session } from "next-auth";
 import { getNeoSession } from "./Session";
 import neo4j from 'neo4j-driver'
-import { defaultTeam } from "../utils";
+import { defaultTeam, teamAggData } from "../utils";
 
 // returns how many game pieces the robot scored in that row: 1 is bottom, 3 is top
 export async function getTeamScoreLocation(team: number, row: number, teleop: boolean, tx: any) {
@@ -54,6 +54,33 @@ export async function getNumberCyclesAllMatches(team: number, tx: any) {
         { name: team },
     )
     return result.records[0].get(0).low;
+}
+
+// get the weighted number of cycles a team did in all matches:
+// high cycle : coefficient of 5
+// middle cycle: coefficient of 3
+// low cycle: coefficient of 2
+export async function getWeightedCyclesAllMatches(team: number, tx: any) {
+    let res : number = 0
+    const lower = await tx.run(
+        'MATCH (t:Team {name: $name})-[]->(c:Cycle)-[]->(m:ScoringPosition) WHERE m.name / 9 = 0 RETURN count(*)',
+        { name: team },
+    )
+    res += 2 * lower.records[0].get(0).low;
+    const middle = await tx.run(
+        'MATCH (t:Team {name: $name})-[]->(c:Cycle)-[]->(m:ScoringPosition) WHERE m.name / 9 = 1 RETURN count(*)',
+        { name: team },
+    )
+    res += 3 * middle.records[0].get(0).low;
+
+    const higher = await tx.run(
+        'MATCH (t:Team {name: $name})-[]->(c:Cycle)-[]->(m:ScoringPosition) WHERE m.name / 9 = 2 RETURN count(*)',
+        { name: team },
+    )
+
+    res += 5 * higher.records[0].get(0).low
+
+    return res
 }
 
 // returns nodes connected to a team node in a given match
@@ -169,21 +196,6 @@ export async function getClimbAllMatches(team: number, teleop: boolean, tx: any)
     return climbs
 }
 
-export interface teamData {
-    team: number,
-    matchesPlayed: number,
-    autoPPG: number,
-    PPG: number,
-    cyclesPG: number,
-    scoringAccuracy: number,
-    coneAccuracy: number,
-    cubeAccuracy: number,
-    scoringPositions: Array<number>,
-    autoClimbPPG: number,
-    teleopClimbPPG: number,
-    climbPPG: number,
-    linkPG: number
-}
 
 //takes the team number as a parameter, returns an object with the following format
 /*
@@ -209,6 +221,7 @@ export async function getTeam({team}: {team: number}) {
     let conesScored: number = 0
     let cubesScored: number = 0
     let ncycles: number = 0
+    let nWcycles: number = 0
     let scoringPositions = Array(3)
     let autoClimbPoints: number = 0
     let teleopClimbPoints: number = 0
@@ -242,26 +255,31 @@ export async function getTeam({team}: {team: number}) {
         scoringPositions[1] = await getTeamScoreLocation(team, 2, false, tx) + await getTeamScoreLocation(team, 2, false, tx)
         scoringPositions[2] = await getTeamScoreLocation(team, 3, false, tx) + await getTeamScoreLocation(team, 3, false, tx)
 
-        conesPickedUp = await getPiecesPickedUpAllMatches(team, "CONE", tx)
-        cubesPickedUp = await getPiecesPickedUpAllMatches(team, "CUBE", tx)
+        conesPickedUp = await getPiecesPickedUpAllMatches(team, "cone", tx)
+        cubesPickedUp = await getPiecesPickedUpAllMatches(team, "cube", tx)
 
-        conesScored = await getPiecesScoredAllMatches(team, 'CONE', tx)
-        cubesScored = await getPiecesScoredAllMatches(team, 'CONE', tx)
+        conesScored = await getPiecesScoredAllMatches(team, 'cone', tx)
+        cubesScored = await getPiecesScoredAllMatches(team, 'cube', tx)
 
         ncycles = await getNumberCyclesAllMatches(team, tx)
+        nWcycles = await getWeightedCyclesAllMatches(team, tx)
         matchesPlayed = await getMatchesPlayed(team, tx)
         links = await getLinks(team, tx)
+
+        await tx.close()
+        await session.close()
 
     } catch (error) {
         console.error(error)
     }
 
-    let teamdata: teamData = {
+    let teamdata: teamAggData = {
         team: team,
         matchesPlayed: matchesPlayed,
         autoPPG: autoPoints / matchesPlayed,
         PPG: points / matchesPlayed,
         cyclesPG: ncycles / matchesPlayed,
+        weightedCyclesPG: nWcycles / matchesPlayed,
         scoringAccuracy: (conesScored + cubesScored) / (conesPickedUp + cubesPickedUp),
         coneAccuracy: conesScored / conesPickedUp,
         cubeAccuracy: cubesScored / cubesPickedUp,
@@ -269,10 +287,13 @@ export async function getTeam({team}: {team: number}) {
         autoClimbPPG: autoClimbPoints / matchesPlayed,
         teleopClimbPPG: teleopClimbPoints / matchesPlayed,
         climbPPG: (autoClimbPoints + teleopClimbPoints) / matchesPlayed,
-        linkPG: links / matchesPlayed
+        linkPG: links / matchesPlayed,
+        // power rating = 4 * wCPG + 3 * accu + 2 * linkPG + 5 * PPG
+        // powerRating: 4 * (nWcycles / matchesPlayed) + 3 * (conesScored + cubesScored) / (conesPickedUp + cubesPickedUp) + 2 * (links / matchesPlayed)
+        // + 5 * (points / matchesPlayed)
     }
 
-    console.log(teamdata)
+    // console.log(teamdata)
 
     return teamdata.matchesPlayed > 0 ? teamdata : defaultTeam
 }
@@ -416,10 +437,10 @@ export async function getMatch(team: number, match: String) {
         autoPoints: autoPoints,
         points: points,
         piecesScored: piecesScored,
-        scoringAccuracy: piecesScored / (cubesPickedUp + conesPickedUp)
+        scoringAccuracy: piecesScored / (cubesPickedUp + conesPickedUp),
     }
 
-    console.log(matchData)
+    // console.log(matchData)
     return (
         matchData
     )
@@ -491,4 +512,15 @@ export async function getAllTeamNumbers() {
         console.error(error)
     }
     return toReturn
+}
+
+export async function getAllTeamData(){
+    let ret : teamAggData[] = []
+    const teamlist = await getAllTeamNumbers()
+    console.log(teamlist)
+    for(let i = 0; i < teamlist.length; i++){
+        ret.push(await getTeam({team: teamlist[i]}))
+    }
+
+    return ret
 }

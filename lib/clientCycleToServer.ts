@@ -8,7 +8,7 @@ export function convertCycleServer(cycles: Array<clientCycle>){
         let x = cycles[i].x
         let y = cycles[i].y
         let teleop = !cycles[i].auto
-        let scoringPosition = revPegPosition(cycles[i].grid, cycles[i].level, cycles[i].position)
+        let scoringPosition = (27 + revPegPosition(cycles[i].grid, cycles[i].level, cycles[i].position)) % 27
         let link = cycles[i].link
         let object = cycles[i].cone ? "cone" : "cube"
         serverCycles.push({x, y, teleop, scoringPosition, link, object})

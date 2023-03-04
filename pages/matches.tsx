@@ -98,6 +98,9 @@ export default function SelectMatchDropBox() {
         <div className={styles.center}>
           <h2>
             <Link
+                onClick={()=>{
+                    
+                }}
               href={
                 "/match?match=" +
                 selectedMatch +

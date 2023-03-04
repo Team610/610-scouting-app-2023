@@ -4,9 +4,9 @@
 // 9  10  11 | 12  13  14 | 15  16  17
 // 0  1   2  |  3   4   5 |  6   7   8
 export function pegPosition(id: number){
-    let r = id / 9 + 1
+    let r = id / 9
     let c = id % 9 + 1
-    let g = c / 3 + 1
+    let g = (c % 9) / 3
     return new Array(g, r, c)
 }
 
@@ -19,5 +19,5 @@ export function revPegPosition(grid: number, row: number, column: number){
    let r = row
    let c = column
 
-   return (r - 1) * 9 + (c - 1);
+   return r * 9 + g * 3 + (c - 1);
 }

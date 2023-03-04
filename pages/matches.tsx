@@ -22,7 +22,7 @@ export default function SelectMatchDropBox() {
           "monpiIlPoQ81Y5bc8zhoMNuTbm8bLHQzYikSQuYYZHvM3BbAm8Y4uFeaOU6bMNg1",
       };
       const response = await fetch(
-        "https://www.thebluealliance.com/api/v3/event/2023isde1/matches",
+        "https://www.thebluealliance.com/api/v3/event/2023onnew/matches",
         { headers: headers }
       );
       const data = await response.json();
@@ -48,7 +48,7 @@ export default function SelectMatchDropBox() {
     setSelectedMatch(match);
     jsonData.forEach((item: any) => {
       if (item.comp_level + item.match_number == match) {
-        const red = item.alliances.red.team_keys.map((team : string) =>
+        const red = item.alliances.red.team_keys.map((team: string) =>
           team.substring(3)
         );
         const blue = item.alliances.blue.team_keys.map((team: string) =>
@@ -98,9 +98,7 @@ export default function SelectMatchDropBox() {
         <div className={styles.center}>
           <h2>
             <Link
-                onClick={()=>{
-                    
-                }}
+              onClick={() => {}}
               href={
                 "/match?match=" +
                 selectedMatch +

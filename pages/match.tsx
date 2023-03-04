@@ -55,10 +55,9 @@ export default function MatchScreen() {
   const queryParams = router.query;
   const matchID = queryParams.match?.toString()!;
   const teamID = parseInt(queryParams.team?.toString()!);
-  const red = queryParams.red?.toString().replaceAll('"', "").split(",");
-  const blue = queryParams.blue?.toString().replaceAll('"', "").split(",");
+  const red = queryParams.red?.toString().split(",");
+  const blue = queryParams.blue?.toString().split(",");
 
-  // console.log(teamID)
 
   // redirect page to "TeleOp" after 10 seconds while displaying remaining time on page
   useEffect(() => {
@@ -181,7 +180,7 @@ export default function MatchScreen() {
                   addGamePiece={addGamePiece}
                   pickedupGamePiece={gamePiece}
                   scoreGamePiece={scoreGamePiece}
-                  isBlueAlliance={alliance == "blue"}
+                  isBlueAlliance={alliance.toString() === "blue"}
                 />
               </div>
             ) : null}
@@ -244,6 +243,7 @@ export default function MatchScreen() {
               addGamePiece={addGamePiece}
               pickedupGamePiece={gamePiece}
               scoreGamePiece={scoreGamePiece}
+              isBlueAlliance={alliance.toString() === "blue"}
             />
           ) : null}
         </>

@@ -48,10 +48,10 @@ export default function SelectMatchDropBox() {
     setSelectedMatch(match);
     jsonData.forEach((item: any) => {
       if (item.comp_level + item.match_number == match) {
-        const red = item.alliances.red.team_keys.map((team) =>
+        const red = item.alliances.red.team_keys.map((team : string) =>
           team.substring(3)
         );
-        const blue = item.alliances.blue.team_keys.map((team) =>
+        const blue = item.alliances.blue.team_keys.map((team: string) =>
           team.substring(3)
         );
         setBlueTeams(blue);

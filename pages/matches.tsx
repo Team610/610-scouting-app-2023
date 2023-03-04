@@ -43,7 +43,7 @@ export default function SelectMatchDropBox() {
     return (
         <div>
             <Select
-                label="Choose an event in progress"
+                label="Choose the match in progress"
                 placeholder="Select"
                 data={options}
                 searchable
@@ -52,7 +52,7 @@ export default function SelectMatchDropBox() {
             {
                 selectedMatch != "" ? 
                 <Select
-                label="Choose an event in progress"
+                label="Choose the team you are scouting"
                 placeholder="Select"
                 data={teamNumbers}
                 searchable

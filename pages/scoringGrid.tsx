@@ -8,17 +8,17 @@ import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import { useDetectClickOutside } from "react-detect-click-outside";
 import { score } from "../neo4j/AddData";
 
-function getLevel(col){
+function getLevel({col, isBlue}:{col: number, isBlue: boolean}){
   let pos = 1;
   if (col % 3 == 0) {
-    pos = 0;
+    pos = isBlue ? 0 : 2;
   } else if ((col + 1) % 3 == 0) {
-    pos = 2;
+    pos = isBlue ? 2 : 0;
   }
   return pos
 }
 
-function getPosition(pos){
+function getPosition({pos} : {pos: number}){
   return Math.floor(pos / 3) + 1
 }
 
@@ -26,10 +26,12 @@ export default function ScoringGrid({
   addGamePiece,
   pickedupGamePiece,
   scoreGamePiece,
+  isBlueAlliance,
 }: {
   addGamePiece: Function;
   pickedupGamePiece: String;
   scoreGamePiece: Function;
+  isBlueAlliance: boolean;
 }) {
   //score, auto vs teleop for scores
   const coneCol = [0, 1, 2, 6, 7, 8];
@@ -57,12 +59,12 @@ export default function ScoringGrid({
                   <div key={pos}>
                     <Box
                       gamePiece={gamePiece}
-                      level={getLevel(pos)}
+                      level={getLevel({col: pos, isBlue: isBlueAlliance})}
                       grid={grid}
                       addGamePiece={addGamePiece}
                       pickedupGamePiece={pickedupGamePiece}
                       scoreGamePiece={scoreGamePiece}
-                      position={pos}
+                      position={getPosition({pos: pos})}
                     ></Box>
                   </div>
                 );

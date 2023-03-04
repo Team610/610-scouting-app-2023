@@ -48,7 +48,7 @@ export default function MatchScreen() {
   const [mobility, setMobility] = useState(false);
   const [parked, setParked] = useState(false);
   const router = useRouter();
-  const [alliance, setAlliance] = useState("red");
+  const [blueAllaince, setBlueAllaince] = useState(false);
 
   const [time, setTime] = useState(18);
 
@@ -57,7 +57,6 @@ export default function MatchScreen() {
   const teamID = parseInt(queryParams.team?.toString()!);
   const red = queryParams.red?.toString().split(",");
   const blue = queryParams.blue?.toString().split(",");
-
 
   // redirect page to "TeleOp" after 10 seconds while displaying remaining time on page
   useEffect(() => {
@@ -70,7 +69,7 @@ export default function MatchScreen() {
     }
 
     if (blue?.includes(teamID.toString())) {
-      setAlliance("blue");
+      setBlueAllaince(true);
       blue.splice(blue.indexOf(teamID.toString()), 1);
     } else {
       red?.splice(red.indexOf(teamID.toString()), 1);
@@ -173,14 +172,14 @@ export default function MatchScreen() {
     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
       <div style={{ display: "flex", flexDirection: "row", gap: "20px" }}>
         <>
-          <div style={{ display: "flex" }}>
-            {alliance == "red" ? (
+          <div style={{ display: "flex", gap: "10px" }}>
+            {!blueAllaince ? (
               <div style={{ display: "flex" }}>
                 <ScoringGrid
                   addGamePiece={addGamePiece}
                   pickedupGamePiece={gamePiece}
                   scoreGamePiece={scoreGamePiece}
-                  isBlueAlliance={alliance.toString() === "blue"}
+                  isBlueAlliance={blueAllaince}
                 />
               </div>
             ) : null}
@@ -238,12 +237,12 @@ export default function MatchScreen() {
               </div>
             </div>
           </div>
-          {alliance == "blue" ? (
+          {blueAllaince ? (
             <ScoringGrid
               addGamePiece={addGamePiece}
               pickedupGamePiece={gamePiece}
               scoreGamePiece={scoreGamePiece}
-              isBlueAlliance={alliance.toString() === "blue"}
+              isBlueAlliance={blueAllaince}
             />
           ) : null}
         </>
@@ -253,8 +252,12 @@ export default function MatchScreen() {
           onClick={async () => {
             await submitMatch({
               team: teamID,
-              allies: [1, 2],
-              enemies: [3, 4],
+              allies: blueAllaince
+                ? blue?.map((item) => parseInt(item))!
+                : red?.map((item) => parseInt(item))!,
+              enemies: blueAllaince
+                ? red?.map((item) => parseInt(item))!
+                : blue?.map((item) => parseInt(item))!,
               match: matchID,
               cycles: convertCycleServer(gamePieces),
               autoClimb: chargingStation.auto.engage

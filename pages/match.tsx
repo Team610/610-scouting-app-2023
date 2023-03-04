@@ -48,12 +48,21 @@ export default function MatchScreen() {
   const [mobility, setMobility] = useState(false);
   const [parked, setParked] = useState(false);
   const router = useRouter();
+  const [alliance, setAlliance] = useState("red");
 
   const [time, setTime] = useState(18);
 
   const queryParams = router.query;
   const matchID = queryParams.match?.toString()!;
   const teamID = parseInt(queryParams.team?.toString()!);
+  const red = queryParams.red?.toString().split(",");
+  const blue = queryParams.blue?.toString().split(",");
+  if (blue?.includes(teamID.toString())) {
+    setAlliance("blue");
+    blue.splice(blue.indexOf(teamID.toString()), 1);
+  } else {
+    red?.splice(red.indexOf(teamID.toString()), 1);
+  }
 
   // redirect page to "TeleOp" after 10 seconds while displaying remaining time on page
   useEffect(() => {
@@ -162,6 +171,13 @@ export default function MatchScreen() {
       <div style={{ display: "flex", flexDirection: "row", gap: "20px" }}>
         <>
           <div>
+            {alliance == "red" ? (
+              <ScoringGrid
+                addGamePiece={addGamePiece}
+                pickedupGamePiece={gamePiece}
+                scoreGamePiece={scoreGamePiece}
+              />
+            ) : null}
             <Intake
               gamePiece={gamePiece}
               setGamePiece={setGamePiece}
@@ -216,11 +232,13 @@ export default function MatchScreen() {
               </div>
             </div>
           </div>
-          <ScoringGrid
-            addGamePiece={addGamePiece}
-            pickedupGamePiece={gamePiece}
-            scoreGamePiece={scoreGamePiece}
-          />
+          {alliance == "blue" ? (
+            <ScoringGrid
+              addGamePiece={addGamePiece}
+              pickedupGamePiece={gamePiece}
+              scoreGamePiece={scoreGamePiece}
+            />
+          ) : null}
         </>
       </div>
       {gameState == "teleop" ? (

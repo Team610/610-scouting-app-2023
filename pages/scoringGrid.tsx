@@ -46,6 +46,7 @@ export default function ScoringGrid({
                 display: "grid",
                 gridTemplateColumns: "repeat(3, 1fr)",
                 height: "max-content",
+                border: "5px solid red",
               }}
             >
               {new Array(0, 1, 2, 3, 4, 5, 6, 7, 8).map((pos) => {

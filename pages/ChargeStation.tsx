@@ -83,7 +83,7 @@ function NumPartners({ setNumPartners }: { setNumPartners: Function }) {
           onChange={(event) =>
             setNumPartners(parseInt(event.currentTarget.value))
           }
-          data={["0", "1", "2", "3"]}
+          data={["0", "1", "2"]}
         />
       </div>
     </>

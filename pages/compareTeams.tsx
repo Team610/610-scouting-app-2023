@@ -26,13 +26,13 @@ export function CompareTeamData({ teams }: { teams: Array<number> }) {
       <th>PPG</th>
       <th>Cycles PG</th>
       <th>Weighted Cycles PG</th>
-      {/* <th>Scoring Accuracy</th>
-      <th>Cone Accuracy</th>
-      <th>Cube Accuracy</th> */}
-      <th>Scoring Positions</th>
+      <th>Scoring Accuracy</th>
       <th>Auto Climb PPG</th>
       <th>Teleop Climb PPG</th>
       <th>Climb PPG</th>
+      <th>Scoring Positions</th>
+      <th>Cone Accuracy</th>
+      <th>Cube Accuracy</th>
       <th>Link PG</th>
     </tr>
   );
@@ -47,9 +47,10 @@ export function CompareTeamData({ teams }: { teams: Array<number> }) {
         <td>{data.PPG}</td>
         <td>{data.cyclesPG}</td>
         <td>{data.weightedCyclesPG}</td>
-        {/* <td>{data.scoringAccuracy}</td> */}
-        {/* <td>{data.coneAccuracy}</td>
-        <td>{data.cubeAccuracy}</td> */}
+        <td>{data.scoringAccuracy}</td>
+        <td>{data.autoClimbPPG}</td>
+        <td>{data.teleopClimbPPG}</td>
+        <td>{data.climbPPG}</td>
         <td>
           {"Lower: " +
             data.scoringPositions[0] +
@@ -58,9 +59,8 @@ export function CompareTeamData({ teams }: { teams: Array<number> }) {
             " Top: " +
             data.scoringPositions[2]}
         </td>
-        <td>{data.autoClimbPPG}</td>
-        <td>{data.teleopClimbPPG}</td>
-        <td>{data.climbPPG}</td>
+        <td>{data.coneAccuracy}</td>
+        <td>{data.cubeAccuracy}</td>
         <td>{data.linkPG}</td>
       </tr>
     ))
@@ -109,9 +109,9 @@ export function AggregateRow({ data }: { data: teamAggData }) {
       <td>{data.PPG.toFixed(2)}</td>
       <td>{data.cyclesPG.toFixed(2)}</td>
       <td>{data.weightedCyclesPG.toFixed(2)}</td>
-      {/* <td>{data.scoringAccuracy.toFixed(2)}</td>
+      <td>{data.scoringAccuracy.toFixed(2)}</td>
       <td>{data.coneAccuracy.toFixed(2)}</td>
-      <td>{data.cubeAccuracy.toFixed(2)}</td> */}
+      <td>{data.cubeAccuracy.toFixed(2)}</td>
       <td>
         {"Lower: " +
           data.scoringPositions[0] +

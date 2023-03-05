@@ -32,6 +32,28 @@ export async function getTeamScoreLocation(team: number, row: number, teleop: bo
     }
 }
 
+export async function getMaxPiecesScored(team: number, tx:any){
+    const matches = await getMatchList(team)
+    let max = 0
+    for (let match in matches){
+        let temp = 0
+        const not17 = await tx.run(
+            'MATCH (t:Team {name: $name})-[]->(m:Cycle) - [:SCORED] -> (q:ScoringPosition) WHERE q.name <> 17 RETURN count(m)',
+            { name: team},
+        )
+        temp += not17.records[0].get(0).low
+        const yes17 = await tx.run(
+            'MATCH (t:Team {name: $name})-[]->(m:Cycle) - [:SCORED] -> (q:ScoringPosition) WHERE q.name = 17 RETURN count(DISTINCT m.match)',
+            { name: team},
+        )
+        temp += yes17.records[0].get(0).low
+        if (temp > max){
+            max = temp
+        }
+    }
+    return max
+}
+
 // get where team picked up pieces in all matches
 export async function getPiecesScoredAllMatches(team: number, piece: string, tx: any) {
     //cones picked up
@@ -51,6 +73,7 @@ export async function getPiecesScoredAllMatches(team: number, piece: string, tx:
     )
 
     ret += yes17.records[0].get(0).low
+    console.log(not17)
 
     return ret
 }
@@ -284,6 +307,7 @@ export async function getTeam({team}: {team: number}) {
     let autoClimb: Array<number>
     let teleopClimb: Array<number>
     let links: number = 0
+    let maxPiecesScored: number = 0
 
     try {
         const tx = session.beginTransaction()
@@ -322,6 +346,9 @@ export async function getTeam({team}: {team: number}) {
         matchesPlayed = await getMatchesPlayed(team, tx)
         links = await getLinks(team, tx)
 
+        maxPiecesScored = await getMaxPiecesScored(team, tx)
+        console.log(maxPiecesScored)
+
         await tx.close()
         await session.close()
 
@@ -336,6 +363,8 @@ export async function getTeam({team}: {team: number}) {
         PPG: points / matchesPlayed,
         cyclesPG: ncycles / matchesPlayed,
         weightedCyclesPG: nWcycles / matchesPlayed,
+        avgPiecesScored: (conesScored + cubesScored) / matchesPlayed,
+        maxPiecesScored: maxPiecesScored,
         scoringAccuracy: (conesScored + cubesScored) / (conesPickedUp + cubesPickedUp),
         coneAccuracy: conesScored / conesPickedUp,
         cubeAccuracy: cubesScored / cubesPickedUp,
@@ -400,6 +429,7 @@ export async function getTeamStandardizedScores(team:number) {
     }
     return ret
 }
+
 //takes the team and match numbers as paramters, returns object  in the following format
 /*
     team: team,
@@ -572,7 +602,7 @@ export async function getAmountCube({ team }: { team: number }) {
         console.error(error)
     }
   }
-  
+ 
 export async function getMatchByValueAndRelatoinship(amount: number, relationship: String, team: number) {
     const session = getNeoSession()
     const tx = session.beginTransaction()

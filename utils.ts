@@ -45,6 +45,8 @@ export interface teamAggData {
     teleopClimbPPG: number,
     climbPPG: number,
     linkPG: number,
+    avgPiecesScored: number,
+    maxPiecesScored: number
     // powerRating: number
 }
 
@@ -63,6 +65,8 @@ export const defaultTeam : teamAggData ={
     teleopClimbPPG: 0,
     climbPPG: 0,
     linkPG: 0,
+    avgPiecesScored: 0,
+    maxPiecesScored: 0
     // powerRating: 0
 }
 

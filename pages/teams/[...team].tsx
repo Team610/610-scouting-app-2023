@@ -9,7 +9,7 @@ import { teamAggData } from "../../utils";
 import { AggregateRow } from "../compareTeams";
 import { Table } from "@mantine/core";
 
-export default function Home(this: any) {
+export default function Home() {
   const [matches, setMatches] = useState<number[]>();
   const [agg, setAgg] = useState<teamAggData>();
   const router = useRouter();
@@ -48,9 +48,9 @@ export default function Home(this: any) {
           <th>PPG</th>
           <th>Cycles PG</th>
           <th>Weighted Cycles PG</th>
-          {/* <th>Scoring Accuracy</th>
+          <th>Scoring Accuracy</th>
           <th>Cone Accuracy</th>
-          <th>Cube Accuracy</th> */}
+          <th>Cube Accuracy</th>
           <th>Scoring Positions</th>
           <th>Auto Climb PPG</th>
           <th>Teleop Climb PPG</th>

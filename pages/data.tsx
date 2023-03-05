@@ -41,7 +41,7 @@ export function DisplayTeamData({ data }: { data: teamAggData[] }) {
   );
 }
 
-export default function singleTeamData() {
+export function singleTeamData() {
   const [teamNo, setTeamNo] = useState(0);
   const [data, setData] = useState<teamAggData[]>([defaultTeam]);
   useEffect(() => {
@@ -75,7 +75,7 @@ export default function singleTeamData() {
   );
 }
 
-function allTeamData() {
+export default function allTeamData() {
   const [data, setData] = useState<teamAggData[]>([defaultTeam]);
   useEffect(() => {
     async function getData(){

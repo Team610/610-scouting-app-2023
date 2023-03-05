@@ -1,4 +1,9 @@
-import { getAllTeamData, getCompTeams, getMatch, getTeam} from "../neo4j/Aggregate";
+import {
+  getAllTeamData,
+  getCompTeams,
+  getMatch,
+  getTeam,
+} from "../neo4j/Aggregate";
 import { createNTeams, addDummyData } from "../neo4j/AddData";
 import { query, wipe } from "../neo4j/Miscellaneous";
 import { Button, Table, TextInput } from "@mantine/core";
@@ -6,10 +11,9 @@ import sampleMatch from "../data/sampleMatch.json";
 import { Input } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { defaultTeam, teamAggData } from "../utils";
-import {CSVLink, CSVDownload} from 'react-csv';
+import { CSVLink, CSVDownload } from "react-csv";
 
 export function DisplayTeamData({ data }: { data: teamAggData[] }) {
-
   const ths = (
     <tr>
       <th>Team</th>
@@ -29,29 +33,40 @@ export function DisplayTeamData({ data }: { data: teamAggData[] }) {
     </tr>
   );
 
-  const rows = data ? data.map((d : teamAggData) => <AggregateRow data={d} />) : <></>;
+  const rows = data ? (
+    data.map((d: teamAggData) => <AggregateRow data={d} />)
+  ) : (
+    <></>
+  );
+  console.log(data);
 
   return (
     <>
-      <Table>
-        <thead>{ths}</thead>
-        <tbody>{rows}</tbody>
-      </Table>
+      {data ? (
+        <Table>
+          <thead>{ths}</thead>
+          <tbody>{rows}</tbody>
+        </Table>
+      ) : (
+        "Loading"
+      )}
     </>
   );
 }
 
-export function singleTeamData() {
-  const [teamNo, setTeamNo] = useState(0);
-  const [data, setData] = useState<teamAggData[]>([defaultTeam]);
+export function SingleTeamData({ team }: { team: number }) {
+  const [teamNo, setTeamNo] = useState(team);
+  const [data, setData] = useState<teamAggData[]>();
   useEffect(() => {
     async function getData() {
-      if (teamNo != 0) {
+      if (teamNo !== 0) {
         setData([await getTeam({ team: teamNo })]);
       }
     }
     getData();
   }, [teamNo]);
+
+  console.log(data)
 
   return (
     <div>
@@ -63,32 +78,43 @@ export function singleTeamData() {
       </Button> */}
       {/* <Button onClick={async () => await wipe()}>Wipe</Button> */}
 
-      <TextInput
-        placeholder="610"
-        label="Team Number"
-        withAsterisk
-        onChange={(e) => setTeamNo(e.currentTarget.value == "" ? 0 : parseInt(e.currentTarget.value))}
-      ></TextInput>
-
-      <DisplayTeamData data={data} />
+      {team === 0 ? (
+        <TextInput
+          placeholder="610"
+          label="Team Number"
+          withAsterisk
+          onChange={(e) =>
+            {setTeamNo(
+              e.currentTarget.value == "" ? 0 : parseInt(e.currentTarget.value)
+            )
+            setData(undefined)
+          }}
+        ></TextInput>
+      ) : null}
+      {data !== undefined ? <DisplayTeamData data={data} /> : teamNo === 0 ? "Enter a team" : "Loading"}
     </div>
   );
 }
 
 export default function allTeamData() {
-  const [data, setData] = useState<teamAggData[]>([defaultTeam]);
+  const [data, setData] = useState<teamAggData[]>();
   useEffect(() => {
-    async function getData(){
-      setData(await getAllTeamData())
+    async function getData() {
+      setData(await getAllTeamData());
     }
-    getData()
-  }, [])
+    getData();
+  }, []);
   return (
     <div>
-      <DisplayTeamData data={data} />
-      <CSVLink data={data} >Download CSV</CSVLink>
+      All Teams
+      {data ? (
+        <div>
+          <DisplayTeamData data={data} />
+          <CSVLink data={data}>Download CSV</CSVLink>
+        </div>
+      ) : null}
     </div>
-  )
+  );
 }
 export function AggregateRow({ data }: { data: teamAggData }) {
   return (

@@ -8,6 +8,7 @@ import { getTeams } from "../../neo4j/GetData";
 import { teamAggData } from "../../utils";
 import { AggregateRow } from "../compareTeams";
 import { Table } from "@mantine/core";
+import { SingleTeamData } from "../data";
 
 export default function Home() {
   const [matches, setMatches] = useState<number[]>();
@@ -29,39 +30,7 @@ export default function Home() {
   return (
     <div>
       <h1>Team {teamNumber}</h1>
-      {/* <div style={{ border: "1px solid grey" }}>Team {teamNumber}</div> */}
-      {/* <div style={{ border: "1px solid grey" }}>Matches: </div> */}
-      {/* <div style={{ display: "flex", flexDirection: "column" }}> */}
-      {/* {matches?.map((match) => {
-          return (
-            <div>
-              <Link href={`${router.asPath}/${match}`}>{match}</Link>
-            </div>
-          );
-        })} */}
-      <Table>
-        <thead>
-        <tr>
-          <th>Team</th>
-          <th>Matches Played</th>
-          <th>Auto PPG</th>
-          <th>PPG</th>
-          <th>Cycles PG</th>
-          <th>Weighted Cycles PG</th>
-          <th>Scoring Accuracy</th>
-          <th>Cone Accuracy</th>
-          <th>Cube Accuracy</th>
-          <th>Scoring Positions</th>
-          <th>Auto Climb PPG</th>
-          <th>Teleop Climb PPG</th>
-          <th>Climb PPG</th>
-          <th>Link PG</th>
-        </tr>
-        </thead>
-        <tbody>
-          {agg ? <AggregateRow data={agg!} /> : null}
-        </tbody>
-      </Table>
+      <SingleTeamData team={parseInt(teamNumber)} />
     </div>
   );
 }

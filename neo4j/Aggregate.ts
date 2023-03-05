@@ -38,13 +38,13 @@ export async function getMaxPiecesScored(team: number, tx:any){
     for (let match in matches){
         let temp = 0
         const not17 = await tx.run(
-            'MATCH (t:Team {name: $name})-[]->(m:Cycle) - [:SCORED] -> (q:ScoringPosition) WHERE q.name <> 17 RETURN count(m)',
-            { name: team},
+            'MATCH (t:Team {name: $name})-[{match: $match}]->(m:Cycle) - [:SCORED] -> (q:ScoringPosition) WHERE q.name <> 17 RETURN count(m)',
+            { name: team, match: match},
         )
         temp += not17.records[0].get(0).low
         const yes17 = await tx.run(
-            'MATCH (t:Team {name: $name})-[]->(m:Cycle) - [:SCORED] -> (q:ScoringPosition) WHERE q.name = 17 RETURN count(DISTINCT m.match)',
-            { name: team},
+            'MATCH (t:Team {name: $name})-[{match: $match}]->(m:Cycle) - [:SCORED] -> (q:ScoringPosition) WHERE q.name = 17 RETURN count(DISTINCT m.match)',
+            { name: team, match: match},
         )
         temp += yes17.records[0].get(0).low
         if (temp > max){
@@ -73,7 +73,6 @@ export async function getPiecesScoredAllMatches(team: number, piece: string, tx:
     )
 
     ret += yes17.records[0].get(0).low
-    console.log(not17)
 
     return ret
 }
@@ -312,28 +311,36 @@ export async function getTeam({team}: {team: number}) {
     try {
         const tx = session.beginTransaction()
 
+        let a0 = await getTeamScoreLocation(team, 1, false, tx)
+        let a1 = await getTeamScoreLocation(team, 2, false, tx)
+        let a2 = await getTeamScoreLocation(team, 3, false, tx)
+
         //auto points
-        autoPoints += 3 * await getTeamScoreLocation(team, 1, false, tx)
-        autoPoints += 4 * await getTeamScoreLocation(team, 2, false, tx)
-        autoPoints += 6 * await getTeamScoreLocation(team, 3, false, tx)
+        autoPoints += 3 * a0
+        autoPoints += 4 * a1
+        autoPoints += 6 * a2
 
         autoClimb = await getClimbAllMatches(team, false, tx)
         autoClimbPoints = 3 * autoClimb[0] + 8 * autoClimb[1] + 12 * autoClimb[2]
         autoPoints += autoClimbPoints
 
+        let t0 = await getTeamScoreLocation(team, 1, true, tx)
+        let t1 = await getTeamScoreLocation(team, 2, true, tx)
+        let t2 = await getTeamScoreLocation(team, 3, true, tx)
+
         points = autoPoints
-        points += 2 * await getTeamScoreLocation(team, 1, true, tx)
-        points += 3 * await getTeamScoreLocation(team, 2, true, tx)
-        points += 5 * await getTeamScoreLocation(team, 3, true, tx)
+        points += 2 * t0
+        points += 3 * t1
+        points += 5 * t2
         teleopClimb = await getClimbAllMatches(team, true, tx)
         teleopClimbPoints = 2 * teleopClimb[0] + 6 * teleopClimb[1] + 10 * teleopClimb[2]
         points += teleopClimbPoints
 
         points += 5 * await getnumberOfLinks(team, tx);
 
-        scoringPositions[0] = await getTeamScoreLocation(team, 1, false, tx) + await getTeamScoreLocation(team, 1, false, tx)
-        scoringPositions[1] = await getTeamScoreLocation(team, 2, false, tx) + await getTeamScoreLocation(team, 2, false, tx)
-        scoringPositions[2] = await getTeamScoreLocation(team, 3, false, tx) + await getTeamScoreLocation(team, 3, false, tx)
+        scoringPositions[0] = a0 + t0
+        scoringPositions[1] = a1 + t1
+        scoringPositions[2] = a2 + t2
 
         conesPickedUp = await getPiecesPickedUpAllMatches(team, "cone", tx)
         cubesPickedUp = await getPiecesPickedUpAllMatches(team, "cube", tx)
@@ -346,8 +353,9 @@ export async function getTeam({team}: {team: number}) {
         matchesPlayed = await getMatchesPlayed(team, tx)
         links = await getLinks(team, tx)
 
-        maxPiecesScored = await getMaxPiecesScored(team, tx)
-        console.log(maxPiecesScored)
+        console.log(team)
+
+        // maxPiecesScored = await getMaxPiecesScored(team, tx)
 
         await tx.close()
         await session.close()
@@ -594,7 +602,6 @@ export async function getAmountCube({ team }: { team: number }) {
             'MATCH (t:Team {name: $name})-[:CUBE]->(c:Cycle) RETURN count(*)',
             { name: team },
         )
-        console.log(result.records[0].get(0).low)
 
         await tx.commit()
 
@@ -632,11 +639,11 @@ export async function getMatchList(team : number){
         )
         console.log(result.records.map((record: any) => record._fields[0].low))
         let ret:Array<number> = result.records.map((record: any) => record._fields[0].low)
+        await tx.commit()
         return ret
     }catch(error){
         console.error(error)
     }
-    await tx.commit()
 }
 export async function getAllTeamNumbers() {
     const session = getNeoSession()

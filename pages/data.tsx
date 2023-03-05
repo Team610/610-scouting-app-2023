@@ -6,6 +6,7 @@ import sampleMatch from "../data/sampleMatch.json";
 import { Input } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { defaultTeam, teamAggData } from "../utils";
+import {CSVLink, CSVDownload} from 'react-csv';
 
 export function DisplayTeamData({ data }: { data: teamAggData[] }) {
 
@@ -40,7 +41,7 @@ export function DisplayTeamData({ data }: { data: teamAggData[] }) {
   );
 }
 
-function singleTeamData() {
+export default function singleTeamData() {
   const [teamNo, setTeamNo] = useState(0);
   const [data, setData] = useState<teamAggData[]>([defaultTeam]);
   useEffect(() => {
@@ -54,12 +55,12 @@ function singleTeamData() {
 
   return (
     <div>
-      <Button onClick={async () => await createNTeams(20)}>
+      {/* <Button onClick={async () => await createNTeams(20)}>
         Create dummy teams
       </Button>
       <Button onClick={async () => await addDummyData({ data: sampleMatch })}>
         Add dummy data
-      </Button>
+      </Button> */}
       {/* <Button onClick={async () => await wipe()}>Wipe</Button> */}
 
       <TextInput
@@ -74,7 +75,7 @@ function singleTeamData() {
   );
 }
 
-export default function allTeamData() {
+function allTeamData() {
   const [data, setData] = useState<teamAggData[]>([defaultTeam]);
   useEffect(() => {
     async function getData(){
@@ -85,6 +86,7 @@ export default function allTeamData() {
   return (
     <div>
       <DisplayTeamData data={data} />
+      <CSVLink data={data} >Download CSV</CSVLink>
     </div>
   )
 }

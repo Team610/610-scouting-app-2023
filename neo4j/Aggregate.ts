@@ -6,11 +6,27 @@ import { defaultTeam, teamAggData, arrayAverage, standardDeviation } from "../ut
 // returns how many game pieces the robot scored in that row: 1 is bottom, 3 is top
 export async function getTeamScoreLocation(team: number, row: number, teleop: boolean, tx: any) {
     try {
-        const result = await tx.run(
-            'MATCH (t:Team {name: $name})--(c:Cycle)-[]->(s:ScoringPosition) WHERE s.name/9 = $row AND c.teleop = $teleTrue RETURN count(*)',
-            { name: team, row: row - 1, teleTrue: teleop },
-        )
-        return result.records[0].get(0).low
+        if(row != 2){
+            const result = await tx.run(
+                'MATCH (t:Team {name: $name})--(c:Cycle)-[]->(s:ScoringPosition) WHERE s.name/9 = $row AND c.teleop = $teleTrue RETURN count(*)',
+                { name: team, row: row - 1, teleTrue: teleop },
+            )
+            return result.records[0].get(0).low
+        }else{
+            let ret = 0
+            const not17 = await tx.run(
+                'MATCH (t:Team {name: $name})--(c:Cycle)-[]->(s:ScoringPosition) WHERE s.name/9 = $row AND c.teleop = $teleTrue AND s.name <> 17 RETURN count(*)',
+                { name: team, row: row - 1, teleTrue: teleop },
+            )
+            ret += not17.records[0].get(0).low
+            const yes17 = await tx.run(
+                'MATCH (t:Team {name: $name})--(c:Cycle)-[]->(s:ScoringPosition) WHERE s.name/9 = $row AND c.teleop = $teleTrue RETURN count(DISTINCT c.match)',
+                { name: team, row: row - 1, teleTrue: teleop },
+            )
+            ret += yes17.records[0].get(0).low
+
+            return ret
+        }
     } catch (error) {
         console.error(error)
     }
@@ -19,22 +35,44 @@ export async function getTeamScoreLocation(team: number, row: number, teleop: bo
 // get where team picked up pieces in all matches
 export async function getPiecesScoredAllMatches(team: number, piece: string, tx: any) {
     //cones picked up
-    const result = await tx.run(
-        'MATCH (t:Team {name: $name})-[:' + piece + ']->() - [:SCORED] -> () RETURN count(*)',
+    
+    let ret = 0
+
+    const not17 = await tx.run(
+        'MATCH (t:Team {name: $name})-[r:' + piece + ']->(m:Cycle) - [:SCORED] -> (q:ScoringPosition) WHERE q.name <> 17 RETURN count(m)',
         { name: team, piece: piece },
     )
-    return result.records[0].get(0).low;
+
+    ret += not17.records[0].get(0).low
+
+    const yes17 = await tx.run(
+        'MATCH (t:Team {name: $name})-[r:' + piece + ']->(m:Cycle) - [:SCORED] -> (q:ScoringPosition) WHERE q.name = 17 RETURN count(DISTINCT m.match)',
+        { name: team, piece: piece },
+    )
+
+    ret += yes17.records[0].get(0).low
+
+    return ret
 }
 
 
 // get where team picked up pieces in a match, given what piece
-export async function getPiecesScored(team: number, match:String, piece: string, tx:any){
+export async function getPiecesScored(team: number, match: String, piece: string, tx: any){
     //cones picked up
-    const result = await tx.run(
-        'MATCH (t:Team {name: $name})-[:' + piece + '{match: toString($match)}]->(c:Cycle) - [:SCORED] -> () RETURN count(*)',
+    let ret = 0
+    const not17 = await tx.run(
+        'MATCH (t:Team {name: $name})-[:' + piece + '{match: toString($match)}]->(c:Cycle) - [:SCORED] -> (q:ScoringPosition) WHERE q.name <> 17 RETURN count(*)',
         { name: team, match: match, piece: piece},
     )
-    return result.records[0].get(0).low;
+    ret += not17.records[0].get(0).low;
+
+    const yes17 = await tx.run(
+        'MATCH (t:Team {name: $name})-[:' + piece + '{match: toString($match)}]->(c:Cycle) - [:SCORED] -> (q:ScoringPosition) WHERE q.name === 17 RETURN count(DISTINCT c.match)',
+        { name: team, match: match, piece: piece},
+    )
+    ret += yes17.records[0].get(0).low;
+
+    return ret
 }
 
 
@@ -149,11 +187,27 @@ export async function getLinks(team: number, tx: any) {
 // returns how many game pieces the robot scored in that row IN A MATCH: 1 is bottom, 3 is top
 export async function getTeamMatchScoreLocation(team : number, row : number, match: String, teleop: boolean, tx:any){
     try{
-        const result = await tx.run(
-            'MATCH (t:Team {name: $name})--(c:Cycle)-[{match: toString($match)}]->(s:ScoringPosition) WHERE s.name/9 = $row AND c.teleop = $teleTrue RETURN count(*)',
-                {name: team, row: row - 1, teleTrue: teleop, match: match}
-        )
-        return result.records[0].get(0).low
+        if(row != 2){
+            const result = await tx.run(
+                'MATCH (t:Team {name: $name})--(c:Cycle)-[match:toString($match)]->(s:ScoringPosition) WHERE s.name/9 = $row AND c.teleop = $teleTrue RETURN count(*)',
+                { name: team, row: row - 1, teleTrue: teleop, match: match },
+            )
+            return result.records[0].get(0).low
+        }else{
+            let ret = 0
+            const not17 = await tx.run(
+                'MATCH (t:Team {name: $name})--(c:Cycle)-[match:toString($match)]->(s:ScoringPosition) WHERE s.name/9 = $row AND c.teleop = $teleTrue AND s.name <> 17 RETURN count(*)',
+                { name: team, row: row - 1, teleTrue: teleop, match: match },
+            )
+            ret += not17.records[0].get(0).low
+            const yes17 = await tx.run(
+                'MATCH (t:Team {name: $name})--(c:Cycle)-[match:toString($match)]->(s:ScoringPosition) WHERE s.name/9 = $row AND c.teleop = $teleTrue RETURN count(DISTINCT c.match)',
+                { name: team, row: row - 1, teleTrue: teleop, match: match },
+            )
+            ret += yes17.records[0].get(0).low
+
+            return ret
+        }
     } catch (error) {
         console.error(error)
     }
@@ -295,7 +349,7 @@ export async function getTeam({team}: {team: number}) {
         // + 5 * (points / matchesPlayed)
     }
 
-    // console.log(teamdata)
+    console.log(teamdata)
 
     return teamdata.matchesPlayed > 0 ? teamdata : defaultTeam
 }
@@ -581,7 +635,6 @@ export async function getAllTeamNumbers() {
 export async function getAllTeamData(){
     let ret : teamAggData[] = []
     const teamlist = await getAllTeamNumbers()
-    console.log(teamlist)
     for(let i = 0; i < teamlist.length; i++){
         ret.push(await getTeam({team: teamlist[i]}))
     }

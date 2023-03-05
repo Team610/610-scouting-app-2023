@@ -30,6 +30,8 @@ export function DisplayTeamData({ data }: { data: teamAggData[] }) {
       <th>Teleop Climb PPG</th>
       <th>Climb PPG</th>
       <th>Link PG</th>
+      <th>Auto Pieces PG</th>
+      <th>Teleop Pieces PG</th>
     </tr>
   );
 
@@ -140,6 +142,8 @@ export function AggregateRow({ data }: { data: teamAggData }) {
       <td>{data.teleopClimbPPG.toFixed(2)}</td>
       <td>{data.climbPPG.toFixed(2)}</td>
       <td>{data.linkPG.toFixed(2)}</td>
+      <td>{data.autoPiecesPG.toFixed(2)}</td>
+      <td>{data.teleopPiecesPG.toFixed(2)}</td>
     </tr>
   );
 }

@@ -55,21 +55,19 @@ export async function getMaxPiecesScored(team: number, tx:any){
 }
 
 // get where team picked up pieces in all matches
-export async function getPiecesScoredAllMatches(team: number, piece: string, tx: any) {
-    //cones picked up
-    
+export async function getPiecesScoredAllMatches(team: number, piece: string, teleop:boolean, tx: any) {
     let ret = 0
 
     const not17 = await tx.run(
-        'MATCH (t:Team {name: $name})-[r:' + piece + ']->(m:Cycle) - [:SCORED] -> (q:ScoringPosition) WHERE q.name <> 17 RETURN count(m)',
-        { name: team, piece: piece },
+        'MATCH (t:Team {name: $name})-[r:' + piece + ']->(m:Cycle) - [:SCORED{teleop: $teleop}] -> (q:ScoringPosition) WHERE q.name <> 17 RETURN count(m)',
+        { name: team, piece: piece, teleop:teleop },
     )
 
     ret += not17.records[0].get(0).low
 
     const yes17 = await tx.run(
-        'MATCH (t:Team {name: $name})-[r:' + piece + ']->(m:Cycle) - [:SCORED] -> (q:ScoringPosition) WHERE q.name = 17 RETURN count(DISTINCT m.match)',
-        { name: team, piece: piece },
+        'MATCH (t:Team {name: $name})-[r:' + piece + ']->(m:Cycle) - [:SCORED{teleop: $teleop}] -> (q:ScoringPosition) WHERE q.name = 17 RETURN count(DISTINCT m.match)',
+        { name: team, piece: piece, teleop:teleop },
     )
 
     ret += yes17.records[0].get(0).low
@@ -296,6 +294,10 @@ export async function getTeam({team}: {team: number}) {
     let matchesPlayed: number = 0
     let conesPickedUp: number = 0
     let cubesPickedUp: number = 0
+    let autoConesScored: number = 0
+    let autoCubesScored: number = 0
+    let teleopConesScored: number = 0
+    let teleopCubesScored: number = 0
     let conesScored: number = 0
     let cubesScored: number = 0
     let ncycles: number = 0
@@ -345,8 +347,14 @@ export async function getTeam({team}: {team: number}) {
         conesPickedUp = await getPiecesPickedUpAllMatches(team, "cone", tx)
         cubesPickedUp = await getPiecesPickedUpAllMatches(team, "cube", tx)
 
-        conesScored = await getPiecesScoredAllMatches(team, 'cone', tx)
-        cubesScored = await getPiecesScoredAllMatches(team, 'cube', tx)
+        autoConesScored = await getPiecesScoredAllMatches(team, 'cone', false, tx)
+        autoCubesScored = await getPiecesScoredAllMatches(team, 'cube', false, tx)
+
+        teleopConesScored = await getPiecesScoredAllMatches(team, 'cone', true, tx)
+        teleopCubesScored = await getPiecesScoredAllMatches(team, 'cube', true, tx)
+
+        cubesScored = teleopCubesScored + autoCubesScored
+        conesScored = teleopConesScored + autoConesScored
 
         ncycles = await getNumberCyclesAllMatches(team, tx)
         nWcycles = await getWeightedCyclesAllMatches(team, tx)
@@ -363,6 +371,8 @@ export async function getTeam({team}: {team: number}) {
     } catch (error) {
         console.error(error)
     }
+
+    // console.log(autoConesScored + " " + autoCubesScored + " " + teleopConesScored + " " + teleopCubesScored)
 
     let teamdata: teamAggData = {
         team: team,
@@ -381,6 +391,9 @@ export async function getTeam({team}: {team: number}) {
         teleopClimbPPG: teleopClimbPoints / matchesPlayed,
         climbPPG: (autoClimbPoints + teleopClimbPoints) / matchesPlayed,
         linkPG: links / matchesPlayed,
+        autoPiecesPG: (autoConesScored + autoCubesScored) / matchesPlayed,
+        teleopPiecesPG: (teleopConesScored + teleopCubesScored) / matchesPlayed
+
         // power rating = 4 * wCPG + 3 * accu + 2 * linkPG + 5 * PPG
         // powerRating: 4 * (nWcycles / matchesPlayed) + 3 * (conesScored + cubesScored) / (conesPickedUp + cubesPickedUp) + 2 * (links / matchesPlayed)
         // + 5 * (points / matchesPlayed)

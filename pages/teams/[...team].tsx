@@ -30,7 +30,8 @@ export default function Home() {
   return (
     <div>
       <h1>Team {teamNumber}</h1>
-      <SingleTeamData team={parseInt(teamNumber)} />
+      {/* <SingleTeamData team={parseInt(teamNumber)} /> */}
+      Go to /single for stats
     </div>
   );
 }

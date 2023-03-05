@@ -57,16 +57,15 @@ export function DisplayTeamData({ data }: { data: teamAggData[] }) {
 export function SingleTeamData({ team }: { team: number }) {
   const [teamNo, setTeamNo] = useState(team);
   const [data, setData] = useState<teamAggData[]>();
-  useEffect(() => {
-    async function getData() {
-      if (teamNo !== 0) {
-        setData([await getTeam({ team: teamNo })]);
-      }
-    }
-    getData();
-  }, [teamNo]);
-
-  console.log(data)
+  const [searching, setSearching] = useState(false);
+  // useEffect(() => {
+  //   async function getData() {
+  //     if (teamNo !== 0) {
+  //       setData([await getTeam({ team: teamNo })]);
+  //     }
+  //   }
+  //   getData();
+  // }, []);
 
   return (
     <div>
@@ -79,19 +78,34 @@ export function SingleTeamData({ team }: { team: number }) {
       {/* <Button onClick={async () => await wipe()}>Wipe</Button> */}
 
       {team === 0 ? (
-        <TextInput
-          placeholder="610"
-          label="Team Number"
-          withAsterisk
-          onChange={(e) =>
-            {setTeamNo(
-              e.currentTarget.value == "" ? 0 : parseInt(e.currentTarget.value)
-            )
-            setData(undefined)
-          }}
-        ></TextInput>
+        <div>
+          <TextInput
+            placeholder="610"
+            label="Team Number"
+            withAsterisk
+            onChange={(e) => {
+              setTeamNo(
+                e.currentTarget.value == ""
+                  ? 0
+                  : parseInt(e.currentTarget.value)
+              );
+              setData(undefined);
+              setSearching(false);
+            }}
+          ></TextInput>
+          <Button
+            onClick={async () => {
+              setData([await getTeam({ team: teamNo })]);
+              setSearching(true);
+            }}
+          >
+            Run Query
+          </Button>
+        </div>
       ) : null}
-      {data !== undefined ? <DisplayTeamData data={data} /> : teamNo === 0 ? "Enter a team" : "Loading"}
+      {data !== undefined ? (
+        <DisplayTeamData data={data} />
+      ) : null}
     </div>
   );
 }

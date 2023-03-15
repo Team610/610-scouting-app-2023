@@ -340,9 +340,9 @@ export async function getTeam({team}: {team: number}) {
 
         points += 5 * await getnumberOfLinks(team, tx);
 
-        scoringPositions[0] = a0 + t0
-        scoringPositions[1] = a1 + t1
-        scoringPositions[2] = a2 + t2
+        scoringPositions[0] = (a0 + t0) / matchesPlayed
+        scoringPositions[1] = (a1 + t1) / matchesPlayed
+        scoringPositions[2] = (a2 + t2) / matchesPlayed
 
         conesPickedUp = await getPiecesPickedUpAllMatches(team, "cone", tx)
         cubesPickedUp = await getPiecesPickedUpAllMatches(team, "cube", tx)
@@ -680,6 +680,54 @@ export async function getAllTeamNumbers() {
         console.error(error)
     }
     return toReturn
+}
+
+// team: team,
+//         matchesPlayed: matchesPlayed,
+//         autoPPG: autoPoints / matchesPlayed,
+//         PPG: points / matchesPlayed,
+//         cyclesPG: ncycles / matchesPlayed,
+//         weightedCyclesPG: nWcycles / matchesPlayed,
+//         avgPiecesScored: (conesScored + cubesScored) / matchesPlayed,
+//         maxPiecesScored: maxPiecesScored,
+//         scoringAccuracy: (conesScored + cubesScored) / (conesPickedUp + cubesPickedUp),
+//         coneAccuracy: conesScored / conesPickedUp,
+//         cubeAccuracy: cubesScored / cubesPickedUp,
+//         scoringPositions: scoringPositions,
+//         autoClimbPPG: autoClimbPoints / matchesPlayed,
+//         teleopClimbPPG: teleopClimbPoints / matchesPlayed,
+//         climbPPG: (autoClimbPoints + teleopClimbPoints) / matchesPlayed,
+//         linkPG: links / matchesPlayed,
+//         autoPiecesPG: (autoConesScored + autoCubesScored) / matchesPlayed,
+//         teleopPiecesPG: (teleopConesScored + teleopCubesScored) / matchesPlayed
+
+export async function agg_node({team_agg_data}: {team_agg_data : teamAggData}){
+    const session = getNeoSession() 
+    try{
+        const tx = session.beginTransaction()
+        let qs = "MERGE (ta:TeamAgg{name:toInteger(" + team_agg_data["team"] + ")})\nWITH ta\nMATCH (t:Team{name: toInteger(" + team_agg_data["team"] + ")})\n"
+        Object.keys(team_agg_data).forEach(function(key: string){
+            if(key == "matchesPlayed"){
+                qs += ("SET ta.matchesPlayed = toInteger(" + team_agg_data[key] + ")\n")
+            }else if (key == "scoringPositions"){
+                qs += ("SET ta.lowerScored = toInteger(" + team_agg_data["scoringPositions"][0] + ")\n")
+                qs += ("SET ta.middleScored = toInteger(" + team_agg_data["scoringPositions"][1] + ")\n")
+                qs += ("SET ta.upperScored = toInteger(" + team_agg_data["scoringPositions"][2] + ")\n")
+                console.log(team_agg_data["scoringPositions"])
+            }else {
+                qs += ("SET ta." + key + " = toFloat(" + (team_agg_data as any)[key] + ")\n")
+            }
+        })
+
+        console.log(qs)
+
+        await tx.run(qs)
+        await tx.commit()
+        await session.close()
+    }
+    catch(error){
+        console.log(error)
+    }
 }
 
 export async function getAllTeamData(){

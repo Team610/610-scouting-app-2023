@@ -7,12 +7,12 @@ import { getNeoSession } from "./Session";
 export interface clientCycle {
     x: number,
     y: number,
+    substation: string,
     auto: boolean,
-    grid: number,
     level: number,
     cone: boolean,
     link: boolean,
-    position: number
+    dropped: boolean
 }
 
 export async function submitMatch(match: matchData){

@@ -3,7 +3,7 @@ import { Anybody } from "@next/font/google";
 import Link from "next/link";
 import router, { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { getMatch, getMatchList, getTeam } from "../../neo4j/Aggregate";
+import { getMatch, getMatchList, calculateTeamAgg } from "../../neo4j/Aggregate";
 import { getTeams } from "../../neo4j/GetData";
 import { teamAggData } from "../../utils";
 import { AggregateRow } from "../compareTeams";
@@ -19,7 +19,7 @@ export default function Home() {
   useEffect(() => {
     async function getData() {
       let data = await getMatchList(parseInt(teamNumber));
-      let teamAgg = await getTeam({ team: parseInt(teamNumber) });
+      let teamAgg = await calculateTeamAgg({ team: parseInt(teamNumber) });
       setMatches(data);
       setAgg(teamAgg);
     }

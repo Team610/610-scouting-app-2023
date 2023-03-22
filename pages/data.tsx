@@ -2,7 +2,7 @@ import {
   getAllTeamData,
   getCompTeams,
   getMatch,
-  getTeam,
+  calculateTeamAgg,
 } from "../neo4j/Aggregate";
 import { createNTeams, addDummyData } from "../neo4j/AddData";
 import { query, wipe } from "../neo4j/Miscellaneous";
@@ -97,7 +97,7 @@ export function SingleTeamData({ team }: { team: number }) {
           ></TextInput>
           <Button
             onClick={async () => {
-              setData([await getTeam({ team: teamNo })]);
+              setData([await calculateTeamAgg({ team: teamNo })]);
               setSearching(true);
             }}
           >

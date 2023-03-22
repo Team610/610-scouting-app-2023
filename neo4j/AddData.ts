@@ -152,8 +152,6 @@ export async function scoreMatch(match: matchData){
 export async function score(data: matchData) {
     const session = getNeoSession()
 
-    // try
-
     //climb
 
     for (var i = 0; i < data.cycles.length; i++) {

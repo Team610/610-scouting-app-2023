@@ -286,7 +286,7 @@ export async function getClimbAllMatches(team: number, teleop: boolean, tx: any)
     teleopClimbPPG: teleopClimb,
     autoClimbPPG: autoClimb,
  */
-export async function getTeam({team}: {team: number}) {
+export async function calculateTeamAgg({team}: {team: number}) {
     const session = getNeoSession()
 
     let autoPoints: number = 0
@@ -399,9 +399,11 @@ export async function getTeam({team}: {team: number}) {
         // + 5 * (points / matchesPlayed)
     }
 
-    console.log(teamdata)
-
     return teamdata.matchesPlayed > 0 ? teamdata : defaultTeam
+}
+
+export async function getTeamAgg({team}: {team: number}) {
+    
 }
 
 interface teamRelativeStatistics {
@@ -425,7 +427,7 @@ export async function getTeamStandardizedScores(team:number) {
     let foundTeam:number = 0
 
     for (let index = 0; index < teams.length; index++) {
-        let thisTeam: any = await getTeam({ team: teams[index] })
+        let thisTeam: any = await calculateTeamAgg({ team: teams[index] })
     
         if(thisTeam.team == team) {
             foundTeam = index
@@ -599,7 +601,7 @@ export async function getMatch(team: number, match: String) {
 }
 
 export async function getCompTeams(teams: number[]) {
-    const teamPromises = teams.map((team) => getTeam({team:team}));
+    const teamPromises = teams.map((team) => calculateTeamAgg({team:team}));
     const teamData = await Promise.all(teamPromises);
     return teamData;
 }
@@ -682,26 +684,7 @@ export async function getAllTeamNumbers() {
     return toReturn
 }
 
-// team: team,
-//         matchesPlayed: matchesPlayed,
-//         autoPPG: autoPoints / matchesPlayed,
-//         PPG: points / matchesPlayed,
-//         cyclesPG: ncycles / matchesPlayed,
-//         weightedCyclesPG: nWcycles / matchesPlayed,
-//         avgPiecesScored: (conesScored + cubesScored) / matchesPlayed,
-//         maxPiecesScored: maxPiecesScored,
-//         scoringAccuracy: (conesScored + cubesScored) / (conesPickedUp + cubesPickedUp),
-//         coneAccuracy: conesScored / conesPickedUp,
-//         cubeAccuracy: cubesScored / cubesPickedUp,
-//         scoringPositions: scoringPositions,
-//         autoClimbPPG: autoClimbPoints / matchesPlayed,
-//         teleopClimbPPG: teleopClimbPoints / matchesPlayed,
-//         climbPPG: (autoClimbPoints + teleopClimbPoints) / matchesPlayed,
-//         linkPG: links / matchesPlayed,
-//         autoPiecesPG: (autoConesScored + autoCubesScored) / matchesPlayed,
-//         teleopPiecesPG: (teleopConesScored + teleopCubesScored) / matchesPlayed
-
-export async function agg_node({team_agg_data}: {team_agg_data : teamAggData}){
+export async function setTeamAgg({team_agg_data}: {team_agg_data : teamAggData}){
     const session = getNeoSession() 
     try{
         const tx = session.beginTransaction()
@@ -734,7 +717,7 @@ export async function getAllTeamData(){
     let ret : teamAggData[] = []
     const teamlist = await getAllTeamNumbers()
     for(let i = 0; i < teamlist.length; i++){
-        ret.push(await getTeam({team: teamlist[i]}))
+        ret.push(await calculateTeamAgg({team: teamlist[i]}))
     }
 
     return ret

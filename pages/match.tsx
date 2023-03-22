@@ -8,6 +8,7 @@ import { getNeoSession } from "../neo4j/Session";
 import { convertCycleServer } from "../lib/clientCycleToServer";
 import { useRouter } from "next/router";
 import React from "react";
+import GamePiece from "./components/CurrentGamePiece";
 
 export interface Score {
   auto: number;
@@ -18,11 +19,13 @@ export interface ChargingStation {
   auto: {
     dock: boolean;
     engage: boolean;
+    mobility: boolean;
   };
   teleop: {
     dock: boolean;
     engage: boolean;
     numPartners: number;
+    parked: boolean;
   };
 }
 
@@ -30,11 +33,13 @@ export let deafultChargingStation = {
   auto: {
     dock: false,
     engage: false,
+    mobility: false,
   },
   teleop: {
     dock: false,
     engage: false,
     numPartners: 0,
+    parked: false,
   },
 };
 
@@ -45,11 +50,9 @@ export default function MatchScreen() {
     deafultChargingStation
   );
   const [gamePiece, setGamePiece] = useState("nothing");
-  const [mobility, setMobility] = useState(false);
-  const [parked, setParked] = useState(false);
-  const router = useRouter();
   const [blueAllaince, setBlueAllaince] = useState(false);
 
+  const router = useRouter();
   const [time, setTime] = useState(18);
 
   const queryParams = router.query;
@@ -78,60 +81,71 @@ export default function MatchScreen() {
     return () => clearTimeout(timer);
   }, [time]);
 
-  function addGamePiece(x: number, y: number, cone: boolean) {
+  function addGamePiece(
+    x: number,
+    y: number,
+    cone: boolean,
+    substation: string
+  ) {
     let obj: clientCycle = {
       x: x,
       y: y,
+      substation: substation,
       cone: cone,
       auto: gameState == "auto",
-      grid: 0,
       level: 0,
-      position: 0,
       link: false,
+      dropped: false,
     };
     let temp = [...gamePieces, obj];
     setGamePieces(temp);
   }
 
-  function scoreGamePiece(
-    level: number,
-    cone: boolean,
-    grid: number,
-    position: number,
-    remove: boolean | undefined
-  ) {
+  function scoreGamePiece(level: number, cone: boolean, remove?: boolean) {
     let temp = gamePieces;
     let obj = temp[gamePieces.length - 1];
     obj.auto = gameState == "auto";
-    obj.cone = cone;
-    obj.grid = grid;
-    obj.level = level;
-    obj.position = position;
-
-    console.log(obj);
-    console.log(remove);
-
     // if we the game piece has been scored, add it to the cycles
     if (!remove) {
+      obj.cone = cone;
+      obj.level = level;
       temp[temp.length - 1] = obj;
-
       setGamePieces(temp);
       setGamePiece("nothing");
+    } else {
+      //logic to make the last element align with correct level removed from
+      for (let i = gamePieces.length - 1; i >= 0; i--) {
+        let piece = gamePieces[i];
+        if (piece.level === level) {
+          let arr = [...gamePieces];
+          arr.splice(i, 1);
+          arr.push(piece);
+          console.log(arr);
+          setGamePieces(arr);
+          //reset gamepiece, last element in array will automatically be the piece intaken and not scoredd
+          setGamePiece(piece.cone ? "cone" : "cube");
+          break;
+        }
+      }
     }
-    // only want to set game piece to nothing if it has been scored
-    else {
-      setGamePiece(gamePieces[gamePieces.length - 1].cone ? "cone" : "cube");
-    }
+    console.log(gamePieces);
   }
 
-  function updateChargeStation(docked: boolean, engaged: boolean) {
+  function updateChargeStation(
+    auto: boolean,
+    docked?: boolean,
+    engaged?: boolean,
+    other?: boolean
+  ) {
     let obj = { ...chargingStation };
-    if (gameState == "auto") {
-      obj.auto.dock = docked;
-      obj.auto.engage = engaged;
+    if (auto) {
+      if (docked !== undefined) obj.auto.dock = docked;
+      if (engaged !== undefined) obj.auto.engage = engaged;
+      if (other !== undefined) obj.auto.mobility = other;
     } else {
-      obj.teleop.dock = docked;
-      obj.teleop.engage = engaged;
+      if (docked !== undefined) obj.teleop.dock = docked;
+      if (engaged !== undefined) obj.teleop.engage = engaged;
+      if (other !== undefined) obj.teleop.parked = other;
     }
     setChargingStation(obj);
   }
@@ -142,29 +156,45 @@ export default function MatchScreen() {
     setChargingStation(obj);
   }
 
-  function linkGamePiece() {
-    gamePieces[gamePieces.length - 1].link = true;
-  }
-
   function LinkScored() {
     const [isVisible, setIsVisible] = useState(true);
-
     return (
       <div>
         {isVisible &&
           gamePiece == "nothing" &&
           gamePieces.length > 0 &&
-          !gamePieces[gamePieces.length - 1].link && (
+          !gamePieces[gamePieces.length - 1].link &&
+          !gamePieces[gamePieces.length - 1].dropped && (
             <Button
               onClick={() => {
                 setIsVisible(!isVisible);
-                linkGamePiece();
+                gamePieces[gamePieces.length - 1].link = true;
               }}
             >
               Link Scored
             </Button>
           )}
       </div>
+    );
+  }
+
+  function DroppedGamePiece() {
+    return (
+      <>
+        {gamePiece != "nothing" ? (
+          <Button
+            size="sm"
+            onClick={() => {
+              setGamePiece("nothing");
+              let temp = [...gamePieces];
+              temp[gamePieces.length - 1].dropped = true;
+              setGamePieces(temp);
+            }}
+          >
+            Dropped the {gamePiece}
+          </Button>
+        ) : null}
+      </>
     );
   }
 
@@ -176,84 +206,64 @@ export default function MatchScreen() {
         gap: "20px",
       }}
     >
-      <div style={{ display: "flex", flexDirection: "row", gap: "20px" }}>
+      <div style={{ display: "flex", flexDirection: "row" }}>
         <>
           <div style={{ display: "flex", gap: "20px" }}>
-            {!blueAllaince ? (
-              <div style={{ display: "flex" }}>
-                <ScoringGrid
-                  addGamePiece={addGamePiece}
-                  pickedupGamePiece={gamePiece}
-                  scoreGamePiece={scoreGamePiece}
-                  isBlueAlliance={blueAllaince}
-                />
-              </div>
-            ) : null}
             <div>
-              <Intake
-                gamePiece={gamePiece}
-                setGamePiece={setGamePiece}
-                addGamePiece={addGamePiece}
+              <div>
+                <Intake
+                  gamePiece={gamePiece}
+                  setGamePiece={setGamePiece}
+                  addGamePiece={addGamePiece}
+                  blueAllaince={blueAllaince}
+                />
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    padding: "20px",
+                    gap: "20px",
+                  }}
+                >
+                  <ChargeStation
+                    gameState={"auto"}
+                    setNumPartners={setNumPartners}
+                    chargeStationScore={updateChargeStation}
+                    chargeStation={chargingStation}
+                  />
+                  {gameState == "teleop" ? (
+                    <ChargeStation
+                      gameState={"teleop"}
+                      setNumPartners={setNumPartners}
+                      chargeStationScore={updateChargeStation}
+                      chargeStation={chargingStation}
+                    />
+                  ) : null}
+                </div>
+              </div>
+            </div>
+            <div style={{ margin: "10px" }}>
+              <ScoringGrid
+                pickedupGamePiece={gamePiece}
+                scoreGamePiece={scoreGamePiece}
               />
               <div
                 style={{
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
+                  gap: "10px",
                 }}
               >
-                <div
-                  style={{ display: "flex", alignItems: "center", gap: "10px" }}
-                >
-                  <p
-                    style={{
-                      fontSize: "16px",
-                      color: "white",
-                    }}
-                  >
-                    You have {gamePiece}
-                  </p>
-                  <LinkScored />
-                  {gamePiece != "nothing" ? (
-                    <Button size="md" onClick={() => setGamePiece("nothing")}>
-                      Robot dropped the {gamePiece}
-                    </Button>
-                  ) : null}
-                </div>
-                <ChargeStation
-                  gameState={gameState}
-                  setNumPartners={setNumPartners}
-                  chargeStationScore={updateChargeStation}
-                />
-                {gameState == "auto" ? (
-                  <Checkbox
-                    checked={mobility}
-                    onChange={(e) => setMobility(e.target.checked)}
-                    label="Moved off auto line"
-                    size="xl"
-                  />
-                ) : (
-                  <Checkbox
-                    checked={parked}
-                    onChange={(e) => setParked(e.target.checked)}
-                    label="Parked"
-                    size="xl"
-                  />
-                )}
+                <GamePiece gamePiece={gamePiece} />
+                <DroppedGamePiece />
+                <LinkScored />
               </div>
             </div>
           </div>
-          {blueAllaince ? (
-            <ScoringGrid
-              addGamePiece={addGamePiece}
-              pickedupGamePiece={gamePiece}
-              scoreGamePiece={scoreGamePiece}
-              isBlueAlliance={blueAllaince}
-            />
-          ) : null}
         </>
       </div>
-      {gameState == "teleop" ? (
+      {gameState == "teleop" && matchID != undefined ? (
         <Button
           onClick={async () => {
             await submitMatch({
@@ -276,9 +286,12 @@ export default function MatchScreen() {
                 : chargingStation.teleop.dock
                 ? 1
                 : 0,
-              numPartners: chargingStation.teleop.numPartners,
-              mobility: mobility,
-              park: parked,
+              numPartners:
+                chargingStation.teleop.dock || chargingStation.teleop.engage
+                  ? chargingStation.teleop.numPartners
+                  : 0,
+              mobility: chargingStation.auto.mobility,
+              park: chargingStation.teleop.parked,
             });
             router.push("/");
           }}

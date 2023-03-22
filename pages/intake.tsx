@@ -2,9 +2,10 @@ import Image, { StaticImageData } from "next/image";
 import cone from "../styles/img/cone.png";
 import cube from "../styles/img/cube.png";
 import myPic from "../assets/FRCGameField.png";
-import React, { use, useState } from "react";
+import React, { use, useRef, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useDetectClickOutside } from "react-detect-click-outside";
+import { Button } from "@mantine/core";
 
 export interface IntakeLocation {
   left: number;
@@ -16,21 +17,28 @@ export default function Home({
   gamePiece,
   setGamePiece,
   addGamePiece,
+  blueAllaince,
 }: {
   gamePiece: String;
   setGamePiece: Function;
   addGamePiece: Function;
+  blueAllaince: boolean;
 }) {
   let [locations, setLocations] = useState<any>([[]]);
   let [mousePos, setMousePos] = useState<any>({});
-  let [clickOnField, setClickOnField] = useState(true);
-
-  const [selectedOption, setSelectedOption] = useState("");
+  let [autoButton, setAutoButtons] = useState(true);
+  let [selecting, setSelecting] = useState(false);
 
   const [opened, { close, open }] = useDisclosure(false);
 
   function handleClickOutside() {
-    setClickOnField(false);
+    if (!selecting) {
+      if (opened) {
+        let temp = [...locations].slice(0, locations.length - 1);
+        setLocations(temp);
+      }
+      close();
+    }
   }
 
   const ref = useDetectClickOutside({ onTriggered: handleClickOutside });
@@ -41,11 +49,12 @@ export default function Home({
     }
   }
 
-  function handleClick(e: any) {
+  function handleClick(e: any, substation: string) {
     let obj = {
       left: mousePos.x,
       top: mousePos.y,
       gamePiece: "",
+      substation: substation,
     };
     //removing a game piece
     if (locations[locations.length - 1].gamePiece == "") {
@@ -57,7 +66,7 @@ export default function Home({
       let temp = [...locations, obj];
       setLocations(temp);
     }
-
+    setSelecting(true);
     open();
   }
 
@@ -66,7 +75,11 @@ export default function Home({
     let curr = locations[locations.length - 1];
     locations[locations.length - 1].gamePiece = x;
     setLocations(temp);
+    if (curr.substation.includes(blueAllaince ? "blue" : "red")) {
+      setAutoButtons(false);
+    }
     addGamePiece(curr.left, curr.top, x == "cone");
+    setSelecting(false);
     close();
   }
 
@@ -101,8 +114,26 @@ export default function Home({
     }
   }, [gamePiece]);
 
+  let leftAuto = 70;
+  let topAuto = 60;
+
+  let leftShelf = 627;
+  let topShelf = 270;
+
+  let leftSub = 440;
+  let topSub = 320;
+
+  let topFloor = 140;
+  let leftFloor = 315;
+
+  if (blueAllaince) {
+    leftAuto = 520;
+    leftShelf = 0;
+    leftSub = 140;
+  }
+
   return (
-    <>
+    <div ref={ref}>
       {/* <Group position="left" spacing="xl">
         <Button onClick={() => clear()}> Clear</Button>
         <select value={selectedOption} onChange={handleChange}>
@@ -116,17 +147,98 @@ export default function Home({
       </Group> */}
       <div>
         <Image
-          onClick={(e) => {
-            gamePiece == "nothing" ? handleClick(e) : null;
-          }}
+          // onClick={(e) => {
+          //   gamePiece == "nothing" ? handleClick(e, "floor") : null;
+          // }}
           src={myPic}
           width={700}
+          height={356}
           alt="image"
           style={{ transform: "rotate(180deg)" }}
-          ref={ref}
         />
       </div>
+      {autoButton ? (
+        <>
+          <Button
+            style={{
+              position: "absolute",
+              left: `${leftAuto}px`,
+              top: `${topAuto}px`,
+            }}
+            onClick={(e) => {
+              handleClick(e, blueAllaince ? "blue" : "red" + " top");
+            }}
+          >
+            Top
+          </Button>
+          <Button
+            style={{
+              position: "absolute",
+              left: `${leftAuto}px`,
+              top: `${topAuto + 50}px`,
+            }}
+            onClick={(e) => {
+              handleClick(e, blueAllaince ? "blue" : "red" + " middle");
+            }}
+          >
+            Middle
+          </Button>
+          <Button
+            style={{
+              position: "absolute",
+              left: `${leftAuto}px`,
+              top: `${topAuto + 100}px`,
+            }}
+            onClick={(e) => {
+              handleClick(e, blueAllaince ? "blue" : "red" + " bottom");
+            }}
+          >
+            Bottom
+          </Button>{" "}
+        </>
+      ) : (
+        <>
+          <Button
+            style={{
+              top: `${topSub}px`,
+              left: `${leftSub}px`,
+              position: "absolute",
+            }}
+            onClick={(e) => {
+              gamePiece == "nothing" ? handleClick(e, "gate") : null;
+            }}
+          >
+            Substation
+          </Button>
+          <Button
+            style={{
+              top: `${topShelf}px`,
+              left: `${leftShelf}px`,
+              position: "absolute",
+            }}
+            onClick={(e) => {
+              gamePiece == "nothing" ? handleClick(e, "shelf") : null;
+            }}
+          >
+            Shelf
+          </Button>
+          <Button
+            style={{
+              top: `${topFloor}px`,
+              left: `${leftFloor}px`,
+              position: "absolute",
+            }}
+            onClick={(e) => {
+              gamePiece == "nothing" ? handleClick(e, "floor") : null;
+            }}
+          >
+            Floor
+          </Button>
+        </>
+      )}
       {locations.map((coord: IntakeLocation, idx: number) => {
+        //always starts with empty arrow so ignore the first index
+        //also ignore the last index which is yet to be assigned a game piece
         if (idx !== 0 && (idx !== locations.length - 1 || !opened)) {
           return (
             <Image
@@ -144,7 +256,7 @@ export default function Home({
                 position: "absolute",
               }}
               width={20}
-              key={coord.left}
+              key={idx}
             ></Image>
           );
         }
@@ -156,50 +268,51 @@ export default function Home({
             justifyContent: "center",
             gap: "10px",
             paddingTop: "10px",
-            left: locations[locations.length - 1].left - 43,
+            left: locations[locations.length - 1].left - 60,
             top: locations[locations.length - 1].top - 40,
             position: "absolute",
           }}
         >
           <GamePieceSelect
             pieceSelected={pieceSelected}
-            gamePiece={gamePiece}
             setGamePiece={setGamePiece}
           />
         </div>
       ) : null}
-    </>
+    </div>
   );
 }
 function GamePieceSelect({
   pieceSelected,
-  gamePiece,
   setGamePiece,
 }: {
   pieceSelected: Function;
-  gamePiece: String;
   setGamePiece: Function;
 }) {
   return (
-    <div>
-      <Image
-        src={cone}
-        alt="gamepiece"
-        width={50}
+    <>
+      <Button
+        variant="subtle"
+        compact
         onClick={() => {
           setGamePiece("cone");
           pieceSelected("cone");
         }}
-      ></Image>
-      <Image
-        src={cube}
-        alt="gamepiece"
-        width={50}
+        style={{ height: "fit-content", backgroundColor: "none" }}
+      >
+        <Image src={cone} alt="gamepiece" width={40}></Image>
+      </Button>
+      <Button
+        variant="subtle"
+        compact
         onClick={() => {
           setGamePiece("cube");
           pieceSelected("cube");
         }}
-      ></Image>
-    </div>
+        style={{ height: "fit-content", backgroundColor: "none" }}
+      >
+        <Image src={cube} alt="gamepiece" width={40}></Image>
+      </Button>
+    </>
   );
 }

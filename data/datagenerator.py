@@ -25,10 +25,9 @@ for i in range(N_ROUNDS):
         red_pos = list(range(27))
         for j in range(cycle_count):
             t = {}
-            t['x'] = random.randint(0, 90)
-            t['y'] = random.randint(0, 90)
             t['teleop'] = False if j < auto_cycles else True
-            t['scoringPosition'] = blue_pos.pop(random.randint(0, len(blue_pos) - 1)) if a < 3 else red_pos.pop(random.randint(0, len(red_pos) - 1))
+            t['substation'] = random.choice(["red bottom", "red middle", "red top", "blue bottom", "blue middle", "blue top", "shelf", "ramp", "floor"])
+            t['level'] = random.randint(0, 3)
             t['link'] = ranBoolean() == 1
             t['object'] = "CUBE" if random.randint(0, 2) == 0 else "CONE"
             cycles.append(t)

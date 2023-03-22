@@ -159,11 +159,10 @@ export async function score(data: matchData) {
             const tx = session.beginTransaction()
             //create the cycle node for the current cycle
             const result = await tx.run(
-                'CREATE (a:Cycle{x:$x,y:$y,match:toString($match),teleop:$teleop}) RETURN  ID(a)',
+                'CREATE (a:Cycle{substation:toString($sub),match:toString($match),teleop:$teleop}) RETURN  ID(a)',
                 {
+                    sub: data.cycles[i].substation,
                     team: data.team,
-                    x: data.cycles[i].x,
-                    y: data.cycles[i].y,
                     match: data.match,
                     teleop: data.cycles[i].teleop,
                 },
@@ -176,8 +175,6 @@ export async function score(data: matchData) {
                 {
                     id: id,
                     team: data.team,
-                    x: data.cycles[i].x,
-                    y: data.cycles[i].y,
                     match: data.match,
                     teleop: data.cycles[i].teleop,
                     object: data.cycles[i].object
@@ -185,11 +182,12 @@ export async function score(data: matchData) {
             )
 
             //if the piece is scored merge the node with the name of the position, and then create the relationship from the cycle to the scoringposition
-            if (data.cycles[i].scoringPosition != null) {
+            if (data.cycles[i].level != null && data.cycles[i].level != 0) {
+                const positions = ["dropped", "bottom", "middle", "top"]
                 const result2 = await tx.run(
-                    'MERGE (z:ScoringPosition{name: toInteger($name), team:toInteger($team)}) RETURN ID(z)',
+                    'MERGE (z:ScoringPosition{name: $posName, team:toInteger($team)}) RETURN ID(z)',
                     {
-                        name: data.cycles[i].scoringPosition,
+                        posName: positions[data.cycles[i].level],
                         team: data.team
                     },
                 )

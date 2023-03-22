@@ -78,7 +78,7 @@ export default function Home({
     if (curr.substation.includes(blueAllaince ? "blue" : "red")) {
       setAutoButtons(false);
     }
-    addGamePiece(curr.left, curr.top, x == "cone");
+    addGamePiece(x == "cone", curr.substation);
     setSelecting(false);
     close();
   }

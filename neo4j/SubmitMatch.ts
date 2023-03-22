@@ -5,8 +5,6 @@ import { calculateTeamAgg, setTeamAgg } from "./Aggregate";
 import { getNeoSession } from "./Session";
 
 export interface clientCycle {
-    x: number,
-    y: number,
     substation: string,
     auto: boolean,
     level: number,

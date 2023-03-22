@@ -9,10 +9,9 @@ export function getNeoSession(){
 }
 
 export interface cycleData {
-    x: number,
-    y: number,
+    substation: string,
     teleop: boolean,
-    scoringPosition: number,
+    level: number,
     link: boolean,
     object: string
 }

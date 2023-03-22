@@ -82,14 +82,10 @@ export default function MatchScreen() {
   }, [time]);
 
   function addGamePiece(
-    x: number,
-    y: number,
     cone: boolean,
     substation: string
   ) {
     let obj: clientCycle = {
-      x: x,
-      y: y,
       substation: substation,
       cone: cone,
       auto: gameState == "auto",

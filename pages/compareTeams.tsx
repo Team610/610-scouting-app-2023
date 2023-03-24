@@ -1,4 +1,4 @@
-import { getCompTeams, getMatch, calculateTeamAgg } from "../neo4j/Aggregate";
+import { getCompTeams, getMatch, calculateTeamAgg, getTeamAgg } from "../neo4j/Aggregate";
 import { createNTeams, addDummyData } from "../neo4j/AddData";
 import { query, wipe } from "../neo4j/Miscellaneous";
 import { Button, Table } from "@mantine/core";
@@ -82,8 +82,8 @@ export function CompareTeamData({ teams }: { teams: Array<number> }) {
 export default function CompareTeams() {
   return (
     <div>
-      <Button onClick={async () => await createNTeams(20)}>
-        Create dummy teams
+      <Button onClick={async () => await getTeamAgg({team: 7712})}>
+        getAgg
       </Button>
       <Button onClick={async () => await addDummyData({ data: sampleMatch })}>
                 Add dummy data

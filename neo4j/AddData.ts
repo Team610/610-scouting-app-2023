@@ -137,13 +137,13 @@ export async function addDummyData({data}: {data: Array<matchData>}){
 //scores a single match
 export async function scoreMatch(match: matchData){
     console.log(match)
-    makeTeam(match.team)
-    score(match)
-    allies(match)
-    enemies(match)
-    park(match)
-    mobility(match)
-    climb(match)
+    await makeTeam(match.team)
+    await score(match)
+    await allies(match)
+    await enemies(match)
+    await park(match)
+    await mobility(match)
+    await climb(match)
 
 }
 

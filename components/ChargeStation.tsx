@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Checkbox, getSortedBreakpoints, Switch } from "@mantine/core";
 import { Text } from "@mantine/core";
 import { NativeSelect } from "@mantine/core";
-import { ChargingStation, deafultChargingStation } from "./match";
+import { ChargingStation, deafultChargingStation } from "../pages/match";
 
 const CheckBoxStyle = {
   "& .mantine-Checkbox-label": {

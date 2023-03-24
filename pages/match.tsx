@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Checkbox } from "@mantine/core";
-import ChargeStation from "./ChargeStation";
+import ChargeStation from "../components/ChargeStation";
 import Intake from "./intake";
 import ScoringGrid from "./scoringGrid";
 import { clientCycle, submitMatch } from "../neo4j/SubmitMatch";

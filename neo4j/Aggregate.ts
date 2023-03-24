@@ -9,19 +9,19 @@ export async function getTeamScoreLocation(team: number, row: number, teleop: bo
         if(row == 1){
             const result = await tx.run(
                 'MATCH (t:Team {name: $name})--(c:Cycle)-[]->(s:ScoringPosition) WHERE s.name = "bottom" AND c.teleop = $teleTrue RETURN count(*)',
-                { name: team, row: row - 1, teleTrue: teleop },
+                { name: team, teleTrue: teleop },
             )
             return result.records[0].get(0).low
         }else if(row == 2){
             const result = await tx.run(
                 'MATCH (t:Team {name: $name})--(c:Cycle)-[]->(s:ScoringPosition) WHERE s.name = "middle" AND c.teleop = $teleTrue RETURN count(*)',
-                { name: team, row: row - 1, teleTrue: teleop },
+                { name: team, teleTrue: teleop },
             )
             return result.records[0].get(0).low
         }else if(row == 3){
             const result = await tx.run(
                 'MATCH (t:Team {name: $name})--(c:Cycle)-[]->(s:ScoringPosition) WHERE s.name = "top" AND c.teleop = $teleTrue RETURN count(*)',
-                { name: team, row: row - 1, teleTrue: teleop },
+                { name: team, teleTrue: teleop },
             )
             return result.records[0].get(0).low
         }
@@ -51,7 +51,7 @@ export async function getMaxPiecesScored(team: number, tx:any){
 export async function getPiecesScoredAllMatches(team: number, piece: string, teleop:boolean, tx: any) {
 
     const res = await tx.run(
-        'MATCH (t:Team {name: $name})-[r:' + piece + ']->(m:Cycle) - [:SCORED{teleop: $teleop}] -> (q:ScoringPosition) RETURN count(DISTINCT m.match)',
+        'MATCH (t:Team {name: $name})-[r:' + piece + ']->(m:Cycle) - [:SCORED{teleop: $teleop}] -> (q:ScoringPosition) RETURN count(*)',
         { name: team, piece: piece, teleop:teleop },
     )
 
@@ -64,7 +64,7 @@ export async function getPiecesScoredAllMatches(team: number, piece: string, tel
 export async function getPiecesScored(team: number, match: String, piece: string, tx: any){
 
     const res = await tx.run(
-        'MATCH (t:Team {name: $name})-[:' + piece + '{match: toString($match)}]->(c:Cycle) - [:SCORED] -> (q:ScoringPosition) RETURN count(DISTINCT c.match)',
+        'MATCH (t:Team {name: $name})-[:' + piece + '{match: toString($match)}]->(c:Cycle) - [:SCORED] -> (q:ScoringPosition) RETURN count(*)',
         { name: team, match: match, piece: piece},
     )
     return res.records[0].get(0).low;
@@ -288,39 +288,34 @@ export async function calculateTeamAgg({team}: {team: number}) {
 
     try {
         const tx = session.beginTransaction()
-
         matchesPlayed = await getMatchesPlayed(team, tx)
 
-        let a0 = await getTeamScoreLocation(team, 1, false, tx)
-        let a1 = await getTeamScoreLocation(team, 2, false, tx)
-        let a2 = await getTeamScoreLocation(team, 3, false, tx)
+        let autoLow = await getTeamScoreLocation(team, 1, false, tx)
+        let autoMid = await getTeamScoreLocation(team, 2, false, tx)
+        let autoHigh = await getTeamScoreLocation(team, 3, false, tx)
+
+        let teleopLow = await getTeamScoreLocation(team, 1, true, tx)
+        let teleopMid = await getTeamScoreLocation(team, 2, true, tx)
+        let teleopHigh = await getTeamScoreLocation(team, 3, true, tx)
+
+        links = await getnumberOfLinks(team, tx);
 
         //auto points
-        autoPoints += 3 * a0
-        autoPoints += 4 * a1
-        autoPoints += 6 * a2
+        autoPoints = 3 * autoLow + 4 * autoMid + 6 * autoHigh
+        points = autoPoints + 2 * teleopLow + 3 * teleopMid + 5 * teleopHigh + 5 * links
 
         autoClimb = await getClimbAllMatches(team, false, tx)
-        autoClimbPoints = 3 * autoClimb[0] + 8 * autoClimb[1] + 12 * autoClimb[2]
-        autoPoints += autoClimbPoints
-
-        let t0 = await getTeamScoreLocation(team, 1, true, tx)
-        let t1 = await getTeamScoreLocation(team, 2, true, tx)
-        let t2 = await getTeamScoreLocation(team, 3, true, tx)
-
-        points = autoPoints
-        points += 2 * t0
-        points += 3 * t1
-        points += 5 * t2
         teleopClimb = await getClimbAllMatches(team, true, tx)
+
+        autoClimbPoints = 3 * autoClimb[0] + 8 * autoClimb[1] + 12 * autoClimb[2]
         teleopClimbPoints = 2 * teleopClimb[0] + 6 * teleopClimb[1] + 10 * teleopClimb[2]
-        points += teleopClimbPoints
 
-        points += 5 * await getnumberOfLinks(team, tx);
+        autoPoints += autoClimbPoints
+        points += autoClimbPoints + teleopClimbPoints
 
-        scoringPositions[0] = (a0 + t0) / matchesPlayed
-        scoringPositions[1] = (a1 + t1) / matchesPlayed
-        scoringPositions[2] = (a2 + t2) / matchesPlayed
+        scoringPositions[0] = autoLow + teleopLow
+        scoringPositions[1] = autoMid + teleopMid
+        scoringPositions[2] = autoHigh + teleopHigh
 
         conesPickedUp = await getPiecesPickedUpAllMatches(team, "cone", tx)
         cubesPickedUp = await getPiecesPickedUpAllMatches(team, "cube", tx)
@@ -374,7 +369,54 @@ export async function calculateTeamAgg({team}: {team: number}) {
         // + 5 * (points / matchesPlayed)
     }
 
+    console.log(teamdata)
+
     return teamdata.matchesPlayed > 0 ? teamdata : defaultTeam
+}
+
+export async function getTeamAgg({team}: {team: number}) {
+    const session = getNeoSession()
+    try{
+        const tx = session.beginTransaction()
+        const res = await tx.run("MATCH (t:TeamAgg{name: $name}) RETURN properties(t)", {name: team})
+        if (res.records.length > 0){
+            const pros = res.records[0].get("properties(t)")
+
+            let teamdata: teamAggData = {
+                team: team,
+                matchesPlayed: pros.matchesPlayed.low,
+                autoPPG: pros.autoPPG,
+                PPG: pros.PPG,
+                cyclesPG: pros.cyclesPG,
+                weightedCyclesPG: pros.weightedCyclesPG,
+                avgPiecesScored: pros.avgPiecesScored,
+                maxPiecesScored: pros.maxPiecesScored,
+                scoringAccuracy: pros.scoringAccuracy,
+                coneAccuracy: pros.coneAccuracy,
+                cubeAccuracy: pros.cubeAccuracy,
+                scoringPositions: [pros.lowerScored.low, pros.middleScored.low, pros.upperScored.low],
+                autoClimbPPG: pros.autoClimbPPG,
+                teleopClimbPPG: pros.teleopClimbPPG,
+                climbPPG: pros.climbPPG,
+                linkPG: pros.linkPG,
+                autoPiecesPG: pros.autoPiecesPG,
+                teleopPiecesPG: pros.teleopPiecesPG
+        
+                // power rating = 4 * wCPG + 3 * accu + 2 * linkPG + 5 * PPG
+                // powerRating: 4 * (nWcycles / matchesPlayed) + 3 * (conesScored + cubesScored) / (conesPickedUp + cubesPickedUp) + 2 * (links / matchesPlayed)
+                // + 5 * (points / matchesPlayed)
+            }
+
+            console.log(teamdata)
+            return teamdata
+        }
+    
+    }catch(error){
+        console.error(error)
+    }
+
+    return defaultTeam
+    
 }
 
 interface TeamRelativeStatistics {
@@ -660,8 +702,6 @@ export async function setTeamAgg({team_agg_data}: {team_agg_data : teamAggData})
             }
         })
 
-        console.log(qs)
-
         await tx.run(qs)
         await tx.commit()
         await session.close()
@@ -675,9 +715,9 @@ export async function getAllTeamData(){
     let ret : teamAggData[] = []
     const teamlist = await getAllTeamNumbers()
     for(let i = 0; i < teamlist.length; i++){
-        let aggData = await calculateTeamAgg({team: teamlist[i]})
-        if (aggData.matchesPlayed > 0){
-            ret.push(aggData)
+        let temp = await getTeamAgg({team: teamlist[i]})
+        if (temp.matchesPlayed > 0){
+            ret.push(temp)
         }
     }
 

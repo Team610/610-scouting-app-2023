@@ -320,9 +320,9 @@ export async function calculateTeamAgg({team}: {team: number}) {
         autoPoints += autoClimbPoints
         points += autoClimbPoints + teleopClimbPoints
 
-        scoringPositions[0] = autoLow + teleopLow
-        scoringPositions[1] = autoMid + teleopMid
-        scoringPositions[2] = autoHigh + teleopHigh
+        scoringPositions[0] = (autoLow + teleopLow) * 1.0 / matchesPlayed
+        scoringPositions[1] = (autoMid + teleopMid) * 1.0 / matchesPlayed
+        scoringPositions[2] = (autoHigh + teleopHigh) * 1.0 / matchesPlayed
 
         conesPickedUp = await getPiecesPickedUpAllMatches(team, "cone", tx)
         cubesPickedUp = await getPiecesPickedUpAllMatches(team, "cube", tx)
@@ -376,7 +376,7 @@ export async function calculateTeamAgg({team}: {team: number}) {
         // + 5 * (points / matchesPlayed)
     }
 
-    console.log(teamdata)
+    // console.log(teamdata)
 
     return teamdata.matchesPlayed > 0 ? teamdata : defaultTeam
 }
@@ -414,7 +414,7 @@ export async function getTeamAgg({team}: {team: number}) {
                 // + 5 * (points / matchesPlayed)
             }
 
-            console.log(teamdata)
+            // console.log(teamdata)
             return teamdata
         }
     
@@ -702,10 +702,10 @@ export async function setTeamAgg({team_agg_data}: {team_agg_data : teamAggData})
             if(key == "matchesPlayed"){
                 qs += ("SET ta.matchesPlayed = toInteger(" + team_agg_data[key] + ")\n")
             }else if (key == "scoringPositions"){
-                qs += ("SET ta.lowerScored = toInteger(" + team_agg_data["scoringPositions"][0] + ")\n")
-                qs += ("SET ta.middleScored = toInteger(" + team_agg_data["scoringPositions"][1] + ")\n")
-                qs += ("SET ta.upperScored = toInteger(" + team_agg_data["scoringPositions"][2] + ")\n")
-                console.log(team_agg_data["scoringPositions"])
+                qs += ("SET ta.lowerScored = toFloat(" + team_agg_data["scoringPositions"][0] + ")\n")
+                qs += ("SET ta.middleScored = toFloat(" + team_agg_data["scoringPositions"][1] + ")\n")
+                qs += ("SET ta.upperScored = toFloat(" + team_agg_data["scoringPositions"][2] + ")\n")
+                // console.log(team_agg_data["scoringPositions"])
             }else {
                 qs += ("SET ta." + key + " = toFloat(" + (team_agg_data as any)[key] + ")\n")
             }
@@ -722,7 +722,12 @@ export async function setTeamAgg({team_agg_data}: {team_agg_data : teamAggData})
 
 export async function getAllTeamData(){
     let ret : teamAggData[] = []
+
     const teamlist = await getAllTeamNumbers()
+
+    // DUMMY!!
+    // const teamlist = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+
     for(let i = 0; i < teamlist.length; i++){
         let temp = await getTeamAgg({team: teamlist[i]})
         if (temp.matchesPlayed > 0){

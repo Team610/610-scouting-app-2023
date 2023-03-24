@@ -3,6 +3,7 @@ import { getNeoSession } from "./Session";
 import neo4j from 'neo4j-driver'
 import { allies, enemies } from "./Relationships";
 import { matchData } from "../utils";
+import { calculateTeamAgg, setTeamAgg } from "./Aggregate";
 
 
 //create teams to test with takes a number as parameter for number of teams, returns nothing
@@ -124,13 +125,15 @@ export async function climb(data: matchData) {
 
 export async function addDummyData({data}: {data: Array<matchData>}){
     for(var i = 0; i < data.length; i++){
-        // console.log("added dummy data " + (i + 1) + "/" + (data.length + 1))
-        score(data[i])
-        allies(data[i])
-        enemies(data[i])
-        climb(data[i])
-        park(data[i])
-        mobility(data[i])
+        console.log("added dummy data " + (i + 1) + "/" + data.length)
+        await score(data[i])
+        await allies(data[i])
+        await enemies(data[i])
+        await climb(data[i])
+        await park(data[i])
+        await mobility(data[i])
+
+        await setTeamAgg({team_agg_data: await calculateTeamAgg({team: data[i].team})})
     }
 }
 
@@ -151,8 +154,6 @@ export async function scoreMatch(match: matchData){
 // adds the cones and cube data from a team from a match, takes the json with the match data as parameter, returns nothing
 export async function score(data: matchData) {
     const session = getNeoSession()
-
-    //climb
 
     for (var i = 0; i < data.cycles.length; i++) {
         try {

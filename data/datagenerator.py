@@ -29,7 +29,7 @@ for i in range(N_ROUNDS):
             t['substation'] = random.choice(["red bottom", "red middle", "red top", "blue bottom", "blue middle", "blue top", "shelf", "ramp", "floor"])
             t['level'] = random.randint(0, 3)
             t['link'] = ranBoolean() == 1
-            t['object'] = "CUBE" if random.randint(0, 2) == 0 else "CONE"
+            t['object'] = "cube" if random.randint(0, 2) == 0 else "cone"
             cycles.append(t)
         m['cycles'] = cycles
         m['enemies'] = [teams[x] for x in [3, 4, 5]] if a < 3 else [teams[x] for x in [0, 1, 2]]

@@ -1,6 +1,6 @@
 import { Box, Table } from "@mantine/core";
 import { useMemo } from "react";
-import { teamAggData } from "../../utils";
+import { teamAggData } from "../utils";
 import { MantineReactTable, MRT_ColumnDef } from "mantine-react-table";
 
 export function DisplayTeamData({ data }: { data: teamAggData[] }) {

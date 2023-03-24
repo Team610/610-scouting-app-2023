@@ -8,7 +8,7 @@ import { getNeoSession } from "../neo4j/Session";
 import { convertCycleServer } from "../lib/clientCycleToServer";
 import { useRouter } from "next/router";
 import React from "react";
-import GamePiece from "./components/CurrentGamePiece";
+import GamePiece from "../components/CurrentGamePiece";
 
 export interface Score {
   auto: number;
@@ -81,10 +81,7 @@ export default function MatchScreen() {
     return () => clearTimeout(timer);
   }, [time]);
 
-  function addGamePiece(
-    cone: boolean,
-    substation: string
-  ) {
+  function addGamePiece(cone: boolean, substation: string) {
     let obj: clientCycle = {
       substation: substation,
       cone: cone,

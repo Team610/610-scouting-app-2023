@@ -10,9 +10,14 @@ import { Button, Table, TextInput } from "@mantine/core";
 import sampleMatch from "../data/sampleMatch.json";
 import { Input } from "@mantine/core";
 import { useEffect, useState } from "react";
-import { defaultTeam, defaultWeight, teamAggData, teamAggDataWeight } from "../utils";
+import {
+  defaultTeam,
+  defaultWeight,
+  teamAggData,
+  teamAggDataWeight,
+} from "../utils";
 import { CSVLink, CSVDownload } from "react-csv";
-import { AdvancedTable } from "./components/tables";
+import { AdvancedTable } from "../components/tables";
 
 export function DisplayTeamData({ data }: { data: teamAggData[] }) {
   const [weights, setWeights] = useState<teamAggDataWeight>(defaultWeight);
@@ -144,7 +149,13 @@ export default function AllTeamData() {
     </div>
   );
 }
-export function AggregateRow({ data, weights }: { data: teamAggData, weights: teamAggDataWeight }) {
+export function AggregateRow({
+  data,
+  weights,
+}: {
+  data: teamAggData;
+  weights: teamAggDataWeight;
+}) {
   return (
     <tr key={data.team}>
       <td>{data.team}</td>
@@ -175,26 +186,32 @@ export function AggregateRow({ data, weights }: { data: teamAggData, weights: te
   );
 }
 
-export function calcPR({ teamData, weights }: { teamData: teamAggData, weights: teamAggDataWeight }) {
-  let ret: number = 0
-  ret += teamData.PPG * weights.PPG_weight
-  ret += teamData.autoClimbPPG * weights.autoClimbPPG_weight
-  ret += teamData.autoPPG * weights.autoPPG_weight
-  ret += teamData.autoPiecesPG * weights.autoPiecesPG_weight
-  ret += teamData.avgPiecesScored * weights.avgPiecesScored_weight
-  ret += teamData.climbPPG * weights.climbPPG_weight
-  ret += teamData.coneAccuracy * weights.coneAccuracy_weight
-  ret += teamData.cubeAccuracy * weights.cubeAccuracy_weight
-  ret += teamData.cyclesPG * weights.cyclesPG_weight
-  ret += teamData.linkPG * weights.linkPG_weight
-  ret += teamData.maxPiecesScored * weights.maxPiecesScored_weight
-  ret += teamData.scoringAccuracy * weights.scoringAccuracy_weight
-  ret += teamData.scoringPositions[0] * weights.lowerScoredPG_weight
-  ret += teamData.scoringPositions[1] * weights.middleScoredPG_weight
-  ret += teamData.scoringPositions[2] * weights.upperScoredPG_weight
-  ret += teamData.teleopClimbPPG * weights.teleopClimbPPG_weight
-  ret += teamData.teleopPiecesPG * weights.teleopPiecesPG_weight
-  ret += teamData.weightedCyclesPG * weights.weightedCyclesPG_weight
+export function calcPR({
+  teamData,
+  weights,
+}: {
+  teamData: teamAggData;
+  weights: teamAggDataWeight;
+}) {
+  let ret: number = 0;
+  ret += teamData.PPG * weights.PPG_weight;
+  ret += teamData.autoClimbPPG * weights.autoClimbPPG_weight;
+  ret += teamData.autoPPG * weights.autoPPG_weight;
+  ret += teamData.autoPiecesPG * weights.autoPiecesPG_weight;
+  ret += teamData.avgPiecesScored * weights.avgPiecesScored_weight;
+  ret += teamData.climbPPG * weights.climbPPG_weight;
+  ret += teamData.coneAccuracy * weights.coneAccuracy_weight;
+  ret += teamData.cubeAccuracy * weights.cubeAccuracy_weight;
+  ret += teamData.cyclesPG * weights.cyclesPG_weight;
+  ret += teamData.linkPG * weights.linkPG_weight;
+  ret += teamData.maxPiecesScored * weights.maxPiecesScored_weight;
+  ret += teamData.scoringAccuracy * weights.scoringAccuracy_weight;
+  ret += teamData.scoringPositions[0] * weights.lowerScoredPG_weight;
+  ret += teamData.scoringPositions[1] * weights.middleScoredPG_weight;
+  ret += teamData.scoringPositions[2] * weights.upperScoredPG_weight;
+  ret += teamData.teleopClimbPPG * weights.teleopClimbPPG_weight;
+  ret += teamData.teleopPiecesPG * weights.teleopPiecesPG_weight;
+  ret += teamData.weightedCyclesPG * weights.weightedCyclesPG_weight;
 
-  return ret
+  return ret;
 }

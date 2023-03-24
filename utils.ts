@@ -29,7 +29,7 @@ export interface matchData {
     allies: Array<number>
 }
 
-export interface teamAggData {
+export type teamAggData = {
     team: number,
     matchesPlayed: number,
     autoPPG: number,

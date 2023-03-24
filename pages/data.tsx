@@ -12,6 +12,7 @@ import { Input } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { defaultTeam, defaultWeight, teamAggData, teamAggDataWeight } from "../utils";
 import { CSVLink, CSVDownload } from "react-csv";
+import { AdvancedTable } from "./components/tables";
 
 export function DisplayTeamData({ data }: { data: teamAggData[] }) {
   const [weights, setWeights] = useState<teamAggDataWeight>(defaultWeight);
@@ -61,25 +62,18 @@ export function SingleTeamData({ team }: { team: number }) {
   const [teamNo, setTeamNo] = useState(team);
   const [data, setData] = useState<teamAggData[]>();
   const [searching, setSearching] = useState(false);
-  // useEffect(() => {
-  //   async function getData() {
-  //     if (teamNo !== 0) {
-  //       setData([await getTeam({ team: teamNo })]);
-  //     }
-  //   }
-  //   getData();
-  // }, []);
+
+  useEffect(() => {
+    async function getData() {
+      if (teamNo !== 0) {
+        setData([await calculateTeamAgg({ team: teamNo })]);
+      }
+    }
+    getData();
+  }, []);
 
   return (
     <div>
-      {/* <Button onClick={async () => await createNTeams(20)}>
-        Create dummy teams
-      </Button>
-      <Button onClick={async () => await addDummyData({ data: sampleMatch })}>
-        Add dummy data
-      </Button> */}
-      {/* <Button onClick={async () => await wipe()}>Wipe</Button> */}
-
       {team === 0 ? (
         <div>
           <TextInput
@@ -106,15 +100,14 @@ export function SingleTeamData({ team }: { team: number }) {
           </Button>
         </div>
       ) : null}
-      {data !== undefined ? (
-        <DisplayTeamData data={data} />
-      ) : null}
+      {data !== undefined ? <DisplayTeamData data={data} /> : null}
     </div>
   );
 }
 
-export default function allTeamData() {
+export default function AllTeamData() {
   const [data, setData] = useState<teamAggData[]>();
+  const [advanceTable, setAdvanceTable] = useState(false);
   useEffect(() => {
     async function getData() {
       setData(await getAllTeamData());
@@ -122,14 +115,32 @@ export default function allTeamData() {
     getData();
   }, []);
   return (
-    <div>
-      All Teams
+    <div style={{ padding: "10px" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <h1>All Teams</h1>
+
+        <Button onClick={() => setAdvanceTable(!advanceTable)}>
+          {!advanceTable ? "Advance Table" : "Simple Table"}
+        </Button>
+      </div>
       {data ? (
         <div>
-          <DisplayTeamData data={data} />
+          {advanceTable ? (
+            <AdvancedTable data={data} />
+          ) : (
+            <DisplayTeamData data={data} />
+          )}
           <CSVLink data={data}>Download CSV</CSVLink>
         </div>
-      ) : null}
+      ) : (
+        "Loading"
+      )}
     </div>
   );
 }

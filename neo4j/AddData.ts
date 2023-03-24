@@ -182,7 +182,7 @@ export async function score(data: matchData) {
                 }
             )
 
-            //if the piece is scored merge the node with the name of the position, and then create the relationship from the cycle to the scoringposition
+            //if the piece is scored merge the node with the name of the position
             if (data.cycles[i].level != null && data.cycles[i].level != 0) {
                 const positions = ["dropped", "bottom", "middle", "top"]
                 const result2 = await tx.run(
@@ -192,6 +192,7 @@ export async function score(data: matchData) {
                         team: data.team
                     },
                 )
+                //and then create the relationship from the cycle to the scoringposition
                 const scoringId = result2.records[0].get(0).toNumber()
                 const result3 = await tx.run(
                     'MATCH (c:Cycle), (s:ScoringPosition) WHERE ID(c) = $id AND ID(s) = $scoringId CREATE (c)-[r:SCORED{teleop:$teleop, match:toString($match),link:$link}]->(s)',

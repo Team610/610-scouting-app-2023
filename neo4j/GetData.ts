@@ -1,8 +1,4 @@
-import { Session } from "next-auth";
 import { getNeoSession } from "./Session";
-import neo4j from 'neo4j-driver'
-import { addDummyData, createNTeams } from "./AddData";
-import { getMatchList } from "./Aggregate";
 
 export async function getTeams() {
 
@@ -32,5 +28,20 @@ export async function getTeams() {
         console.error(error)
       }
  
- 
+}
+
+export async function getMatchByValueAndRelatoinship(relationship: String, team: number) {
+  const session = getNeoSession()
+  const tx = session.beginTransaction()
+  try {
+      if (relationship != "SCORED") {
+          const result = await tx.run(
+              'MATCH (t:Team{name: $name})-[:' + relationship + '{match}]->(n) RETURN n.match',
+              {name:team,relationship:relationship}
+          )
+          console.log(result)
+      }
+  } catch (error) {
+      console.error(error)
+  }
 }

@@ -4,16 +4,16 @@ import { query, wipe } from "../neo4j/Miscellaneous";
 import { Button, Table } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { teamAggData } from "../utils";
-import sampleMatch from "../data/sampleMatch.json"
+import sampleMatch from "../data/sampleMatch.json";
 
 export function CompareTeamData({ teams }: { teams: Array<number> }) {
-  const [data6, setData6] = useState<teamAggData[]>();
+  const [data, setData] = useState<teamAggData[]>();
   const teamRoles = ["Blue 1", "Blue 2", "Blue 3", "Red 1", "Red 2", "Red 3"];
 
   useEffect(() => {
     async function getData() {
       console.log("getting data");
-      setData6(await getCompTeams(teams));
+      setData(await getCompTeams(teams));
     }
     getData();
   }, []);
@@ -38,8 +38,8 @@ export function CompareTeamData({ teams }: { teams: Array<number> }) {
     </tr>
   );
 
-  const rows = data6 ? (
-    data6.map((data: teamAggData, index: number) => (
+  const rows = data ? (
+    data.map((data: teamAggData, index: number) => (
       <tr key={data.team}>
         <td>{data.team}</td>
         <td>{teamRoles[index]}</td>
@@ -86,15 +86,9 @@ export default function CompareTeams() {
         Create dummy teams
       </Button>
       <Button onClick={async () => await addDummyData({ data: sampleMatch })}>
-                Add dummy data
-            </Button>
+        Add dummy data
+      </Button>
       <Button onClick={async () => await wipe()}>Wipe</Button>
-      <Button onClick={async () => { 
-          await fetch("/api/create-team", {
-            method: "POST",
-            body: JSON.stringify({team_number: 5})
-          })
-      }}>create teams</Button>
 
       <CompareTeamData teams={[1, 2, 3, 4, 5, 6]} />
     </div>

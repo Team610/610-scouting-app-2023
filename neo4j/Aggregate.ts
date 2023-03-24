@@ -33,11 +33,11 @@ export async function getTeamScoreLocation(team: number, row: number, teleop: bo
 export async function getMaxPiecesScored(team: number, tx:any){
     const matches = await getMatchList(team)
     let max = 0
-    for (let match in matches){
+    for (let i = 0; i < matches?.length!; i++){
         let temp = 0
         const res = await tx.run(
-            'MATCH (t:Team {name: $name})-[{match: $match}]->(m:Cycle) - [:SCORED] -> (q:ScoringPosition) RETURN count(DISTINCT m.match)',
-            { name: team, match: match},
+            'MATCH (t:Team {name: $name})-[{match: $match}]->(m:Cycle) - [:SCORED] -> (q:ScoringPosition) RETURN count(q)',
+            { name: team, match: matches![i]},
         )
         temp = res.records[0].get(0).low
         if (temp > max){
@@ -179,30 +179,29 @@ export async function getLinks(team: number, tx: any) {
     return result.records[0].get(0).low;
 }
 
-
-// returns how many game pieces the robot scored in that row IN A MATCH: 1 is bottom, 3 is top
-export async function getTeamMatchScoreLocation(team : number, row : number, match: String, teleop: boolean, tx:any){
-    try{
-        if(row != 2){
+export async function getTeamScoreLocationByMatch(team: number, row: number, match: String, teleop: boolean, tx: any) {
+    console.log(row)
+    try {
+        if(row == 1){
             const result = await tx.run(
-                'MATCH (t:Team {name: $name})--(c:Cycle)-[match:toString($match)]->(s:ScoringPosition) WHERE s.name/9 = $row AND c.teleop = $teleTrue RETURN count(*)',
-                { name: team, row: row - 1, teleTrue: teleop, match: match },
+                'MATCH (t:Team {name: $name})--(c:Cycle)-[match:toString($match)]->(s:ScoringPosition) WHERE s.name = "bottom" AND c.teleop = $teleTrue RETURN count(*)',
+                { name: team, match: match, row: row - 1, teleTrue: teleop },
             )
             return result.records[0].get(0).low
-        }else{
-            let ret = 0
-            const not17 = await tx.run(
-                'MATCH (t:Team {name: $name})--(c:Cycle)-[match:toString($match)]->(s:ScoringPosition) WHERE s.name/9 = $row AND c.teleop = $teleTrue AND s.name <> 17 RETURN count(*)',
-                { name: team, row: row - 1, teleTrue: teleop, match: match },
+        }else if(row == 2){
+            const result = await tx.run(
+                'MATCH (t:Team {name: $name})--(c:Cycle)-[match:toString($match)]->(s:ScoringPosition) WHERE s.name = "middle" AND c.teleop = $teleTrue RETURN count(*)',
+                { name: team, match: match, row: row - 1, teleTrue: teleop },
             )
-            ret += not17.records[0].get(0).low
-            const yes17 = await tx.run(
-                'MATCH (t:Team {name: $name})--(c:Cycle)-[match:toString($match)]->(s:ScoringPosition) WHERE s.name/9 = $row AND c.teleop = $teleTrue RETURN count(DISTINCT c.match)',
-                { name: team, row: row - 1, teleTrue: teleop, match: match },
-            )
-            ret += yes17.records[0].get(0).low
 
-            return ret
+            return result.records[0].get(0).low
+        }else if(row == 3){
+            const result = await tx.run(
+                'MATCH (t:Team {name: $name})--(c:Cycle)-[match:toString($match)]->(s:ScoringPosition) WHERE s.name = "top" AND c.teleop = $teleTrue RETURN count(*)',
+                { name: team, match: match, row: row - 1, teleTrue: teleop },
+            )
+            console.log(result.records[0].get(0))
+            return result.records[0].get(0).low
         }
     } catch (error) {
         console.error(error)
@@ -247,9 +246,9 @@ export async function getClimbAllMatches(team: number, teleop: boolean, tx: any)
 }
 
 
-//takes the team number as a parameter, returns an object with the following format
-/*
-    team: team,
+/**takes the team number as a parameter, returns an object with the following format
+* @return : 
+{team: team,
     matchesPlayed: matchesPlayed,
     autoPPG: auto points per game,
     PPG: points per game,
@@ -260,7 +259,8 @@ export async function getClimbAllMatches(team: number, teleop: boolean, tx: any)
     scoring positions: [scored in lower, scored in middle, scored in higher]
     links per game: links per game
     teleopClimbPPG: teleopClimb,
-    autoClimbPPG: autoClimb,
+    autoClimbPPG: autoClimb
+}
  */
 export async function calculateTeamAgg({team}: {team: number}) {
     const session = getNeoSession()
@@ -288,6 +288,8 @@ export async function calculateTeamAgg({team}: {team: number}) {
 
     try {
         const tx = session.beginTransaction()
+
+        matchesPlayed = await getMatchesPlayed(team, tx)
 
         let a0 = await getTeamScoreLocation(team, 1, false, tx)
         let a1 = await getTeamScoreLocation(team, 2, false, tx)
@@ -334,10 +336,8 @@ export async function calculateTeamAgg({team}: {team: number}) {
 
         ncycles = await getNumberCyclesAllMatches(team, tx)
         nWcycles = await getWeightedCyclesAllMatches(team, tx)
-        matchesPlayed = await getMatchesPlayed(team, tx)
         links = await getLinks(team, tx)
-
-        console.log(team)
+        maxPiecesScored = await getMaxPiecesScored(team, tx)
 
         // maxPiecesScored = await getMaxPiecesScored(team, tx)
 
@@ -348,7 +348,6 @@ export async function calculateTeamAgg({team}: {team: number}) {
         console.error(error)
     }
 
-    // console.log(autoConesScored + " " + autoCubesScored + " " + teleopConesScored + " " + teleopCubesScored)
 
     let teamdata: teamAggData = {
         team: team,
@@ -378,11 +377,7 @@ export async function calculateTeamAgg({team}: {team: number}) {
     return teamdata.matchesPlayed > 0 ? teamdata : defaultTeam
 }
 
-export async function getTeamAgg({team}: {team: number}) {
-    
-}
-
-interface teamRelativeStatistics {
+interface TeamRelativeStatistics {
     autoScoring:number,
     teleopScoring:number, 
     scoringAccuracy: number,
@@ -390,6 +385,12 @@ interface teamRelativeStatistics {
     teleopClimbPoints: number,
     cyclesPerGame: number
 }
+
+/**
+* Calculate the z score for the main aggregate categories for a specified team
+* @param team - the desired team to calculate z scores for
+* @return : {stat1: zscore, stat2...} - object of zscores
+* */
 
 export async function getTeamStandardizedScores(team:number) {
     let teams: Array<number> = await getAllTeamNumbers()
@@ -418,7 +419,7 @@ export async function getTeamStandardizedScores(team:number) {
 
     }
 
-    let ret:teamRelativeStatistics = {
+    let ret:TeamRelativeStatistics = {
         autoScoring:(autoScoring[foundTeam] - arrayAverage(autoScoring))/standardDeviation(autoScoring),
         teleopScoring:(teleopScoring[foundTeam] - arrayAverage(teleopScoring))/standardDeviation(teleopScoring),
         scoringAccuracy:(scoringAccuracy[foundTeam] - arrayAverage(scoringAccuracy))/standardDeviation(scoringAccuracy),
@@ -530,14 +531,14 @@ export async function getMatch(team: number, match: String) {
         cubesPickedUp = await getPiecesPickedUp(team, match, "CUBE", tx)
         conesPickedUp = await getPiecesPickedUp(team, match, "CONE", tx)
 
-        autoPoints += 3 * await getTeamMatchScoreLocation(team, 1, match, false, tx)
-        autoPoints += 4 * await getTeamMatchScoreLocation(team, 2, match, false, tx)
-        autoPoints += 6 * await getTeamMatchScoreLocation(team, 3, match, false, tx)
+        autoPoints += 3 * await getTeamScoreLocationByMatch(team, 1, match, false, tx)
+        autoPoints += 4 * await getTeamScoreLocationByMatch(team, 2, match, false, tx)
+        autoPoints += 6 * await getTeamScoreLocationByMatch(team, 3, match, false, tx)
 
         points += autoPoints
-        points += 2 * await getTeamMatchScoreLocation(team, 1, match, true, tx)
-        points += 3 * await getTeamMatchScoreLocation(team, 2, match, true, tx)
-        points += 5 * await getTeamMatchScoreLocation(team, 3, match, true, tx)
+        points += 2 * await getTeamScoreLocationByMatch(team, 1, match, true, tx)
+        points += 3 * await getTeamScoreLocationByMatch(team, 2, match, true, tx)
+        points += 5 * await getTeamScoreLocationByMatch(team, 3, match, true, tx)
 
         points += 5 * await getnumberOfLinksMatch(team, match, tx)
 
@@ -600,24 +601,6 @@ export async function getAmountCube({ team }: { team: number }) {
         console.error(error)
     }
   }
- 
-export async function getMatchByValueAndRelatoinship(amount: number, relationship: String, team: number) {
-    const session = getNeoSession()
-    const tx = session.beginTransaction()
-    try {
-        if (relationship != "SCORED") {
-            const result = await tx.run(
-                'MATCH (t:Team{name: $name})-[:' + relationship + '{match}]->(n) RETURN n.match',
-                {name:team,relationship:relationship}
-            )
-            console.log(result)
-        }
-    } catch (error) {
-        console.error(error)
-    }
-
-
-}
 
 // returns how many games a certain team played
 export async function getMatchList(team : number){
@@ -628,14 +611,14 @@ export async function getMatchList(team : number){
             'MATCH (t:Team {name: $name})-[r]->(n) RETURN DISTINCT r.match',
             { name: team },
         )
-        console.log(result.records.map((record: any) => record._fields[0].low))
-        let ret:Array<number> = result.records.map((record: any) => record._fields[0].low)
+        let ret:Array<string> = result.records.map((record: any) => record._fields[0])
         await tx.commit()
         return ret
     }catch(error){
         console.error(error)
     }
 }
+
 export async function getAllTeamNumbers() {
     const session = getNeoSession()
     let tempResult:any
@@ -649,7 +632,6 @@ export async function getAllTeamNumbers() {
         tempResult = result
         for (let index = 0; index < result.records.length; index++) {
             toReturn.push(tempResult.records[index]._fields[0].properties.name.low)
-            console.log(toReturn[index])
         }
 
         await tx.commit()
@@ -693,7 +675,10 @@ export async function getAllTeamData(){
     let ret : teamAggData[] = []
     const teamlist = await getAllTeamNumbers()
     for(let i = 0; i < teamlist.length; i++){
-        ret.push(await calculateTeamAgg({team: teamlist[i]}))
+        let aggData = await calculateTeamAgg({team: teamlist[i]})
+        if (aggData.matchesPlayed > 0){
+            ret.push(aggData)
+        }
     }
 
     return ret

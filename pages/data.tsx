@@ -12,73 +12,24 @@ import { Input } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { defaultTeam, teamAggData } from "../utils";
 import { CSVLink, CSVDownload } from "react-csv";
-
-export function DisplayTeamData({ data }: { data: teamAggData[] }) {
-  const ths = (
-    <tr>
-      <th>Team</th>
-      <th>Matches Played</th>
-      <th>Auto PPG</th>
-      <th>PPG</th>
-      <th>Cycles PG</th>
-      <th>Weighted Cycles PG</th>
-      <th>Scoring Accuracy</th>
-      <th>Cone Accuracy</th>
-      <th>Cube Accuracy</th>
-      <th>Scoring Positions</th>
-      <th>Auto Climb PPG</th>
-      <th>Teleop Climb PPG</th>
-      <th>Climb PPG</th>
-      <th>Link PG</th>
-      <th>Auto Pieces PG</th>
-      <th>Teleop Pieces PG</th>
-    </tr>
-  );
-
-  const rows = data ? (
-    data.map((d: teamAggData) => <AggregateRow data={d} />)
-  ) : (
-    <></>
-  );
-  console.log(data);
-
-  return (
-    <>
-      {data ? (
-        <Table>
-          <thead>{ths}</thead>
-          <tbody>{rows}</tbody>
-        </Table>
-      ) : (
-        "Loading"
-      )}
-    </>
-  );
-}
+import { AdvancedTable, DisplayTeamData } from "./components/tables";
 
 export function SingleTeamData({ team }: { team: number }) {
   const [teamNo, setTeamNo] = useState(team);
   const [data, setData] = useState<teamAggData[]>();
   const [searching, setSearching] = useState(false);
-  // useEffect(() => {
-  //   async function getData() {
-  //     if (teamNo !== 0) {
-  //       setData([await getTeam({ team: teamNo })]);
-  //     }
-  //   }
-  //   getData();
-  // }, []);
+
+  useEffect(() => {
+    async function getData() {
+      if (teamNo !== 0) {
+        setData([await calculateTeamAgg({ team: teamNo })]);
+      }
+    }
+    getData();
+  }, []);
 
   return (
     <div>
-      {/* <Button onClick={async () => await createNTeams(20)}>
-        Create dummy teams
-      </Button>
-      <Button onClick={async () => await addDummyData({ data: sampleMatch })}>
-        Add dummy data
-      </Button> */}
-      {/* <Button onClick={async () => await wipe()}>Wipe</Button> */}
-
       {team === 0 ? (
         <div>
           <TextInput
@@ -105,15 +56,14 @@ export function SingleTeamData({ team }: { team: number }) {
           </Button>
         </div>
       ) : null}
-      {data !== undefined ? (
-        <DisplayTeamData data={data} />
-      ) : null}
+      {data !== undefined ? <DisplayTeamData data={data} /> : null}
     </div>
   );
 }
 
-export default function allTeamData() {
+export default function AllTeamData() {
   const [data, setData] = useState<teamAggData[]>();
+  const [advanceTable, setAdvanceTable] = useState(false);
   useEffect(() => {
     async function getData() {
       setData(await getAllTeamData());
@@ -121,43 +71,32 @@ export default function allTeamData() {
     getData();
   }, []);
   return (
-    <div>
-      All Teams
+    <div style={{ padding: "10px" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <h1>All Teams</h1>
+
+        <Button onClick={() => setAdvanceTable(!advanceTable)}>
+          {!advanceTable ? "Advance Table" : "Simple Table"}
+        </Button>
+      </div>
       {data ? (
         <div>
-          <DisplayTeamData data={data} />
+          {advanceTable ? (
+            <AdvancedTable data={data} />
+          ) : (
+            <DisplayTeamData data={data} />
+          )}
           <CSVLink data={data}>Download CSV</CSVLink>
         </div>
-      ) : null}
+      ) : (
+        "Loading"
+      )}
     </div>
-  );
-}
-export function AggregateRow({ data }: { data: teamAggData }) {
-  return (
-    <tr key={data.team}>
-      <td>{data.team}</td>
-      <td>{data.matchesPlayed}</td>
-      <td>{data.autoPPG.toFixed(2)}</td>
-      <td>{data.PPG.toFixed(2)}</td>
-      <td>{data.cyclesPG.toFixed(2)}</td>
-      <td>{data.weightedCyclesPG.toFixed(2)}</td>
-      <td>{data.scoringAccuracy.toFixed(2)}</td>
-      <td>{data.coneAccuracy.toFixed(2)}</td>
-      <td>{data.cubeAccuracy.toFixed(2)}</td>
-      <td>
-        {"Lower: " +
-          data.scoringPositions[0] +
-          " Middle: " +
-          data.scoringPositions[1] +
-          " Top: " +
-          data.scoringPositions[2]}
-      </td>
-      <td>{data.autoClimbPPG.toFixed(2)}</td>
-      <td>{data.teleopClimbPPG.toFixed(2)}</td>
-      <td>{data.climbPPG.toFixed(2)}</td>
-      <td>{data.linkPG.toFixed(2)}</td>
-      <td>{data.autoPiecesPG.toFixed(2)}</td>
-      <td>{data.teleopPiecesPG.toFixed(2)}</td>
-    </tr>
   );
 }

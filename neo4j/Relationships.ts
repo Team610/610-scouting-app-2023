@@ -29,7 +29,7 @@ export async function allies(data: matchData) {
 //takes the match data for a team as the parameter, creates the enemy relaitionships for the team
 
   export async function enemies(data: any) {
-    console.log(data.enemies)
+
     const session = getNeoSession()
     for (let index = 0; index < data.enemies.length; index++) {
       try {

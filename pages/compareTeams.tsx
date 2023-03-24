@@ -82,9 +82,6 @@ export function CompareTeamData({ teams }: { teams: Array<number> }) {
 export default function CompareTeams() {
   return (
     <div>
-      <Button onClick={async () => await getTeamAgg({team: 7712})}>
-        getAgg
-      </Button>
       <Button onClick={async () => await addDummyData({ data: sampleMatch })}>
                 Add dummy data
             </Button>
@@ -96,7 +93,7 @@ export default function CompareTeams() {
           })
       }}>create teams</Button>
 
-      <CompareTeamData teams={[1, 2, 3, 4, 5, 6]} />
+      {/* <CompareTeamData teams={[1, 2, 3, 4, 5, 6]} /> */}
     </div>
   );
 }

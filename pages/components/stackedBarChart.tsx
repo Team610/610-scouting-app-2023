@@ -46,8 +46,8 @@ async function getData(team: number) {
 
   if (labels) {
     for (let index = 0; index < labels.length; index++) {
-      const element = await getMatch(team, labels[index]);
-      console.log(element);
+      const match = await getMatch(team, labels[index]);
+      console.log(match);
     }
     data = {
       labels,

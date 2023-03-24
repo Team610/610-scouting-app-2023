@@ -184,20 +184,20 @@ export async function getTeamScoreLocationByMatch(team: number, row: number, mat
     try {
         if(row == 1){
             const result = await tx.run(
-                'MATCH (t:Team {name: $name})--(c:Cycle)-[match:toString($match)]->(s:ScoringPosition) WHERE s.name = "bottom" AND c.teleop = $teleTrue RETURN count(*)',
+                'MATCH (t:Team {name: $name})--(c:Cycle)-[{match:toString($match)}]->(s:ScoringPosition) WHERE s.name = "bottom" AND c.teleop = $teleTrue RETURN count(*)',
                 { name: team, match: match, row: row - 1, teleTrue: teleop },
             )
             return result.records[0].get(0).low
         }else if(row == 2){
             const result = await tx.run(
-                'MATCH (t:Team {name: $name})--(c:Cycle)-[match:toString($match)]->(s:ScoringPosition) WHERE s.name = "middle" AND c.teleop = $teleTrue RETURN count(*)',
+                'MATCH (t:Team {name: $name})--(c:Cycle)-[{match:toString($match)}]->(s:ScoringPosition) WHERE s.name = "middle" AND c.teleop = $teleTrue RETURN count(*)',
                 { name: team, match: match, row: row - 1, teleTrue: teleop },
             )
 
             return result.records[0].get(0).low
         }else if(row == 3){
             const result = await tx.run(
-                'MATCH (t:Team {name: $name})--(c:Cycle)-[match:toString($match)]->(s:ScoringPosition) WHERE s.name = "top" AND c.teleop = $teleTrue RETURN count(*)',
+                'MATCH (t:Team {name: $name})--(c:Cycle)-[{match:toString($match)}]->(s:ScoringPosition) WHERE s.name = "top" AND c.teleop = $teleTrue RETURN count(*)',
                 { name: team, match: match, row: row - 1, teleTrue: teleop },
             )
             console.log(result.records[0].get(0))
@@ -243,6 +243,13 @@ export async function getClimbAllMatches(team: number, teleop: boolean, tx: any)
     climbs[2] = result.records[0].get(0).low;
 
     return climbs
+}
+
+async function getAutoCyclesByMatch(team:number, match: String, tx: any){
+    let result = await tx.run('MATCH (t:Team {name:$name})--(c:Cycle {match: $match}) RETURN count(c)', {
+        name: team, match: match
+    })
+    console.log(result)
 }
 
 
@@ -513,10 +520,10 @@ export async function getMatch(team: number, match: String) {
     let cubesPickedUp = 0
     let conesPickedUp = 0
     let scoringAccuracy: number = 0
+    let autoCycles = 0
 
     try {
         const tx = session.beginTransaction()
-        var result: any
 
         nCycles = await getNumberCycles(team, match, tx)
         cycles = new Array(nCycles)
@@ -528,6 +535,7 @@ export async function getMatch(team: number, match: String) {
         for (let index = 0; index < matchNodes.records.length; index++) {
             switch (matchNodes.records[index]._fields[0].labels[0]) {
                 case "Cycle":
+                    console.log(matchNodes.records[index])
                     cycles.push(matchNodes.records[index]._fields[0].properties)
                     break;
                 case "AutoClimb":
@@ -612,7 +620,8 @@ export async function getMatch(team: number, match: String) {
         piecesScored: piecesScored,
         scoringAccuracy: piecesScored / (cubesPickedUp + conesPickedUp),
     }
-
+    console.log("match data coming")
+    console.log(matchData)
     // console.log(matchData)
     return (
         matchData

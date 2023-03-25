@@ -12,7 +12,7 @@ import { Input } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { defaultTeam, defaultWeight, teamAggData, teamAggDataWeight } from "../utils";
 import { CSVLink, CSVDownload } from "react-csv";
-import { AdvancedTable } from "./components/tables";
+import { AdvancedTable} from "./components/tables";
 
 export function DisplayTeamData({ data }: { data: teamAggData[] }) {
   const [weights, setWeights] = useState<teamAggDataWeight>(defaultWeight);
@@ -145,6 +145,7 @@ export default function AllTeamData() {
   );
 }
 export function AggregateRow({ data, weights }: { data: teamAggData, weights: teamAggDataWeight }) {
+  console.log(data.scoringPositions[0])
   return (
     <tr key={data.team}>
       <td>{data.team}</td>

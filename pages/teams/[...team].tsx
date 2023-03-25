@@ -8,6 +8,7 @@ import {
 import { teamAggData } from "../../utils";
 import { SingleTeamData } from "../data";
 import Image from "next/image";
+import Chart from "../../components/chart";
 
 export default function Home() {
   const [matches, setMatches] = useState<string[]>();
@@ -63,6 +64,11 @@ export default function Home() {
         )}
       </div>
       {agg ? <SingleTeamData team={parseInt(teamNumber)} /> : <>Loading</>}
+      {matches ? (
+        <Chart team={parseInt(teamNumber)} matches={matches} />
+      ) : (
+        <></>
+      )}
     </div>
   );
 }

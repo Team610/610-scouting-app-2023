@@ -166,7 +166,7 @@ export default function Home({
               top: `${topAuto}px`,
             }}
             onClick={(e) => {
-              handleClick(e, blueAllaince ? "blue" : "red" + " top");
+              handleClick(e, (blueAllaince ? "blue" : "red") + " top");
             }}
           >
             Top
@@ -178,7 +178,7 @@ export default function Home({
               top: `${topAuto + 50}px`,
             }}
             onClick={(e) => {
-              handleClick(e, blueAllaince ? "blue" : "red" + " middle");
+              handleClick(e, (blueAllaince ? "blue" : "red") + " middle");
             }}
           >
             Middle
@@ -190,7 +190,7 @@ export default function Home({
               top: `${topAuto + 100}px`,
             }}
             onClick={(e) => {
-              handleClick(e, blueAllaince ? "blue" : "red" + " bottom");
+              handleClick(e, (blueAllaince ? "blue" : "red") + " bottom");
             }}
           >
             Bottom

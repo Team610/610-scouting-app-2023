@@ -81,7 +81,7 @@ export const AdvancedTable = ({ data }: { data: teamAggData[] }) => {
                   padding: "4px",
                 })}
               >
-                {cell.getValue<number>().toFixed(2)}
+                {cell.getValue<number>()}
               </Box>
             ),
           },
@@ -106,7 +106,7 @@ export const AdvancedTable = ({ data }: { data: teamAggData[] }) => {
                   padding: "4px",
                 })}
               >
-                {cell.getValue<number>().toFixed(2)}
+                {cell.getValue<number>()}
               </Box>
             ),
           },
@@ -132,11 +132,11 @@ export const AdvancedTable = ({ data }: { data: teamAggData[] }) => {
           {
             accessorFn: (row) =>
               "Lower: " +
-              row.scoringPositions[0].toFixed(2) +
+              row.scoringPositions[0] +
               " | Middle: " +
-              row.scoringPositions[1].toFixed(2) +
+              row.scoringPositions[1] +
               " | Top: " +
-              row.scoringPositions[2].toFixed(2),
+              row.scoringPositions[2],
             header: "Scoring Position",
             id: "Scoring Position",
             size: 50,

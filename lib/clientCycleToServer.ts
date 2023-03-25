@@ -9,6 +9,7 @@ export function convertCycleServer(cycles: Array<clientCycle>){
         let level = cycles[i].level
         let link = cycles[i].link
         let object = cycles[i].cone ? "cone" : "cube"
+        console.log(substation)
         serverCycles.push({substation, teleop, level, link, object})
     }
 

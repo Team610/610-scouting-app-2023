@@ -81,7 +81,7 @@ export default function SelectMatchDropBox() {
       <Select
         label="Choose the match in progress"
         placeholder="Select"
-        data={options}
+        data={options.sort()}
         searchable
         onChange={(e: any) => selectMatch(e)}
       />

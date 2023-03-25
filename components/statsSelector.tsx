@@ -1,22 +1,31 @@
-import { MultiSelect } from "@mantine/core";
-import { useState } from "react";
-
-const matchStats = [
+export const matchStats = [
   { value: "autoCycles", label: "Auto Cycles" },
+  { value: "autoScored", label: "Auto Scored" },
   { value: "autoTop", label: "Auto Top" },
   { value: "autoMiddle", label: "Auto Middle" },
   { value: "autoBottom", label: "Auto Bottom" },
+  { value: "teleopScored", label: "Teleop Scored" },
   { value: "teleopCycles", label: "Teleop Cycles" },
-  { value: "teleopTop", label: "Teleop Scored" },
-  { value: "teleopMiddle", label: "Teleop Scored" },
-  { value: "teleopBottom", label: "Teleop Scored" },
-  { value: "autoClimbPoints", label: "Auto Climb Points" },
-  { value: "teleopClimbPoints", label: "Teleop Climb Points" },
+  { value: "teleopTop", label: "Teleop Top" },
+  { value: "teleopMiddle", label: "Teleop Middle" },
+  { value: "teleopBottom", label: "Teleop Bottom" },
+  { value: "autoClimb", label: "Auto Climb Points" },
+  { value: "teleopClimb", label: "Teleop Climb Points" },
   { value: "mobility", label: "Mobility" },
 ];
 
-export default function StatSelector() {
-  //used for matches and stats
-  const [stats, setStats] = useState();
-  return <MultiSelect data={matchStats} label="Stats" />;
-}
+export const statLegend: any = {
+  "Auto Cycles": "autoCycles",
+  "Auto Scored": "autoScored",
+  "Auto Top": "autoTop",
+  "Auto Middle": "autoMiddle",
+  "Auto Bottom": "autoBottom",
+  "Teleop Scored": "teleopScored",
+  "Teleop Cycles": "teleopCycles",
+  "Teleop Top": "teleopTop",
+  "Teleop Middle": "teleopMiddle",
+  "Teleop Bottom": "teleopBottom",
+  "Auto Climb Points": "autoClimb",
+  "Teleop Climb Points": "teleopClimb",
+  "Mobility": "mobility",
+};

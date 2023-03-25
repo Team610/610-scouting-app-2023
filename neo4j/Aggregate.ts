@@ -401,7 +401,7 @@ export async function getTeamAgg({team}: {team: number}) {
                 scoringAccuracy: pros.scoringAccuracy,
                 coneAccuracy: pros.coneAccuracy,
                 cubeAccuracy: pros.cubeAccuracy,
-                scoringPositions: [pros.lowerScored.low, pros.middleScored.low, pros.upperScored.low],
+                scoringPositions: [pros.lowerScored, pros.middleScored, pros.upperScored],
                 autoClimbPPG: pros.autoClimbPPG,
                 teleopClimbPPG: pros.teleopClimbPPG,
                 climbPPG: pros.climbPPG,

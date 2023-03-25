@@ -29,7 +29,8 @@ export interface matchData {
     allies: Array<number>
 }
 
-export type teamAggData = {
+export interface teamAggData {
+    [key: string]: number | number[] | undefined;
     team: number,
     matchesPlayed: number,
     autoPPG: number,

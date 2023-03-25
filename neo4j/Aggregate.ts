@@ -495,6 +495,39 @@ interface TeamRelativeStatistics {
   cyclesPerGame: number;
 }
 
+function calculatePercentiles({teamsData} : {teamsData: teamAggData[]}) {
+  const stats = [
+    'autoPPG',
+    'PPG',
+    'cyclesPG',
+    'weightedCyclesPG',
+    'scoringAccuracy',
+    'coneAccuracy',
+    'cubeAccuracy',
+    'autoClimbPPG',
+    'teleopClimbPPG',
+    'climbPPG',
+    'linkPG',
+    'avgPiecesScored',
+    'maxPiecesScored',
+    'autoPiecesPG',
+    'teleopPiecesPG',
+  ];
+
+  stats.forEach(stat => {
+    const statArray = teamsData.map(teamData => teamData[stat]);
+    statArray.sort((a, b) => Number(a) - Number(b));
+
+    teamsData.forEach(teamData => {
+      const teamStatIndex = statArray.indexOf(teamData[stat]);
+      const percentile = (teamStatIndex / teamsData.length) * 100;
+      teamData[`percentile${stat}`] = percentile;
+    });
+  });
+
+  return teamsData;
+}
+
 /**
  * Calculate the z score for the main aggregate categories for a specified team
  * @param team - the desired team to calculate z scores for
@@ -513,7 +546,7 @@ export async function getTeamStandardizedScores(team: number) {
   let foundTeam: number = 0;
 
   for (let index = 0; index < teams.length; index++) {
-    let thisTeam: any = await calculateTeamAgg({ team: teams[index] });
+    let thisTeam: any = await getTeamAgg({ team: teams[index] });
 
     if (thisTeam.team == team) {
       foundTeam = index;

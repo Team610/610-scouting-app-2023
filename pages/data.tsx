@@ -19,8 +19,8 @@ import {
 import { CSVLink, CSVDownload } from "react-csv";
 import { AdvancedTable } from "../components/tables";
 
-export function DisplayTeamData({ data }: { data: teamAggData[] }) {
-  const [weights, setWeights] = useState<teamAggDataWeight>(defaultWeight);
+
+export function DisplayTeamData({ data, weight }: { data: teamAggData[], weight: teamAggDataWeight }) {
   const ths = (
     <tr>
       <th>Team</th>
@@ -44,7 +44,7 @@ export function DisplayTeamData({ data }: { data: teamAggData[] }) {
   );
 
   const rows = data ? (
-    data.map((d: teamAggData) => <AggregateRow data={d} weights={weights} />)
+    data.map((d: teamAggData) => <AggregateRow data={d} weights={weight} />)
   ) : (
     <></>
   );
@@ -105,7 +105,7 @@ export function SingleTeamData({ team }: { team: number }) {
           </Button>
         </div>
       ) : null}
-      {data !== undefined ? <DisplayTeamData data={data} /> : null}
+      {data !== undefined ? <DisplayTeamData data={data} weight={defaultWeight} /> : null}
     </div>
   );
 }
@@ -113,40 +113,56 @@ export function SingleTeamData({ team }: { team: number }) {
 export default function AllTeamData() {
   const [data, setData] = useState<teamAggData[]>();
   const [advanceTable, setAdvanceTable] = useState(false);
+  const [weights, setWeights] = useState<teamAggDataWeight>(defaultWeight);
+
   useEffect(() => {
     async function getData() {
       setData(await getAllTeamData());
     }
     getData();
   }, []);
+
+  const handleWeightChange = (key: keyof teamAggDataWeight, value: string) => {
+    setWeights(prevWeights => ({
+      ...prevWeights,
+      [key]: parseInt(value),
+    }));
+  };
+
+  const weightAdjuster = Object.keys(defaultWeight).map((feature: string) => <TextInput  
+  label = {feature}
+  defaultValue={defaultWeight[feature]} 
+  onChange={(e: any) => handleWeightChange(feature, e.currentTarget.value)}
+  maxLength={3}
+  ></TextInput>)
+
   return (
     <div style={{ padding: "10px" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <h1>All Teams</h1>
 
-        <Button onClick={() => setAdvanceTable(!advanceTable)}>
-          {!advanceTable ? "Advance Table" : "Simple Table"}
-        </Button>
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <>{weightAdjuster}</>
       </div>
-      {data ? (
-        <div>
-          {advanceTable ? (
-            <AdvancedTable data={data} />
-          ) : (
-            <DisplayTeamData data={data} />
-          )}
-          <CSVLink data={data}>Download CSV</CSVLink>
-        </div>
-      ) : (
-        "Loading"
-      )}
-    </div>
+      <h1>All Teams</h1>
+      
+
+      <Button onClick={() => setAdvanceTable(!advanceTable)}>
+        {!advanceTable ? "Advance Table" : "Simple Table"}
+      </Button>
+      {
+        data ? (
+          <div>
+            {advanceTable ? (
+              <AdvancedTable data={data} />
+            ) : (
+              <DisplayTeamData data={data} weight={weights} />
+            )}
+            <CSVLink data={data}>Download CSV</CSVLink>
+          </div>
+        ) : (
+          "Loading"
+        )
+      }
+    </div >
   );
 }
 export function AggregateRow({
@@ -194,24 +210,24 @@ export function calcPR({
   weights: teamAggDataWeight;
 }) {
   let ret: number = 0;
-  ret += teamData.PPG * weights.PPG_weight;
-  ret += teamData.autoClimbPPG * weights.autoClimbPPG_weight;
-  ret += teamData.autoPPG * weights.autoPPG_weight;
-  ret += teamData.autoPiecesPG * weights.autoPiecesPG_weight;
-  ret += teamData.avgPiecesScored * weights.avgPiecesScored_weight;
-  ret += teamData.climbPPG * weights.climbPPG_weight;
-  ret += teamData.coneAccuracy * weights.coneAccuracy_weight;
-  ret += teamData.cubeAccuracy * weights.cubeAccuracy_weight;
-  ret += teamData.cyclesPG * weights.cyclesPG_weight;
-  ret += teamData.linkPG * weights.linkPG_weight;
-  ret += teamData.maxPiecesScored * weights.maxPiecesScored_weight;
-  ret += teamData.scoringAccuracy * weights.scoringAccuracy_weight;
-  ret += teamData.scoringPositions[0] * weights.lowerScoredPG_weight;
-  ret += teamData.scoringPositions[1] * weights.middleScoredPG_weight;
-  ret += teamData.scoringPositions[2] * weights.upperScoredPG_weight;
-  ret += teamData.teleopClimbPPG * weights.teleopClimbPPG_weight;
-  ret += teamData.teleopPiecesPG * weights.teleopPiecesPG_weight;
-  ret += teamData.weightedCyclesPG * weights.weightedCyclesPG_weight;
+  ret += teamData.PPG * weights.PPG;
+  ret += teamData.autoClimbPPG * weights.autoClimbPG;
+  ret += teamData.autoPPG * weights.autoPPG;
+  ret += teamData.autoPiecesPG * weights.autoPiecesPG;
+  ret += teamData.avgPiecesScored * weights.piecesPG;
+  ret += teamData.climbPPG * weights.climbPG;
+  ret += teamData.coneAccuracy * weights.coneAccuracy;
+  ret += teamData.cubeAccuracy * weights.cubeAccuracy;
+  ret += teamData.cyclesPG * weights.cyclesPG;
+  ret += teamData.linkPG * weights.linkPG;
+  ret += teamData.maxPiecesScored * weights.maxPieces;
+  ret += teamData.scoringAccuracy * weights.accuracy;
+  ret += teamData.scoringPositions[0] * weights.lowerPG;
+  ret += teamData.scoringPositions[1] * weights.middlePG;
+  ret += teamData.scoringPositions[2] * weights.upperPG;
+  ret += teamData.teleopClimbPPG * weights.teleClimbPG;
+  ret += teamData.teleopPiecesPG * weights.telePiecesPG;
+  ret += teamData.weightedCyclesPG * weights.wCyclesPG;
 
   return ret;
 }

@@ -19,8 +19,13 @@ import {
 import { CSVLink, CSVDownload } from "react-csv";
 import { AdvancedTable } from "../components/tables";
 
-
-export function DisplayTeamData({ data, weight }: { data: teamAggData[], weight: teamAggDataWeight }) {
+export function DisplayTeamData({
+  data,
+  weight,
+}: {
+  data: teamAggData[];
+  weight: teamAggDataWeight;
+}) {
   const ths = (
     <tr>
       <th>Team</th>
@@ -105,15 +110,18 @@ export function SingleTeamData({ team }: { team: number }) {
           </Button>
         </div>
       ) : null}
-      {data !== undefined ? <DisplayTeamData data={data} weight={defaultWeight} /> : null}
+      {data !== undefined ? (
+        <DisplayTeamData data={data} weight={defaultWeight} />
+      ) : null}
     </div>
   );
 }
 
 export default function AllTeamData() {
   const [data, setData] = useState<teamAggData[]>();
-  const [advanceTable, setAdvanceTable] = useState(false);
+  const [advanceTable, setAdvanceTable] = useState(true);
   const [weights, setWeights] = useState<teamAggDataWeight>(defaultWeight);
+  const [displayWeights, setDisplayWeights] = useState(false);
 
   useEffect(() => {
     async function getData() {
@@ -123,46 +131,60 @@ export default function AllTeamData() {
   }, []);
 
   const handleWeightChange = (key: keyof teamAggDataWeight, value: string) => {
-    setWeights(prevWeights => ({
+    setWeights((prevWeights) => ({
       ...prevWeights,
       [key]: parseInt(value),
     }));
   };
 
-  const weightAdjuster = Object.keys(defaultWeight).map((feature: string) => <TextInput  
-  label = {feature}
-  defaultValue={defaultWeight[feature]} 
-  onChange={(e: any) => handleWeightChange(feature, e.currentTarget.value)}
-  maxLength={3}
-  ></TextInput>)
+  const weightAdjuster = Object.keys(defaultWeight).map((feature: string) => (
+    <TextInput
+      label={feature}
+      defaultValue={defaultWeight[feature]}
+      onChange={(e: any) => handleWeightChange(feature, e.currentTarget.value)}
+      maxLength={3}
+    ></TextInput>
+  ));
 
   return (
     <div style={{ padding: "10px" }}>
-
-      <div style={{ display: "flex", alignItems: "center" }}>
-        <>{weightAdjuster}</>
-      </div>
+      {displayWeights ? (
+        <>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "10px",
+            }}
+          >
+            <>{weightAdjuster}</>
+          </div>
+          <Button onClick={() => setDisplayWeights(false)}>Hide Weights</Button>
+        </>
+      ) : (
+        <Button onClick={() => setDisplayWeights(true)}>
+          Display Weighting
+        </Button>
+      )}
       <h1>All Teams</h1>
-      
 
       <Button onClick={() => setAdvanceTable(!advanceTable)}>
         {!advanceTable ? "Advance Table" : "Simple Table"}
       </Button>
-      {
-        data ? (
-          <div>
-            {advanceTable ? (
-              <AdvancedTable data={data} />
-            ) : (
-              <DisplayTeamData data={data} weight={weights} />
-            )}
-            <CSVLink data={data}>Download CSV</CSVLink>
-          </div>
-        ) : (
-          "Loading"
-        )
-      }
-    </div >
+      {data ? (
+        <div>
+          {advanceTable ? (
+            <AdvancedTable data={data} weights={weights} />
+          ) : (
+            <DisplayTeamData data={data} weight={weights} />
+          )}
+          <CSVLink data={data}>Download CSV</CSVLink>
+        </div>
+      ) : (
+        <div>Loading...</div>
+      )}
+    </div>
   );
 }
 export function AggregateRow({
@@ -197,7 +219,7 @@ export function AggregateRow({
       <td>{data.linkPG.toFixed(2)}</td>
       <td>{data.autoPiecesPG.toFixed(2)}</td>
       <td>{data.teleopPiecesPG.toFixed(2)}</td>
-      <td>{calcPR({ teamData: data, weights: weights }).toFixed(2)}</td>
+      <td>{calcPR({ teamData: data, weights: weights })}</td>
     </tr>
   );
 }
@@ -215,13 +237,18 @@ export function calcPR({
   ret += teamData.autoPPG * weights.autoPPG;
   ret += teamData.autoPiecesPG * weights.autoPiecesPG;
   ret += teamData.avgPiecesScored * weights.piecesPG;
-  ret += teamData.climbPPG * weights.climbPG;
-  ret += teamData.coneAccuracy * weights.coneAccuracy;
-  ret += teamData.cubeAccuracy * weights.cubeAccuracy;
+  ret += isNaN(teamData.coneAccuracy * weights.coneAccuracy)
+    ? 0
+    : teamData.coneAccuracy * weights.coneAccuracy;
+  ret += isNaN(teamData.cubeAccuracy * weights.cubeAccuracy)
+    ? 0
+    : teamData.cubeAccuracy * weights.cubeAccuracy;
   ret += teamData.cyclesPG * weights.cyclesPG;
   ret += teamData.linkPG * weights.linkPG;
   ret += teamData.maxPiecesScored * weights.maxPieces;
-  ret += teamData.scoringAccuracy * weights.accuracy;
+  ret += isNaN(teamData.scoringAccuracy * weights.accuracy)
+    ? 0
+    : teamData.scoringAccuracy * weights.accuracy;
   ret += teamData.scoringPositions[0] * weights.lowerPG;
   ret += teamData.scoringPositions[1] * weights.middlePG;
   ret += teamData.scoringPositions[2] * weights.upperPG;
@@ -229,5 +256,5 @@ export function calcPR({
   ret += teamData.teleopPiecesPG * weights.telePiecesPG;
   ret += teamData.weightedCyclesPG * weights.wCyclesPG;
 
-  return ret;
+  return ret.toFixed(2);
 }

@@ -1,7 +1,13 @@
 import { Box, Table } from "@mantine/core";
 import { useMemo } from "react";
-import { teamAggData } from "../utils";
-import { MantineReactTable, MRT_ColumnDef } from "mantine-react-table";
+import { teamAggData, teamAggDataWeight } from "../utils";
+import {
+  MantineReactTable,
+  MRT_Cell,
+  MRT_ColumnDef,
+  MRT_Row,
+} from "mantine-react-table";
+import { calcPR } from "../pages/data";
 
 export function DisplayTeamData({ data }: { data: teamAggData[] }) {
   const ths = (
@@ -41,7 +47,24 @@ export function DisplayTeamData({ data }: { data: teamAggData[] }) {
   );
 }
 
-export const AdvancedTable = ({ data }: { data: teamAggData[] }) => {
+export const AdvancedTable = ({
+  data,
+  weights,
+}: {
+  data: teamAggData[];
+  weights: teamAggDataWeight;
+}) => {
+  function getPR(team: number) {
+    let pr = 0;
+    data.map((temp, idx) => {
+      if (team == temp.team) {
+        let row = data[idx];
+        pr = parseFloat(calcPR({ teamData: row, weights }));
+      }
+    });
+    return pr;
+  }
+
   const columns = useMemo<MRT_ColumnDef<teamAggData>[]>(
     () => [
       {
@@ -53,6 +76,11 @@ export const AdvancedTable = ({ data }: { data: teamAggData[] }) => {
             id: "team",
             header: "Team",
             size: 50,
+          },
+          {
+            accessorFn: (row) => getPR(row.team),
+            header: "Power Ranking",
+            id: "power",
           },
           {
             accessorFn: (row) => row.autoPPG.toFixed(2),
@@ -194,10 +222,7 @@ export const AdvancedTable = ({ data }: { data: teamAggData[] }) => {
         columnVisibility: { required: false, description: false },
         density: "xs",
         showGlobalFilter: true,
-        sorting: [
-          { id: "required", desc: true },
-          { id: "propName", desc: false },
-        ],
+        sorting: [{ id: "power", desc: true }],
         showColumnFilters: true,
       }}
     />

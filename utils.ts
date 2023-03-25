@@ -48,6 +48,7 @@ export type teamAggData = {
     maxPiecesScored: number,
     autoPiecesPG: number,
     teleopPiecesPG: number,
+    powerRanking?: number
 }
 
 export interface teamAggDataWeight {
@@ -64,7 +65,6 @@ export interface teamAggDataWeight {
     upperPG: number,
     autoClimbPG: number,
     teleClimbPG: number,
-    climbPG: number,
     linkPG: number,
     piecesPG: number,
     maxPieces: number,
@@ -74,23 +74,22 @@ export interface teamAggDataWeight {
 
 export const defaultWeight : teamAggDataWeight = {
     autoPPG: 1,
-    PPG: 0,
-    cyclesPG: 0,
     wCyclesPG: 2,
     accuracy: 1,
+    autoClimbPG: 1,
+    teleClimbPG: 1,
+    linkPG: 2,
+    maxPieces: 2,
+    autoPiecesPG: 2,
+    telePiecesPG: 1,
+    PPG: 0,
+    cyclesPG: 0,
     coneAccuracy: 0,
     cubeAccuracy: 0,
     lowerPG:0,
     middlePG: 0,
     upperPG: 0,
-    autoClimbPG: 1,
-    teleClimbPG: 1,
-    climbPG: 0,
-    linkPG: 2,
     piecesPG: 0,
-    maxPieces: 2,
-    autoPiecesPG: 2,
-    telePiecesPG: 1,
 }
 
 export const defaultTeam : teamAggData ={

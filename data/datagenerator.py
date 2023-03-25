@@ -26,7 +26,7 @@ for i in range(N_ROUNDS):
         for j in range(cycle_count):
             t = {}
             t['teleop'] = False if j < auto_cycles else True
-            t['substation'] = random.choice(["red bottom", "red middle", "red top", "blue bottom", "blue middle", "blue top", "shelf", "ramp", "floor"])
+            t['substation'] = random.choice(["red bottom", "red middle", "red top", "blue bottom", "blue middle", "blue top", "shelf", "gate", "floor"])
             t['level'] = random.randint(0, 3)
             t['link'] = ranBoolean() == 1
             t['object'] = "cube" if random.randint(0, 2) == 0 else "cone"

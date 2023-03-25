@@ -51,6 +51,7 @@ export default function MatchScreen() {
   );
   const [gamePiece, setGamePiece] = useState("nothing");
   const [blueAllaince, setBlueAllaince] = useState(false);
+  const [submitted, setSubmitted] = useState(false)
 
   const router = useRouter();
   const [time, setTime] = useState(18);
@@ -258,7 +259,9 @@ export default function MatchScreen() {
       </div>
       {gameState == "teleop" && matchID != undefined ? (
         <Button
+          disabled={submitted}
           onClick={async () => {
+            setSubmitted(true)
             await submitMatch({
               team: teamID,
               allies: blueAllaince

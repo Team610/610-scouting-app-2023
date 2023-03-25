@@ -55,13 +55,13 @@ export const AdvancedTable = ({ data }: { data: teamAggData[] }) => {
             size: 50,
           },
           {
-            accessorFn: (row) => row.autoPPG,
+            accessorFn: (row) => row.autoPPG.toFixed(2),
             header: "Auto PPG",
             id: "autoPPG",
             size: 50,
           },
           {
-            accessorFn: (row) => row.cyclesPG,
+            accessorFn: (row) => row.cyclesPG.toFixed(2),
             header: "Cycles PG",
             id: "cycles",
             size: 50,
@@ -81,7 +81,7 @@ export const AdvancedTable = ({ data }: { data: teamAggData[] }) => {
                   padding: "4px",
                 })}
               >
-                {cell.getValue<number>()}
+                {cell.getValue<number>().toFixed(2)}
               </Box>
             ),
           },
@@ -106,7 +106,7 @@ export const AdvancedTable = ({ data }: { data: teamAggData[] }) => {
                   padding: "4px",
                 })}
               >
-                {cell.getValue<number>()}
+                {cell.getValue<number>().toFixed(2)}
               </Box>
             ),
           },
@@ -132,46 +132,46 @@ export const AdvancedTable = ({ data }: { data: teamAggData[] }) => {
           {
             accessorFn: (row) =>
               "Lower: " +
-              row.scoringPositions[0] +
+              row.scoringPositions[0].toFixed(2) +
               " | Middle: " +
-              row.scoringPositions[1] +
+              row.scoringPositions[1].toFixed(2) +
               " | Top: " +
-              row.scoringPositions[2],
+              row.scoringPositions[2].toFixed(2),
             header: "Scoring Position",
             id: "Scoring Position",
             size: 50,
           },
           {
-            accessorFn: (row) => row.autoClimbPPG,
+            accessorFn: (row) => row.autoClimbPPG.toFixed(2),
             header: "Auto Climb PPG",
             id: "auto climb ppg",
             size: 50,
           },
           {
-            accessorFn: (row) => row.teleopClimbPPG,
+            accessorFn: (row) => row.teleopClimbPPG.toFixed(2),
             header: "Teleop Climb PPG",
             id: "teleop climb ppg",
             size: 50,
           },
           {
-            accessorFn: (row) => row.autoPiecesPG,
+            accessorFn: (row) => row.autoPiecesPG.toFixed(2),
             header: "Auto Pieces PG",
             id: "auto pieces",
             size: 50,
           },
           {
-            accessorFn: (row) => row.teleopPiecesPG,
+            accessorFn: (row) => row.teleopPiecesPG.toFixed(2),
             header: "Teleop Pieces PG",
             id: "teleop pieces",
           },
           {
-            accessorFn: (row) => row.linkPG,
+            accessorFn: (row) => row.linkPG.toFixed(2),
             header: "Link PG",
             id: "link pg",
             size: 50,
           },
           {
-            accessorFn: (row) => row.PPG,
+            accessorFn: (row) => row.PPG.toFixed(2),
             header: "PPG",
             id: "PPG",
             size: 50,

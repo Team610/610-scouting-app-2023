@@ -1,6 +1,10 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { getMatchList, calculateTeamAgg } from "../../neo4j/Aggregate";
+import {
+  getMatchList,
+  calculateTeamAgg,
+  getTeamAgg,
+} from "../../neo4j/Aggregate";
 import { teamAggData } from "../../utils";
 import { SingleTeamData } from "../data";
 import Image from "next/image";
@@ -15,7 +19,7 @@ export default function Home() {
   useEffect(() => {
     async function getData() {
       let data = await getMatchList(parseInt(teamNumber));
-      let teamAgg = await calculateTeamAgg({ team: parseInt(teamNumber) });
+      let teamAgg = await getTeamAgg({ team: parseInt(teamNumber) });
       console.log(teamAgg);
       setMatches(data);
       setAgg(teamAgg);

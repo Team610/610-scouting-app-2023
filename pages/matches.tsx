@@ -5,15 +5,23 @@ import NextCors from "nextjs-cors";
 import { match } from "assert";
 import { useRouter } from "next/router";
 import Link from "next/link";
-export default function SelectMatchDropBox() {
-  const [jsonData, setJsonData] = useState([]);
-  const [selectedMatch, setSelectedMatch] = useState("");
+
+export function SelectMatch({
+  setSelectedMatch,
+  setBlueTeams,
+  setRedTeams,
+}: {
+  setSelectedMatch: Function;
+  setBlueTeams: Function;
+  setRedTeams: Function;
+}) {
   const [matchNumbers, setMatchNumbers] = useState([]);
-  const [teamNumbers, setTeamNumbers] = useState([]);
-  const [selectedTeam, setSelectedTeam] = useState("");
-  const [redTeams, setRedTeams] = useState([]);
-  const [blueTeams, setBlueTeams] = useState([]);
-  const router = useRouter();
+  const [jsonData, setJsonData] = useState([]);
+
+  const options = matchNumbers.map((number) => ({
+    value: number,
+    label: `Match #${number}`,
+  }));
 
   useEffect(() => {
     async function fetchData() {
@@ -39,11 +47,6 @@ export default function SelectMatchDropBox() {
     fetchData();
   }, []);
 
-  const options = matchNumbers.map((number) => ({
-    value: number,
-    label: `Match #${number}`,
-  }));
-
   const selectMatch = (match: any) => {
     setSelectedMatch(match);
     jsonData.forEach((item: any) => {
@@ -56,13 +59,29 @@ export default function SelectMatchDropBox() {
         );
         setBlueTeams(blue);
         setRedTeams(red);
-        setTeamNumbers(red.concat(blue));
         return;
       }
     });
   };
 
-  const teamOptions = teamNumbers.map((team, index) => ({
+  return (
+    <Select
+      label="Choose the match in progress"
+      placeholder="Select"
+      data={options.sort()}
+      searchable
+      onChange={(e: any) => selectMatch(e)}
+    />
+  );
+}
+
+export default function SelectMatchDropBox() {
+  const [selectedMatch, setSelectedMatch] = useState("");
+  const [selectedTeam, setSelectedTeam] = useState("");
+  const [redTeams, setRedTeams] = useState([]);
+  const [blueTeams, setBlueTeams] = useState([]);
+
+  const teamOptions = redTeams.concat(blueTeams).map((team, index) => ({
     value: (index < 3 ? "R" : "B") + team,
     label:
       (index < 3 ? "Red " : "Blue ") +
@@ -71,19 +90,12 @@ export default function SelectMatchDropBox() {
       team,
   }));
 
-  const selectTeam = (team: any) => {
-    const color = team.substring(0, 1);
-    const number = team.substring(1);
-  };
-
   return (
     <div>
-      <Select
-        label="Choose the match in progress"
-        placeholder="Select"
-        data={options.sort()}
-        searchable
-        onChange={(e: any) => selectMatch(e)}
+      <SelectMatch
+        setSelectedMatch={setSelectedMatch}
+        setBlueTeams={setBlueTeams}
+        setRedTeams={setRedTeams}
       />
       {selectedMatch != "" ? (
         <Select

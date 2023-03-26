@@ -132,6 +132,33 @@ export default function Home({
     leftSub = 140;
   }
 
+  function determineLocation() {
+    let left = 0;
+    let top = 0;
+    let sub = locations[locations.length - 1].substation;
+    if (sub.includes("red") || sub.includes("blue")) {
+      if (sub.includes("top")) {
+        top = topAuto;
+      }
+      if (sub.includes("middle")) {
+        top = topAuto + 50;
+      }
+      if (sub.includes("bottom")) {
+        top = topAuto + 100;
+      }
+      left = blueAllaince ? leftAuto - 120 : leftAuto + 80;
+      return [top, left];
+    }
+    if (sub == "gate") {
+      return [topSub - 60, leftSub];
+    }
+    if (sub == "shelf") {
+      return [topShelf - 60, blueAllaince ? leftShelf : leftShelf - 50];
+    } else {
+      return [topFloor - 60, leftFloor - 10];
+    }
+  }
+
   return (
     <div ref={ref}>
       {/* <Group position="left" spacing="xl">
@@ -268,8 +295,8 @@ export default function Home({
             justifyContent: "center",
             gap: "10px",
             paddingTop: "10px",
-            left: locations[locations.length - 1].left - 60,
-            top: locations[locations.length - 1].top - 40,
+            left: determineLocation()[1],
+            top: determineLocation()[0],
             position: "absolute",
           }}
         >

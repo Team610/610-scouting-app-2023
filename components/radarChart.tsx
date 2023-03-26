@@ -12,6 +12,7 @@ import { Radar } from "react-chartjs-2";
 import { calculateTeamAgg, getTeamAgg } from "../neo4j/Aggregate";
 import { teamAggData } from "../utils";
 import { TextInput } from "@mantine/core";
+import { getTeams } from "../neo4j/GetData";
 
 ChartJS.register(
   RadialLinearScale,
@@ -156,7 +157,7 @@ function TeamInput({ setTeam, num }: { setTeam: Function; num: number }) {
   );
 }
 //calculates team aggregate data
-function RadarData({ team, num }: { team: number; num: number }) {
+async function RadarData({ team, num }: { team: number; num: number }) {
   const [teamData, setTeamData] = useState<teamAggData>();
   useEffect(() => {
     async function getData() {
@@ -166,29 +167,19 @@ function RadarData({ team, num }: { team: number; num: number }) {
     getData();
   }, [team]);
 
-  changeData({
-    cycles: parseFloat((teamData != undefined ? teamData.cyclesPG : 0) + ""),
-    autoClimb: parseFloat(
-      (teamData != undefined ? teamData.autoClimbPPG : 0) + ""
-    ),
-    teleopClimb: parseFloat(
-      (teamData != undefined ? teamData.teleopClimbPPG : 0) + ""
-    ),
-    autoPieces: parseFloat(
-      (teamData != undefined ? teamData.autoPiecesPG : 0) + ""
-    ),
-    levelOne: parseFloat(
-      (teamData != undefined ? teamData.scoringPositions[0] : 0) + ""
-    ),
-    levelTwo: parseFloat(
-      (teamData != undefined ? teamData.scoringPositions[1] : 0) + ""
-    ),
-    levelThree: parseFloat(
-      (teamData != undefined ? teamData.scoringPositions[2] : 0) + ""
-    ),
-    team: team,
-    num: num,
-  });
+  if (teamData) {
+    changeData({
+      cycles: teamData.cyclesPG,
+      autoClimb: teamData.autoClimbPPG,
+      teleopClimb: teamData.teleopClimbPPG,
+      autoPieces: teamData.autoPiecesPG,
+      levelOne: teamData.scoringPositions[0],
+      levelTwo: teamData.scoringPositions[1],
+      levelThree: teamData.scoringPositions[2],
+      team: team,
+      num: num,
+    });
+  }
 }
 
 //shows radar chart
@@ -196,6 +187,16 @@ export function RadarChart() {
   const [teamOne, setTeamOne] = useState("");
   const [teamTwo, setTeamTwo] = useState("");
   const [teamThree, setTeamThree] = useState("");
+  const [teams, setTeams] = useState<number[]>();
+
+  useEffect(() => {
+    async function getTeamList() {
+      let temp = await getTeams();
+      setTeams(temp);
+    }
+    getTeamList();
+  }, []);
+
   RadarData({ team: parseInt(teamOne + ""), num: 1 });
   RadarData({ team: parseInt(teamTwo + ""), num: 2 });
   RadarData({ team: parseInt(teamThree + ""), num: 3 });

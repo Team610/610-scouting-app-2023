@@ -23,7 +23,7 @@ export default function Compare() {
       ).json();
       for (let index = 0; index < allMatches.length; index++) {
         const element = allMatches[index];
-        if (element["actual_time"] === null) {
+        if (element.actual_time == null) {
           let blueTeams = element.alliances.blue.team_keys.map((team: string) =>
             parseInt(team.substring(3))
           );
@@ -32,6 +32,7 @@ export default function Compare() {
           );
           setRedTeams(redTeams);
           setBlueTeams(blueTeams);
+          break;
         }
       }
     }

@@ -40,11 +40,11 @@ export default function Compare() {
 
   return (
     <div>
-      <SelectMatch
+      {/* <SelectMatch
         setRedTeams={setRedTeams}
         setBlueTeams={setBlueTeams}
         setSelectedMatch={setSelectedMatch}
-      />
+      /> */}
       <div style={{ display: "flex" }}>
         {redTeams && blueTeams ? (
           <>

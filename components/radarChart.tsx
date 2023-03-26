@@ -9,10 +9,9 @@ import {
   Legend,
 } from "chart.js";
 import { Radar } from "react-chartjs-2";
-import { calculateTeamAgg, getTeamAgg } from "../neo4j/Aggregate";
+import { calculateTeamAgg } from "../neo4j/Aggregate";
 import { teamAggData } from "../utils";
 import { TextInput } from "@mantine/core";
-import { getTeams } from "../neo4j/GetData";
 
 ChartJS.register(
   RadialLinearScale,
@@ -36,112 +35,116 @@ export let data = {
   ],
   datasets: [
     {
-      label: "Team #1",
+      label: "Team ?",
       data: [0, 0, 0, 0, 0, 0, 0],
-      backgroundColor: "rgba(0, 0, 0, 0.2)",
-      borderColor: "rgba(255, 99, 132, 1)",
+      backgroundColor: "rgba(255, 0, 0, 0.2)",
+      borderColor: "rgba(255, 0, 0, 1)",
       borderWidth: 1,
     },
     {
-      label: "Team #2",
+      label: "Team ?",
       data: [0, 0, 0, 0, 0, 0, 0],
-      backgroundColor: "rgba(0, 0, 0, 0.2)",
-      borderColor: "rgba(255, 99, 132, 1)",
+      backgroundColor: "rgba(0, 255, 0, 0.2)",
+      borderColor: "rgba(0, 255, 0, 1)",
       borderWidth: 1,
     },
     {
-      label: "Team #3",
+      label: "Team ?",
       data: [0, 0, 0, 0, 0, 0, 0],
-      backgroundColor: "rgba(0, 0, 0, 0.2)",
-      borderColor: "rgba(255, 99, 132, 1)",
+      backgroundColor: "rgba(0, 0, 255, 0.2)",
+      borderColor: "rgba(0, 0, 255, 1)",
       borderWidth: 1,
     },
   ],
 };
 //changes data for radar chart
+
 function changeData({
-  cycles,
-  autoClimb,
-  teleopClimb,
-  autoPieces,
-  levelOne,
-  levelTwo,
-  levelThree,
+  teamData,
   team,
   num,
 }: {
-  cycles: number;
-  autoClimb: number;
-  teleopClimb: number;
-  autoPieces: number;
-  levelOne: number;
-  levelTwo: number;
-  levelThree: number;
+  teamData: teamAggData;
   team: number;
   num: number;
 }) {
   let strLabel = "Team " + team;
-  if (num == 1) {
-    data.datasets = [
-      {
-        label: strLabel,
-        //data: [cycles * 10, autoClimb / 15 * 100, teleopClimb * 10, autoPieces * 50, cycles != 0 ? levelOne / cycles * 100 : 0, cycles != 0 ? levelTwo / cycles * 100 : 0, cycles != 0 ? levelThree / cycles * 100 : 0],
-        data: [
-          cycles,
-          autoClimb,
-          teleopClimb,
-          autoPieces,
-          levelOne,
-          levelTwo,
-          levelThree,
-        ],
-        backgroundColor: "rgba(255, 0, 0, 0.2)",
-        borderColor: "rgba(255, 0, 0, 1)",
-        borderWidth: 1,
-      },
-      data.datasets[1],
-      data.datasets[2],
-    ];
-  } else if (num == 2) {
-    data.datasets = [
-      data.datasets[0],
-      {
-        label: strLabel,
-        data: [
-          cycles,
-          autoClimb,
-          teleopClimb,
-          autoPieces,
-          levelOne,
-          levelTwo,
-          levelThree,
-        ],
-        backgroundColor: "rgba(0, 255, 0, 0.2)",
-        borderColor: "rgba(0, 255, 0, 1)",
-        borderWidth: 1,
-      },
-      data.datasets[2],
-    ];
-  } else if (num == 3) {
-    data.datasets = [
-      data.datasets[0],
-      data.datasets[1],
-      {
-        label: strLabel,
-        data: [
-          cycles,
-          autoClimb,
-          teleopClimb,
-          autoPieces,
-          levelOne,
-          levelTwo,
-          levelThree,
-        ],
-        backgroundColor: "rgba(0, 0, 255, 0.2)",
-        borderColor: "rgba(0, 0, 255, 1)",
-        borderWidth: 1,
-      },
-    ];
+  console.log(teamData);
+  let bgColor =
+    "rgba(" +
+    (num % 3 == 0 ? "0, 0, 255," : num % 2 == 0 ? "0, 255, 0," : "255, 0, 0,") +
+    " 0.2)";
+  let bdColor =
+    "rgba(" +
+    (num % 3 == 0 ? "0, 0, 255," : num % 2 == 0 ? "0, 255, 0," : "255, 0, 0,") +
+    " 1)";
+  switch (num) {
+    case 1:
+      data.datasets = [
+        {
+          label: strLabel,
+          //data: [cycles * 10, autoClimb / 15 * 100, teleopClimb * 10, autoPieces * 50, cycles != 0 ? levelOne / cycles * 100 : 0, cycles != 0 ? levelTwo / cycles * 100 : 0, cycles != 0 ? levelThree / cycles * 100 : 0],
+          data: [
+            parseFloat(teamData.cyclesPG + ""),
+            parseFloat(teamData.autoClimbPPG + ""),
+            parseFloat(teamData.teleopClimbPPG + ""),
+            parseFloat(teamData.autoPiecesPG + ""),
+            parseFloat(teamData.scoringPositions[0] + ""),
+            parseFloat(teamData.scoringPositions[1] + ""),
+            parseFloat(teamData.scoringPositions[2] + ""),
+          ],
+          backgroundColor: bgColor,
+          borderColor: bdColor,
+          borderWidth: 1,
+        },
+        data.datasets[1],
+        data.datasets[2],
+      ];
+      break;
+    case 2:
+      data.datasets = [
+        data.datasets[0],
+        {
+          label: strLabel,
+          //data: [cycles * 10, autoClimb / 15 * 100, teleopClimb * 10, autoPieces * 50, cycles != 0 ? levelOne / cycles * 100 : 0, cycles != 0 ? levelTwo / cycles * 100 : 0, cycles != 0 ? levelThree / cycles * 100 : 0],
+          data: [
+            parseFloat(teamData.cyclesPG + ""),
+            parseFloat(teamData.autoClimbPPG + ""),
+            parseFloat(teamData.teleopClimbPPG + ""),
+            parseFloat(teamData.autoPiecesPG + ""),
+            parseFloat(teamData.scoringPositions[0] + ""),
+            parseFloat(teamData.scoringPositions[1] + ""),
+            parseFloat(teamData.scoringPositions[2] + ""),
+          ],
+          backgroundColor: bgColor,
+          borderColor: bdColor,
+          borderWidth: 1,
+        },
+        data.datasets[2],
+      ];
+      break;
+    case 3:
+      data.datasets = [
+        data.datasets[0],
+        data.datasets[1],
+        {
+          label: strLabel,
+          //data: [cycles * 10, autoClimb / 15 * 100, teleopClimb * 10, autoPieces * 50, cycles != 0 ? levelOne / cycles * 100 : 0, cycles != 0 ? levelTwo / cycles * 100 : 0, cycles != 0 ? levelThree / cycles * 100 : 0],
+          data: [
+            parseFloat(teamData.cyclesPG + ""),
+            parseFloat(teamData.autoClimbPPG + ""),
+            parseFloat(teamData.teleopClimbPPG + ""),
+            parseFloat(teamData.autoPiecesPG + ""),
+            parseFloat(teamData.scoringPositions[0] + ""),
+            parseFloat(teamData.scoringPositions[1] + ""),
+            parseFloat(teamData.scoringPositions[2] + ""),
+          ],
+          backgroundColor: bgColor,
+          borderColor: bdColor,
+          borderWidth: 1,
+        },
+      ];
+      break;
   }
 }
 //text input to put in specific team
@@ -162,20 +165,15 @@ async function RadarData({ team, num }: { team: number; num: number }) {
   useEffect(() => {
     async function getData() {
       let teamAgg = await calculateTeamAgg({ team: parseInt(team + "") });
+      // console.log(teamAgg);
       setTeamData(teamAgg);
     }
     getData();
   }, [team]);
 
-  if (teamData) {
+  if (teamData != undefined) {
     changeData({
-      cycles: teamData.cyclesPG,
-      autoClimb: teamData.autoClimbPPG,
-      teleopClimb: teamData.teleopClimbPPG,
-      autoPieces: teamData.autoPiecesPG,
-      levelOne: teamData.scoringPositions[0],
-      levelTwo: teamData.scoringPositions[1],
-      levelThree: teamData.scoringPositions[2],
+      teamData: teamData,
       team: team,
       num: num,
     });
@@ -187,16 +185,6 @@ export function RadarChart() {
   const [teamOne, setTeamOne] = useState("");
   const [teamTwo, setTeamTwo] = useState("");
   const [teamThree, setTeamThree] = useState("");
-  const [teams, setTeams] = useState<number[]>();
-
-  useEffect(() => {
-    async function getTeamList() {
-      let temp = await getTeams();
-      setTeams(temp);
-    }
-    getTeamList();
-  }, []);
-
   RadarData({ team: parseInt(teamOne + ""), num: 1 });
   RadarData({ team: parseInt(teamTwo + ""), num: 2 });
   RadarData({ team: parseInt(teamThree + ""), num: 3 });
@@ -205,25 +193,23 @@ export function RadarChart() {
     <>
       <div style={{ backgroundColor: "white" }}>
         <div>
-          <div>
-            <TeamInput setTeam={setTeamOne} num={1} />
-            <TeamInput setTeam={setTeamTwo} num={2} />
-            <TeamInput setTeam={setTeamThree} num={3} />
-            <div
-              style={{
-                height: "100vh",
-                position: "relative",
-                marginBottom: "1%",
-                padding: "1%",
+          <TeamInput setTeam={setTeamOne} num={1} />
+          <TeamInput setTeam={setTeamTwo} num={2} />
+          <TeamInput setTeam={setTeamThree} num={3} />
+          <div
+            style={{
+              height: "100vh",
+              position: "relative",
+              marginBottom: "1%",
+              padding: "1%",
+            }}
+          >
+            <Radar
+              data={data}
+              options={{
+                scales: { r: { pointLabels: { font: { size: 10 } } } },
               }}
-            >
-              <Radar
-                data={data}
-                options={{
-                  scales: { r: { pointLabels: { font: { size: 10 } } } },
-                }}
-              />
-            </div>
+            />
           </div>
         </div>
       </div>

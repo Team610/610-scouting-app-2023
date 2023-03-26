@@ -6,7 +6,7 @@ import {
 } from "../neo4j/Aggregate";
 import { createNTeams, addDummyData } from "../neo4j/AddData";
 import { query, wipe } from "../neo4j/Miscellaneous";
-import { Button, MultiSelect, Table, TextInput } from "@mantine/core";
+import { Button, Table, TextInput } from "@mantine/core";
 import sampleMatch from "../data/sampleMatch.json";
 import { Input } from "@mantine/core";
 import { useEffect, useState } from "react";
@@ -18,8 +18,6 @@ import {
 } from "../utils";
 import { CSVLink, CSVDownload } from "react-csv";
 import { AdvancedTable } from "../components/tables";
-import { aggregateStats } from "../components/statsSelector";
-import { BubbleChart } from "../components/bubbleChart";
 
 export function DisplayTeamData({
   data,
@@ -259,29 +257,4 @@ export function calcPR({
   ret += teamData.weightedCyclesPG * weights.wCyclesPG;
 
   return ret.toFixed(2);
-}
-
-export function BubbleGraph({
-  team,
-  matches,
-}: {
-  team: number;
-  matches: string[];
-}) {
-  const [stats, setStats] = useState<string[]>(
-    aggregateStats.map((stats) => stats.value)
-  );
-  const [selectedMatches, setSelectedMatches] = useState<string[]>(matches);
-
-  return (
-    <>
-      <MultiSelect
-        label="Stats"
-        onChange={(e) => setStats(e)}
-        data={aggregateStats}
-        defaultValue={stats}
-      />
-      {/* <BubbleChart stats={stats} /> */}
-    </>
-  );
 }

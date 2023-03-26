@@ -27,11 +27,5 @@ export const statLegend: any = {
   "Teleop Bottom": "teleopBottom",
   "Auto Climb Points": "autoClimb",
   "Teleop Climb Points": "teleopClimb",
-  Mobility: "mobility",
+  "Mobility": "mobility",
 };
-
-export const aggregateStats = [
-  { value: "autoPoints", label: "Auto Points" },
-  { value: "teleopPoints", label: "Teleop Points" },
-  { value: "autoPlusEnd", label: "Auto+Endgame" },
-];

@@ -17,10 +17,7 @@ export async function getTeams() {
         for (let index = 0; index < tempResult.records.length; index++) {
           // console.log(tempResult.records[index]._fields[0].identity.low);
           finalResult.push(tempResult.records[index]._fields[0].properties.name.low);
-        }
-
-        console.log(tempResult)
- 
+        } 
  
         return finalResult;
     }

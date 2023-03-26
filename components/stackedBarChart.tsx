@@ -9,9 +9,7 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { faker } from "@faker-js/faker";
-import { getMatch, getMatchList } from "../neo4j/Aggregate";
-import { matchStats, statLegend } from "./statsSelector";
+import { getMatch } from "../neo4j/Aggregate";
 
 ChartJS.register(
   CategoryScale,

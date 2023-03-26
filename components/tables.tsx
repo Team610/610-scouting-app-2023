@@ -140,6 +140,13 @@ export const AdvancedTable = ({
           },
           {
             accessorFn: (row) =>
+              parseFloat(row.cubeCycleProportion.toFixed(2)) * 100,
+            header: "Cube Scored %",
+            id: "Cube Scored Proportion",
+            size: 50,
+          },
+          {
+            accessorFn: (row) =>
               parseFloat(row.scoringAccuracy.toFixed(2)) * 100,
             header: "Scoring Accuracy %",
             id: "Scoring Accuracy",

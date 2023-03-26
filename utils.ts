@@ -4,7 +4,7 @@ const uri:string = process.env.NEXT_PUBLIC_DATABASE_URI!
 const driver = neo4j.driver(uri, neo4j.auth.basic(process.env.NEXT_PUBLIC_DATABASE_NAME!, process.env.NEXT_PUBLIC_DATABASE_PASSWORD!))
 
 export function getNeoSession(){
-    let session = driver.session({ database: "neo4j" })
+    let session = driver.session({ database: "northbay" })
     return session
 }
 
@@ -49,6 +49,7 @@ export interface teamAggData {
     maxPiecesScored: number,
     autoPiecesPG: number,
     teleopPiecesPG: number,
+    cubeCycleProportion: number,
     powerRanking?: number
 }
 
@@ -71,6 +72,7 @@ export interface teamAggDataWeight {
     maxPieces: number,
     autoPiecesPG: number,
     telePiecesPG: number,
+    cubeCycleProportion: number
 }
 
 export const defaultWeight : teamAggDataWeight = {
@@ -91,6 +93,7 @@ export const defaultWeight : teamAggDataWeight = {
     middlePG: 0,
     upperPG: 0,
     piecesPG: 0,
+    cubeCycleProportion: 0
 }
 
 export const defaultTeam : teamAggData ={
@@ -111,7 +114,8 @@ export const defaultTeam : teamAggData ={
     avgPiecesScored: 0,
     maxPiecesScored: 0,
     autoPiecesPG: 0,
-    teleopPiecesPG: 0
+    teleopPiecesPG: 0,
+    cubeCycleProportion: 0
     // powerRating: 0
 }
 

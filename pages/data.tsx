@@ -34,6 +34,7 @@ export function DisplayTeamData({
       <th>PPG</th>
       <th>Cycles PG</th>
       <th>Weighted Cycles PG</th>
+      <th>Cube Affinity</th>
       <th>Scoring Accuracy</th>
       <th>Cone Accuracy</th>
       <th>Cube Accuracy</th>
@@ -202,6 +203,7 @@ export function AggregateRow({
       <td>{data.PPG.toFixed(2)}</td>
       <td>{data.cyclesPG.toFixed(2)}</td>
       <td>{data.weightedCyclesPG.toFixed(2)}</td>
+      <td>{data.cubeCycleProportion.toFixed(2)}</td>
       <td>{data.scoringAccuracy.toFixed(2)}</td>
       <td>{data.coneAccuracy.toFixed(2)}</td>
       <td>{data.cubeAccuracy.toFixed(2)}</td>

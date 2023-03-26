@@ -419,6 +419,7 @@ export async function calculateTeamAgg({ team }: { team: number }) {
     linkPG: links / matchesPlayed,
     autoPiecesPG: (autoConesScored + autoCubesScored) / matchesPlayed,
     teleopPiecesPG: (teleopConesScored + teleopCubesScored) / matchesPlayed,
+    cubeCycleProportion: (cubesPickedUp) / (conesPickedUp + cubesPickedUp)
 
     // power rating = 4 * wCPG + 3 * accu + 2 * linkPG + 5 * PPG
     // powerRating: 4 * (nWcycles / matchesPlayed) + 3 * (conesScored + cubesScored) / (conesPickedUp + cubesPickedUp) + 2 * (links / matchesPlayed)
@@ -470,6 +471,7 @@ export async function getTeamAgg({ team }: { team: number }) {
         linkPG: pros.linkPG,
         autoPiecesPG: pros.autoPiecesPG,
         teleopPiecesPG: pros.teleopPiecesPG,
+        cubeCycleProportion: pros.cubeCycleProportion,
 
         // power rating = 4 * wCPG + 3 * accu + 2 * linkPG + 5 * PPG
         // powerRating: 4 * (nWcycles / matchesPlayed) + 3 * (conesScored + cubesScored) / (conesPickedUp + cubesPickedUp) + 2 * (links / matchesPlayed)

@@ -9,7 +9,7 @@ import {
   Legend,
 } from "chart.js";
 import { Radar } from "react-chartjs-2";
-import { calculateTeamAgg } from "../neo4j/Aggregate";
+import { calculateTeamAgg, getMatchList } from "../neo4j/Aggregate";
 import { teamAggData } from "../utils";
 import { TextInput } from "@mantine/core";
 
@@ -69,7 +69,6 @@ function changeData({
   num: number;
 }) {
   let strLabel = "Team " + team;
-  console.log(teamData);
   let bgColor =
     "rgba(" +
     (num % 3 == 0 ? "0, 0, 255," : num % 2 == 0 ? "0, 255, 0," : "255, 0, 0,") +
@@ -152,7 +151,7 @@ function TeamInput({ setTeam, num }: { setTeam: Function; num: number }) {
   let str = "Team: #" + num;
   return (
     <TextInput
-      placeholder="e.g. 610"
+      value={num}
       label={str}
       withAsterisk
       onChange={(event) => setTeam(event.currentTarget.value)}
@@ -181,10 +180,15 @@ async function RadarData({ team, num }: { team: number; num: number }) {
 }
 
 //shows radar chart
-export function RadarChart() {
-  const [teamOne, setTeamOne] = useState("");
-  const [teamTwo, setTeamTwo] = useState("");
-  const [teamThree, setTeamThree] = useState("");
+export function RadarChart({ teams }: { teams: number[] }) {
+  const [teamOne, setTeamOne] = useState(teams[0]);
+  const [teamTwo, setTeamTwo] = useState(teams[1]);
+  const [teamThree, setTeamThree] = useState(teams[2]);
+  // useEffect(() => {
+  //   setTeamOne(teams[0]);
+  //   setTeamTwo(teams[1]);
+  //   setTeamThree(teams[2]);
+  // }, []);
   RadarData({ team: parseInt(teamOne + ""), num: 1 });
   RadarData({ team: parseInt(teamTwo + ""), num: 2 });
   RadarData({ team: parseInt(teamThree + ""), num: 3 });
@@ -193,9 +197,9 @@ export function RadarChart() {
     <>
       <div style={{ backgroundColor: "white" }}>
         <div>
-          <TeamInput setTeam={setTeamOne} num={1} />
-          <TeamInput setTeam={setTeamTwo} num={2} />
-          <TeamInput setTeam={setTeamThree} num={3} />
+          <TeamInput setTeam={setTeamOne} num={teamOne} />
+          <TeamInput setTeam={setTeamTwo} num={teamTwo} />
+          <TeamInput setTeam={setTeamThree} num={teamThree} />
           <div
             style={{
               height: "100vh",

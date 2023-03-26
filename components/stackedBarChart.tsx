@@ -47,6 +47,12 @@ const colors = [
   "rgba(75, 192, 192, 1)",
   "rgba(153, 102, 255, 1)",
   "rgba(255, 159, 64, 1)",
+  "rgba(230,14,230, 1)",
+  "rgba(24,203,90, 1)",
+  "rgba(34,81,222, 1)",
+  "rgba(237,132,77, 1)",
+  "rgba(0,118,19, 1)",
+  "rgba(159,85,85, 1)",
 ];
 
 async function getData(team: number, matches: string[], stats: string[]) {

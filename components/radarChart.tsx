@@ -11,7 +11,8 @@ import {
 import { Radar } from "react-chartjs-2";
 import { calculateTeamAgg, getTeamAgg } from "../neo4j/Aggregate";
 import { teamAggData } from "../utils";
-import { TextInput } from "@mantine/core";
+import { Button, TextInput } from "@mantine/core";
+import { CONTROL_SIZES } from "@mantine/core/lib/NumberInput/NumberInput.styles";
 
 ChartJS.register(
   RadialLinearScale,
@@ -126,19 +127,38 @@ function TeamInput({ setTeam, num }: { setTeam: Function; num: number }) {
     />
   );
 }
+//button to search things up
+
+function SearchButton({ setSearch }: { setSearch: Function }) {
+  return (
+    <Button onClick={() => setSearch(true)}>
+      Search
+    </Button>
+  );
+}
+
 //calculates team aggregate data
-function RadarData({ team, num }: { team: number; num: number }) {
+function RadarData({ team, num, search, setSearch }: { team: number; num: number, search: boolean, setSearch: Function }) {
   const [teamData, setTeamData] = useState<teamAggData>();
+
   useEffect(() => {
+
     async function getData() {
-      let teamAgg = (await calculateTeamAgg({ team: parseInt(team + "") }));
-      // console.log(teamAgg);
-      setTeamData(teamAgg);
+
+      if (search) {
+        let teamAgg = (await calculateTeamAgg({ team: parseInt(team + "") }));
+        // console.log(teamAgg);
+        setTeamData(teamAgg);
+        setSearch(false);
+      }
+
+
+
     }
     getData();
-  }, [team]);
+  }, [search]);
 
-  if (teamData != undefined) {
+  if (teamData != undefined && search) {
     changeData({
       teamData: teamData, team: team, num: num
     });
@@ -151,25 +171,30 @@ export function RadarChart() {
   const [teamOne, setTeamOne] = useState('');
   const [teamTwo, setTeamTwo] = useState('');
   const [teamThree, setTeamThree] = useState('');
-  RadarData({ team: parseInt(teamOne + ""), num: 1 });
-  RadarData({ team: parseInt(teamTwo + ""), num: 2 });
-  RadarData({ team: parseInt(teamThree + ""), num: 3 });
+  const [search, setSearch] = useState(false);
+
+  RadarData({ team: parseInt(teamOne + ""), num: 1, search: search, setSearch: setSearch });
+  RadarData({ team: parseInt(teamTwo + ""), num: 2, search: search, setSearch: setSearch });
+  RadarData({ team: parseInt(teamThree + ""), num: 3, search: search, setSearch: setSearch });
 
   return (
     <>
+
       <div style={{ backgroundColor: "white" }}>
-        <div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
           <TeamInput setTeam={setTeamOne} num={1} />
           <TeamInput setTeam={setTeamTwo} num={2} />
           <TeamInput setTeam={setTeamThree} num={3} />
-          <div style={{ height: "100vh", position: "relative", marginBottom: "1%", padding: "1%" }}>
-            <Radar data={data} options={{ scales: { r: { pointLabels: { font: { size: 10 } } } } }} />
-          </div>
-
-
-
+          <SearchButton setSearch={setSearch} />
+        </div>
+        <div style={{ height: "100vh", position: "relative", marginBottom: "1%", padding: "1%" }}>
+          <Radar data={data} options={{ scales: { r: { pointLabels: { font: { size: 10 } } } } }} />
         </div>
       </div>
+
+
+
+
     </>
   );
 }

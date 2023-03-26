@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -7,11 +7,11 @@ import {
   Filler,
   Tooltip,
   Legend,
-} from 'chart.js';
-import { Radar } from 'react-chartjs-2';
-import { calculateTeamAgg, getTeamAgg } from '../neo4j/Aggregate';
-import { teamAggData } from '../utils';
-import { TextInput } from '@mantine/core';
+} from "chart.js";
+import { Radar } from "react-chartjs-2";
+import { calculateTeamAgg, getTeamAgg } from "../neo4j/Aggregate";
+import { teamAggData } from "../utils";
+import { TextInput } from "@mantine/core";
 
 ChartJS.register(
   RadialLinearScale,
@@ -24,7 +24,15 @@ ChartJS.register(
 
 //default data for radarChart
 export let data = {
-  labels: ['Cycles', 'Auto Climb ', 'Teleop Climb', 'Auto Pieces', 'Level 1', 'Level 2', 'Level 3'],
+  labels: [
+    "Cycles",
+    "Auto Climb ",
+    "Teleop Climb",
+    "Auto Pieces",
+    "Level 1",
+    "Level 2",
+    "Level 3",
+  ],
   datasets: [
     {
       label: 'Team ?',
@@ -49,9 +57,6 @@ export let data = {
     },
   ],
 };
-
-
-
 //changes data for radar chart
 
 
@@ -110,16 +115,19 @@ function changeData({ teamData, team, num }: { teamData: teamAggData, team: numb
 
 }
 //text input to put in specific team
-function TeamInput({ setTeam, num }: { setTeam: Function, num: number }) {
-  let str = "Team: #" + num
-  return <TextInput placeholder="e.g. 610"
-    label={str}
-    withAsterisk
-    onChange={(event) => setTeam(event.currentTarget.value)} />;
+function TeamInput({ setTeam, num }: { setTeam: Function; num: number }) {
+  let str = "Team: #" + num;
+  return (
+    <TextInput
+      placeholder="e.g. 610"
+      label={str}
+      withAsterisk
+      onChange={(event) => setTeam(event.currentTarget.value)}
+    />
+  );
 }
-
-//calculates team aggregate data 
-function RadarData({ team, num }: { team: number, num: number }) {
+//calculates team aggregate data
+function RadarData({ team, num }: { team: number; num: number }) {
   const [teamData, setTeamData] = useState<teamAggData>();
   useEffect(() => {
     async function getData() {
@@ -138,7 +146,6 @@ function RadarData({ team, num }: { team: number, num: number }) {
 
 }
 
-
 //shows radar chart
 export function RadarChart() {
   const [teamOne, setTeamOne] = useState('');
@@ -148,9 +155,9 @@ export function RadarChart() {
   RadarData({ team: parseInt(teamTwo + ""), num: 2 });
   RadarData({ team: parseInt(teamThree + ""), num: 3 });
 
-  return <>
-    <div style={{ backgroundColor: "white" }}>
-      <div>
+  return (
+    <>
+      <div style={{ backgroundColor: "white" }}>
         <div>
           <TeamInput setTeam={setTeamOne} num={1} />
           <TeamInput setTeam={setTeamTwo} num={2} />
@@ -162,8 +169,7 @@ export function RadarChart() {
 
 
         </div>
-
       </div>
-    </div>
-  </>;
+    </>
+  );
 }

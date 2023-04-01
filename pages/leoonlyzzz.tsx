@@ -3,7 +3,7 @@ import { addDummyData } from "../neo4j/AddData";
 import { calculateTeamAgg, getAllTeamNumbers, getPiecesPickedUpAllMatches, getPiecesScoredAllMatches, setTeamAgg } from "../neo4j/Aggregate";
 import { wipe } from "../neo4j/Miscellaneous";
 import sampleMatch from "../data/sampleMatch.json"
-import { getNeoSession } from "../utils";
+import { getNeoSession } from "../neo4j/Session";
 
 export default function rdr() {
     return (
@@ -13,7 +13,7 @@ export default function rdr() {
             </Button>
             <Button onClick={async () => await wipe()}>Wipe</Button>
             <Button onClick={async () => await boasdfl()}>set aff</Button> */}
-            {/* <Button onClick={async () => await setTeamAgg({team_agg_data: await calculateTeamAgg({team: 2706})})}></Button> */}
+            <Button onClick={async () => await calculateTeamAgg({team: 2706})}>agg time benchmark</Button>
         </div >
     )
 }

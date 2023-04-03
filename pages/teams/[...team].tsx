@@ -9,6 +9,7 @@ import { teamAggData } from "../../utils";
 import { SingleTeamData } from "../data";
 import Image from "next/image";
 import Chart from "../../components/chart";
+import { StatsRing } from "../../components/statBox";
 
 export default function Home() {
   const [matches, setMatches] = useState<string[]>();
@@ -62,6 +63,30 @@ export default function Home() {
         ) : (
           "Loading"
         )}
+      </div>
+      <div style={{ display: "flex" }}>
+        {[0, 1, 2].map((item) => {
+          return (
+            <StatsRing
+              data={[
+                {
+                  label: "Max Scoring Potential",
+                  stats: "25 Cones",
+                  progress: 65,
+                  color: "white",
+                  icon: "up",
+                },
+                {
+                  label: "Max Scoring Potential",
+                  stats: "25 Cones",
+                  progress: 65,
+                  color: "white",
+                  icon: "up",
+                },
+              ]}
+            />
+          );
+        })}
       </div>
       {agg ? <SingleTeamData team={parseInt(teamNumber)} /> : <>Loading</>}
       {matches ? (

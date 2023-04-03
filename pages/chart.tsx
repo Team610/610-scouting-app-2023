@@ -5,8 +5,8 @@ import { blue } from "@nextui-org/react";
 import { SelectMatch } from "./matches";
 
 export default function Compare() {
-  const [redTeams, setRedTeams] = useState();
-  const [blueTeams, setBlueTeams] = useState();
+  const [redTeams, setRedTeams] = useState([610, 2013, 0]);
+  const [blueTeams, setBlueTeams] = useState([0, 0, 0]);
   const [selectedMatch, setSelectedMatch] = useState();
   useEffect(() => {
     async function getMatches() {
@@ -35,6 +35,7 @@ export default function Compare() {
           break;
         }
       }
+      console.log(1);
     }
     getMatches();
   }, []);
@@ -47,19 +48,13 @@ export default function Compare() {
         setSelectedMatch={setSelectedMatch}
       /> */}
       <div style={{ display: "flex" }}>
-        {redTeams && blueTeams ? (
-          <>
-            {" "}
-            <div style={{ flex: "1" }}>
-              <RadarChart teams={redTeams} />
-            </div>
-            <div style={{ flex: "1" }}>
-              <RadarChart teams={blueTeams} />
-            </div>{" "}
-          </>
-        ) : (
-          "Loading..."
-        )}
+        {" "}
+        <div style={{ flex: "1" }}>
+          <RadarChart teams={redTeams} />
+        </div>
+        <div style={{ flex: "1" }}>
+          <RadarChart teams={blueTeams} />
+        </div>{" "}
       </div>
     </div>
   );

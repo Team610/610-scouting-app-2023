@@ -51,8 +51,8 @@ export default function Home({
 
   function handleClick(e: any, substation: string) {
     let obj = {
-      left: mousePos.x,
-      top: mousePos.y,
+      left: e.clientX,
+      top: e.clientY,
       gamePiece: "",
       substation: substation,
     };

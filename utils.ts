@@ -21,7 +21,8 @@ export interface matchData {
     mobility: boolean,
     cycles: Array<cycleData>,
     enemies: Array<number>,
-    allies: Array<number>
+    allies: Array<number>,
+    defended: Array<{team: string, time: number}>
 }
 
 export interface teamAggData {
@@ -126,7 +127,8 @@ export const defaultMatch : matchData ={
     mobility: false,
     cycles: [],
     enemies: [9997, 9998],
-    allies: [9994, 9995, 9996]
+    allies: [9994, 9995, 9996],
+    defended: [{team: '610', time: 20}]
 }
 
 // return a grid-row-column triplet for where the scoring position is

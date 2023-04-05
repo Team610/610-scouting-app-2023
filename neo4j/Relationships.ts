@@ -52,3 +52,26 @@ export async function allies(data: matchData) {
     }
   }
   
+  export async function defence(data: any) {
+    const session = getNeoSession()
+    for (let index = 0; index < data.defended.length; index++) {
+      try {
+        const tx = session.beginTransaction()
+        
+        const _ = await tx.run  (
+          'MERGE (:Team{name:toInteger($enemyname)})',
+          { enemyname: data.defended[index]["team"]}
+        )
+
+        const result = await tx.run(
+          'MATCH (t:Team),(ot:Team) WHERE t.name = toInteger($name) AND ot.name = toInteger($otherName) CREATE (t)-[:DEFENDED{match: toString($match), time: toFloat($time)}]->(ot)',
+          { name: data.team, otherName: data.defended[index]["team"], match: data.match, time: data.defended[index]["time"] },
+        )
+  
+        await tx.commit()
+        
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  }

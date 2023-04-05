@@ -1,7 +1,7 @@
 import { Session } from "next-auth";
 import { getNeoSession } from "./Session";
 import neo4j from 'neo4j-driver'
-import { allies, enemies } from "./Relationships";
+import { allies, defence, enemies } from "./Relationships";
 import { matchData } from "../utils";
 import { calculateTeamAgg, setTeamAgg } from "./Aggregate";
 
@@ -132,6 +132,7 @@ export async function addDummyData({data}: {data: Array<matchData>}){
         await climb(data[i])
         await park(data[i])
         await mobility(data[i])
+        await defence(data[i])
 
         await setTeamAgg({team_agg_data: await calculateTeamAgg({team: data[i].team})})
     }
@@ -147,7 +148,7 @@ export async function scoreMatch(match: matchData){
     await park(match)
     await mobility(match)
     await climb(match)
-
+    await defence(match)
 }
 
 

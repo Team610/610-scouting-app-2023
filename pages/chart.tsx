@@ -35,7 +35,6 @@ export default function Compare() {
           break;
         }
       }
-      console.log(1);
     }
     getMatches();
   }, []);

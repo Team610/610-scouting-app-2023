@@ -51,7 +51,7 @@ export default function MatchScreen() {
   );
   const [gamePiece, setGamePiece] = useState("nothing");
   const [blueAllaince, setBlueAllaince] = useState(false);
-  const [submitted, setSubmitted] = useState(false)
+  const [submitted, setSubmitted] = useState(false);
 
   const router = useRouter();
   const [time, setTime] = useState(18);
@@ -261,7 +261,7 @@ export default function MatchScreen() {
         <Button
           disabled={submitted}
           onClick={async () => {
-            setSubmitted(true)
+            setSubmitted(true);
             await submitMatch({
               team: teamID,
               allies: blueAllaince

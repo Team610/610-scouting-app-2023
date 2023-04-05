@@ -1,7 +1,7 @@
 import Image, { StaticImageData } from "next/image";
 import cone from "../styles/img/cone.png";
 import cube from "../styles/img/cube.png";
-import myPic from "../assets/FRCGameField.png";
+import myPic from "../styles/img/FRCGameField.png";
 import React, { use, useRef, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useDetectClickOutside } from "react-detect-click-outside";

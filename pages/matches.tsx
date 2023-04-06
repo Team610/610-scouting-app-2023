@@ -30,7 +30,7 @@ export function SelectMatch({
           "monpiIlPoQ81Y5bc8zhoMNuTbm8bLHQzYikSQuYYZHvM3BbAm8Y4uFeaOU6bMNg1",
       };
       const response = await fetch(
-        "https://www.thebluealliance.com/api/v3/event/2023onnob/matches",
+        "https://www.thebluealliance.com/api/v3/event/2023oncmp2/matches",
         { headers: headers }
       );
       const data = await response.json();

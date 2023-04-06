@@ -1,7 +1,7 @@
 import Image, { StaticImageData } from "next/image";
 import cone from "../styles/img/cone.png";
 import cube from "../styles/img/cube.png";
-import myPic from "../assets/FRCGameField.png";
+import myPic from "../styles/img/FRCGameField.png";
 import React, { use, useRef, useState } from "react";
 import { useDisclosure } from "@mantine/hooks";
 import { useDetectClickOutside } from "react-detect-click-outside";
@@ -51,8 +51,8 @@ export default function Home({
 
   function handleClick(e: any, substation: string) {
     let obj = {
-      left: mousePos.x,
-      top: mousePos.y,
+      left: e.clientX,
+      top: e.clientY,
       gamePiece: "",
       substation: substation,
     };
@@ -114,22 +114,49 @@ export default function Home({
     }
   }, [gamePiece]);
 
-  let leftAuto = 70;
-  let topAuto = 60;
+  let leftAuto = 520;
+  let topAuto = 140;
 
-  let leftShelf = 627;
-  let topShelf = 270;
+  let leftShelf = 0;
+  let topShelf = 30;
 
-  let leftSub = 440;
-  let topSub = 320;
+  let leftSub = 140;
+  let topSub = 0;
 
   let topFloor = 140;
   let leftFloor = 315;
 
   if (blueAllaince) {
-    leftAuto = 520;
-    leftShelf = 0;
-    leftSub = 140;
+    leftAuto = 70;
+    leftShelf = 627;
+    leftSub = 440;
+  }
+
+  function determineLocation() {
+    let left = 0;
+    let top = 0;
+    let sub = locations[locations.length - 1].substation;
+    if (sub.includes("red") || sub.includes("blue")) {
+      if (sub.includes("top")) {
+        top = topAuto;
+      }
+      if (sub.includes("middle")) {
+        top = topAuto + 50;
+      }
+      if (sub.includes("bottom")) {
+        top = topAuto + 100;
+      }
+      left = !blueAllaince ? leftAuto - 120 : leftAuto + 80;
+      return [top, left];
+    }
+    if (sub == "gate") {
+      return [topSub + 60,  blueAllaince ? leftSub - 100 : leftSub];
+    }
+    if (sub == "shelf") {
+      return [topShelf + 50, !blueAllaince ? leftShelf : leftShelf + 50];
+    } else {
+      return [topFloor - 50, leftFloor - 10];
+    }
   }
 
   return (
@@ -154,7 +181,7 @@ export default function Home({
           width={700}
           height={356}
           alt="image"
-          style={{ transform: "rotate(180deg)" }}
+          // style={{ transform: "rotate(180deg)" }}
         />
       </div>
       {autoButton ? (

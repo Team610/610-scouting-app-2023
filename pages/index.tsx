@@ -14,7 +14,6 @@ import { allies, enemies } from "../neo4j/Relationships";
 import { query, wipe } from "../neo4j/Miscellaneous";
 import { Button } from "@mantine/core";
 import sampleMatch from "../data/sampleMatch.json";
-import SignIn from "./signIn";
 import Link from "next/link";
 import { getSession, useSession } from "next-auth/react";
 import { Context, useEffect, useState } from "react";
@@ -30,10 +29,9 @@ import SelectMatchDropBox from "./matches";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-  const [queryText, setQueryText] = useState("");
   return (
     <>
-       {/* <Button onClick={async () => await createNTeams(20)}>Create dummy teams</Button>
+      {/* <Button onClick={async () => await createNTeams(20)}>Create dummy teams</Button>
       <Button onClick={async () => await addDummyData({ data: sampleMatch })}> 
         Add dummy data
   </Button>

@@ -1,10 +1,4 @@
-import {
-  createStyles,
-  Header,
-  Group,
-  Button,
-  Box,
-} from "@mantine/core";
+import { createStyles, Header, Group, Button, Box } from "@mantine/core";
 import SignIn, { checkAccount } from "./signIn";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
@@ -118,7 +112,13 @@ export function HeaderMegaMenu() {
               Teams
             </Link>
             <Link href="/data" className={classes.link}>
-              Data
+              Ranking
+            </Link>
+            <Link href="/chart" className={classes.link}>
+              Compare Teams
+            </Link>
+            <Link href="/allTeams" className={classes.link}>
+              All Teams Scatter
             </Link>
             <Link
               href={""}

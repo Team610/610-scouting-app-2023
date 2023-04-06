@@ -3,11 +3,6 @@ import neo4j from 'neo4j-driver'
 const uri:string = process.env.NEXT_PUBLIC_DATABASE_URI!
 const driver = neo4j.driver(uri, neo4j.auth.basic(process.env.NEXT_PUBLIC_DATABASE_NAME!, process.env.NEXT_PUBLIC_DATABASE_PASSWORD!))
 
-export function getNeoSession(){
-    let session = driver.session({ database: "neo4j" })
-    return session
-}
-
 export interface cycleData {
     substation: string,
     teleop: boolean,
@@ -26,7 +21,8 @@ export interface matchData {
     mobility: boolean,
     cycles: Array<cycleData>,
     enemies: Array<number>,
-    allies: Array<number>
+    allies: Array<number>,
+    defended: Array<{team: string, time: number}>
 }
 
 export interface teamAggData {
@@ -127,7 +123,8 @@ export const defaultMatch : matchData ={
     mobility: false,
     cycles: [],
     enemies: [9997, 9998],
-    allies: [9994, 9995, 9996]
+    allies: [9994, 9995, 9996],
+    defended: [{team: '610', time: 20}]
 }
 
 // return a grid-row-column triplet for where the scoring position is

@@ -320,6 +320,8 @@ async function getAutoCyclesByMatch(team: number, match: String, tx: any) {
 export async function calculateTeamAgg({ team }: { team: number }) {
   const session = getNeoSession();
 
+  let startTime = Date.now()
+
   let autoPoints: number = 0;
   let points: number = 0;
   let matchesPlayed: number = 0;
@@ -427,6 +429,10 @@ export async function calculateTeamAgg({ team }: { team: number }) {
   };
 
   // console.log(teamdata)
+
+  let endTime = Date.now()
+
+  console.log("Aggregate done in " + (endTime - startTime) / 1000 + "s")
 
   return teamdata.matchesPlayed > 0 ? teamdata : defaultTeam;
 }
@@ -774,7 +780,7 @@ export async function getMatch(team: number, match: String) {
 }
 
 export async function getCompTeams(teams: number[]) {
-  const teamPromises = teams.map((team) => calculateTeamAgg({ team: team }));
+  const teamPromises = teams.map((team) => getTeamAgg({ team: team }));
   const teamData = await Promise.all(teamPromises);
   return teamData;
 }
@@ -866,7 +872,6 @@ export async function setTeamAgg({
           "SET ta.upperScored = toFloat(" +
           team_agg_data["scoringPositions"][2] +
           ")\n";
-        console.log(team_agg_data["scoringPositions"])
       } else {
         qs +=
           "SET ta." + key + " = toFloat(" + (team_agg_data as any)[key] + ")\n";

@@ -9,6 +9,9 @@ import { convertCycleServer } from "../lib/clientCycleToServer";
 import { useRouter } from "next/router";
 import React from "react";
 import GamePiece from "../components/CurrentGamePiece";
+import Defense from "./defense";
+
+//http://localhost:3000/match?match=f1&team=2013&red=2013,610,771&blue=1305,4152,6864
 
 export interface Score {
   auto: number;
@@ -51,7 +54,9 @@ export default function MatchScreen() {
   );
   const [gamePiece, setGamePiece] = useState("nothing");
   const [blueAllaince, setBlueAllaince] = useState(false);
-  const [submitted, setSubmitted] = useState(false)
+  const [submitted, setSubmitted] = useState(false);
+
+  const [defenseTime, setDefenseTime] = useState([]);
 
   const router = useRouter();
   const [time, setTime] = useState(18);
@@ -59,8 +64,29 @@ export default function MatchScreen() {
   const queryParams = router.query;
   const matchID = queryParams.match?.toString()!;
   const teamID = parseInt(queryParams.team?.toString()!);
-  const red = queryParams.red?.toString().split(",");
-  const blue = queryParams.blue?.toString().split(",");
+  let red = queryParams.red?.toString().split(",");
+  let blue = queryParams.blue?.toString().split(",");
+
+  useEffect(() => {
+    let arr = [];
+    if (!blueAllaince) {
+      arr.push({ team: queryParams.blue?.toString().split(",")[0], time: 0 });
+      arr.push({ team: queryParams.blue?.toString().split(",")[1], time: 0 });
+      arr.push({ team: queryParams.blue?.toString().split(",")[2], time: 0 });
+    } else {
+      arr.push({ team: queryParams.red?.toString().split(",")[0], time: 0 });
+      arr.push({ team: queryParams.red?.toString().split(",")[1], time: 0 });
+      arr.push({ team: queryParams.red?.toString().split(",")[2], time: 0 });
+    }
+    setDefenseTime(arr);
+
+    if (blue?.includes(teamID.toString())) {
+      setBlueAllaince(true);
+      blue.splice(blue.indexOf(teamID.toString()), 1);
+    } else {
+      red?.splice(red.indexOf(teamID.toString()), 1);
+    }
+  }, []);
 
   // redirect page to "TeleOp" after 10 seconds while displaying remaining time on page
   useEffect(() => {
@@ -70,13 +96,6 @@ export default function MatchScreen() {
     if (time === 0) {
       setGameState("teleop");
       setChargingStation(deafultChargingStation);
-    }
-
-    if (blue?.includes(teamID.toString())) {
-      setBlueAllaince(true);
-      blue.splice(blue.indexOf(teamID.toString()), 1);
-    } else {
-      red?.splice(red.indexOf(teamID.toString()), 1);
     }
 
     return () => clearTimeout(timer);
@@ -252,6 +271,11 @@ export default function MatchScreen() {
                 <GamePiece gamePiece={gamePiece} />
                 <DroppedGamePiece />
                 <LinkScored />
+                <Defense
+                  teams={blueAllaince ? red : blue}
+                  defenseTime={defenseTime}
+                  setDefenseTime={setDefenseTime}
+                />
               </div>
             </div>
           </div>
@@ -261,7 +285,7 @@ export default function MatchScreen() {
         <Button
           disabled={submitted}
           onClick={async () => {
-            setSubmitted(true)
+            setSubmitted(true);
             await submitMatch({
               team: teamID,
               allies: blueAllaince
@@ -288,6 +312,7 @@ export default function MatchScreen() {
                   : 0,
               mobility: chargingStation.auto.mobility,
               park: chargingStation.teleop.parked,
+              defended: defenseTime,
             });
             router.push("/");
           }}

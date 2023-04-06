@@ -4,6 +4,7 @@ import {
   getMatchList,
   calculateTeamAgg,
   getTeamAgg,
+  getPiecesByLevel,
 } from "../../neo4j/Aggregate";
 import { teamAggData } from "../../utils";
 import { SingleTeamData } from "../data";
@@ -25,6 +26,7 @@ export default function Home() {
       console.log(teamAgg);
       setMatches(data);
       setAgg(teamAgg);
+      console.log(await getPiecesByLevel(parseInt(teamNumber)));
     }
 
     async function getImage() {

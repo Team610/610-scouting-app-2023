@@ -114,22 +114,22 @@ export default function Home({
     }
   }, [gamePiece]);
 
-  let leftAuto = 70;
-  let topAuto = 60;
+  let leftAuto = 520;
+  let topAuto = 140;
 
-  let leftShelf = 627;
-  let topShelf = 270;
+  let leftShelf = 0;
+  let topShelf = 30;
 
-  let leftSub = 440;
-  let topSub = 320;
+  let leftSub = 140;
+  let topSub = 0;
 
   let topFloor = 140;
   let leftFloor = 315;
 
   if (blueAllaince) {
-    leftAuto = 520;
-    leftShelf = 0;
-    leftSub = 140;
+    leftAuto = 70;
+    leftShelf = 627;
+    leftSub = 440;
   }
 
   function determineLocation() {
@@ -146,16 +146,16 @@ export default function Home({
       if (sub.includes("bottom")) {
         top = topAuto + 100;
       }
-      left = blueAllaince ? leftAuto - 120 : leftAuto + 80;
+      left = !blueAllaince ? leftAuto - 120 : leftAuto + 80;
       return [top, left];
     }
     if (sub == "gate") {
-      return [topSub - 60, leftSub];
+      return [topSub + 60,  blueAllaince ? leftSub - 100 : leftSub];
     }
     if (sub == "shelf") {
-      return [topShelf - 60, blueAllaince ? leftShelf : leftShelf - 50];
+      return [topShelf + 50, !blueAllaince ? leftShelf : leftShelf + 50];
     } else {
-      return [topFloor - 60, leftFloor - 10];
+      return [topFloor - 50, leftFloor - 10];
     }
   }
 

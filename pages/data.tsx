@@ -3,6 +3,7 @@ import {
   getCompTeams,
   getMatch,
   calculateTeamAgg,
+  getPiecesByLevel,
 } from "../neo4j/Aggregate";
 import { createNTeams, addDummyData } from "../neo4j/AddData";
 import { query, wipe } from "../neo4j/Miscellaneous";

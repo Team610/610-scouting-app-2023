@@ -186,6 +186,32 @@ export async function getPiecesPickedUp(
   return result.records[0].get(0).low;
 }
 
+export async function getPiecesByLevel(team: number){
+  let res = {}
+  let pieces = ['', 'cone', 'cube']
+  const session = getNeoSession();
+  const tx = session.beginTransaction();
+  for (let i = 0; i < pieces.length; i++) {
+    const piece = pieces[i];
+    res[piece!="" ? piece : "total"] = {}
+    for (let row = 0; row < 3; row++) {
+      try {
+        const result = await tx.run(
+          'MATCH (t:Team {name: $name})-' + (piece=="" ? '[]' : '[:' + piece + ']') + '-(c:Cycle {teleop: TRUE}) OPTIONAL MATCH (c)--(s:ScoringPosition {name: $row}) RETURN count(c) AS cycleCount, count(s) AS scoredCount',
+          { name: team, row: row == 0 ? "bottom" : row == 1 ? "middle" : "top"}
+        );
+
+        res[piece!="" ? piece : "total"][row] = {
+          cycles: result.records[0].get("cycleCount")["low"], 
+          scored: result.records[0].get("scoredCount")["low"]
+        }
+      }
+      catch(e){console.error(e)}
+    }
+  }
+  return res
+}
+
 // get where team picked up pieces in all matches
 export async function getPiecesPickedUpAllMatches(
   team: number,
@@ -780,7 +806,7 @@ export async function getMatch(team: number, match: String) {
 }
 
 export async function getCompTeams(teams: number[]) {
-  const teamPromises = teams.map((team) => getTeamAgg({ team: team }));
+  const teamPromises = teams.map((team) => calculateTeamAgg({ team: team }));
   const teamData = await Promise.all(teamPromises);
   return teamData;
 }

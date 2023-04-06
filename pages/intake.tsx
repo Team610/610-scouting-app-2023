@@ -150,10 +150,10 @@ export default function Home({
       return [top, left];
     }
     if (sub == "gate") {
-      return [topSub + 60,  blueAllaince ? leftSub - 100 : leftSub];
+      return [topSub + 60, !blueAllaince ? leftSub : leftSub];
     }
     if (sub == "shelf") {
-      return [topShelf + 50, !blueAllaince ? leftShelf : leftShelf + 50];
+      return [topShelf + 50, blueAllaince ? leftShelf - 100 : leftShelf + 50];
     } else {
       return [topFloor - 50, leftFloor - 10];
     }

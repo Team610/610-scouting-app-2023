@@ -117,6 +117,9 @@ export function HeaderMegaMenu() {
             <Link href="/chart" className={classes.link}>
               Compare Teams
             </Link>
+            <Link href="/allTeams" className={classes.link}>
+              All Teams Scatter
+            </Link>
             <Link
               href={""}
               onClick={() => signIn("google")}

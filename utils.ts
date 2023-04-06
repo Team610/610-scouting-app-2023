@@ -45,7 +45,6 @@ export interface teamAggData {
     maxPiecesScored: number,
     autoPiecesPG: number,
     teleopPiecesPG: number,
-    cubeCycleProportion: number,
     powerRanking?: number
 }
 
@@ -68,7 +67,6 @@ export interface teamAggDataWeight {
     maxPieces: number,
     autoPiecesPG: number,
     telePiecesPG: number,
-    cubeCycleProportion: number
 }
 
 export const defaultWeight : teamAggDataWeight = {
@@ -89,7 +87,6 @@ export const defaultWeight : teamAggDataWeight = {
     middlePG: 0,
     upperPG: 0,
     piecesPG: 0,
-    cubeCycleProportion: 0
 }
 
 export const defaultTeam : teamAggData ={
@@ -110,8 +107,7 @@ export const defaultTeam : teamAggData ={
     avgPiecesScored: 0,
     maxPiecesScored: 0,
     autoPiecesPG: 0,
-    teleopPiecesPG: 0,
-    cubeCycleProportion: 0
+    teleopPiecesPG: 0
     // powerRating: 0
 }
 

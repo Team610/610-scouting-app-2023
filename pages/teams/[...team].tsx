@@ -64,7 +64,7 @@ export default function Home() {
           "Loading"
         )}
       </div>
-      <div style={{ display: "flex" }}>
+      {/* <div style={{ display: "flex" }}>
         {[0, 1, 2].map((item) => {
           return (
             <StatsRing
@@ -87,7 +87,7 @@ export default function Home() {
             />
           );
         })}
-      </div>
+      </div> */}
       {agg ? <SingleTeamData team={parseInt(teamNumber)} /> : <>Loading</>}
       {matches ? (
         <Chart team={parseInt(teamNumber)} matches={matches} />

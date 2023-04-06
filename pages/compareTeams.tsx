@@ -82,11 +82,6 @@ export function CompareTeamData({ teams }: { teams: Array<number> }) {
 export default function CompareTeams() {
   return (
     <div>
-      {/* <Button onClick={async () => await addDummyData({ data: sampleMatch })}>
-        Add dummy data
-      </Button>
-      <Button onClick={async () => await wipe()}>Wipe</Button> */}
-
       {/* <CompareTeamData teams={[1, 2, 3, 4, 5, 6]} /> */}
     </div>
   );

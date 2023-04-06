@@ -15,7 +15,6 @@ export interface clientCycle {
 
 export async function submitMatch(match: matchData){
 
-    console.log(match.defended)
     await scoreMatch(match)
     await setTeamAgg({team_agg_data: await calculateTeamAgg({team: match.team})})
 

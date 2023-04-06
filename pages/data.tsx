@@ -106,7 +106,7 @@ export function SingleTeamData({ team }: { team: number }) {
           ></TextInput>
           <Button
             onClick={async () => {
-              setData([await calculateTeamAgg({ team: teamNo })]);
+              setData([await getTeamAgg({ team: teamNo })]);
               setSearching(true);
             }}
           >

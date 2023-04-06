@@ -905,3 +905,42 @@ export async function getAllTeamData() {
 
   return ret;
 }
+
+//max cycles,max gamepieces scored,max cones scored,max cubes scored, max level 3
+export async function getMax(team:number) {
+  let cycles:number=0
+  let piecesScored:number = 0
+  let conesScored:number = 0
+  let cubesSocred:number = 0
+  let level3:number = 0
+  let match:String[] = await getMatchList(team)
+
+  for (let i = 0; i < match.length; i++) {
+    let currentMatch:any = getMatch(team, match[i])
+  
+    if(currentMatch.cycles > cycles) {
+      cycles = currentMatch.cycles 
+    }
+    if(currentMatch.piecesScored > piecesScored) {
+      piecesScored = currentMatch.piecesScored
+    }
+    if(currentMatch.conesScored > conesScored) {
+      conesScored = currentMatch.conesScored
+    }
+    if(currentMatch.cubesScored > cubesSocred) {
+      cubesSocred = currentMatch.cubesScored
+    }
+    if((currentMatch.autoTop + currentMatch.teleopTop) > level3) {
+      level3 = (currentMatch.autoTop + currentMatch.teleopTop) 
+    }
+  }
+  let ret =  {
+    cycles,
+    piecesScored,
+    conesScored,
+    cubesSocred,
+    level3
+  }
+  console.log(ret)
+  return ret
+}

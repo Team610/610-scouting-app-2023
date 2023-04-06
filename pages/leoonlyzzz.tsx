@@ -11,8 +11,8 @@ export default function rdr() {
             {/* <Button onClick={async () => await addDummyData({ data: sampleMatch })}>
                 Add dummy data
            </Button>
-            <Button onClick={async () => await wipe()}>Wipe</Button> */}
-            {/* <Button onClick={async () => await boasdfl()}>set aff</Button> */}
+            <Button onClick={async () => await wipe()}>Wipe</Button>
+            <Button onClick={async () => await boasdfl()}>set aff</Button> */}
             {/* <Button onClick={async () => await calculateTeamAgg({team: 2706})}>agg time benchmark</Button> */}
         </div >
     )

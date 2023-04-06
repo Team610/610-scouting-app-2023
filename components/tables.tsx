@@ -183,6 +183,12 @@ export const AdvancedTable = ({
             size: 50,
           },
           {
+            accessorFn: (row) => row.autoNoClimb.toFixed(2),
+            header: "Auto No Climb PPG",
+            id: "auto no climb ppg",
+            size: 50,
+          },
+          {
             accessorFn: (row) => row.teleopClimbPPG.toFixed(2),
             header: "Teleop Climb PPG",
             id: "teleop climb ppg",

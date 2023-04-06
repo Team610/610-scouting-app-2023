@@ -271,11 +271,13 @@ export default function MatchScreen() {
                 <GamePiece gamePiece={gamePiece} />
                 <DroppedGamePiece />
                 <LinkScored />
-                <Defense
-                  teams={blueAllaince ? red : blue}
-                  defenseTime={defenseTime}
-                  setDefenseTime={setDefenseTime}
-                />
+                {gameState == "teleop" ? ( 
+                  <Defense
+                    teams={blueAllaince ? red : blue}
+                    defenseTime={defenseTime}
+                    setDefenseTime={setDefenseTime}
+                  />) : null}
+
               </div>
             </div>
           </div>

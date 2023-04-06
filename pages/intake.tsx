@@ -114,22 +114,22 @@ export default function Home({
     }
   }, [gamePiece]);
 
-  let leftAuto = 70;
-  let topAuto = 60;
+  let leftAuto = 520;
+  let topAuto = 140;
 
-  let leftShelf = 627;
+  let leftShelf = 0;
   let topShelf = 270;
 
-  let leftSub = 440;
+  let leftSub = 140;
   let topSub = 320;
 
   let topFloor = 140;
   let leftFloor = 315;
 
   if (blueAllaince) {
-    leftAuto = 520;
-    leftShelf = 0;
-    leftSub = 140;
+    leftAuto = 70;
+    leftShelf = 627;
+    leftSub = 440;
   }
 
   function determineLocation() {
@@ -181,7 +181,7 @@ export default function Home({
           width={700}
           height={356}
           alt="image"
-          style={{ transform: "rotate(180deg)" }}
+          // style={{ transform: "rotate(180deg)" }}
         />
       </div>
       {autoButton ? (

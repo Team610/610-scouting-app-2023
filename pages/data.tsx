@@ -45,6 +45,7 @@ export function DisplayTeamData({
       <th>Link PG</th>
       <th>Auto Pieces PG</th>
       <th>Teleop Pieces PG</th>
+      <th>AutoNoClimbPG</th>
       <th>Power Rating</th>
     </tr>
   );
@@ -221,6 +222,7 @@ export function AggregateRow({
       <td>{data.linkPG.toFixed(2)}</td>
       <td>{data.autoPiecesPG.toFixed(2)}</td>
       <td>{data.teleopPiecesPG.toFixed(2)}</td>
+      <td>{data.autoNoClimb.toFixed(2)}</td>
       <td>{calcPR({ teamData: data, weights: weights })}</td>
     </tr>
   );
@@ -257,6 +259,10 @@ export function calcPR({
   ret += teamData.teleopClimbPPG * weights.teleClimbPG;
   ret += teamData.teleopPiecesPG * weights.telePiecesPG;
   ret += teamData.weightedCyclesPG * weights.wCyclesPG;
+  ret += isNaN(teamData.cubeCycleProportion * weights.cubeCycleProportion)
+  ? 0
+  : teamData.cubeCycleProportion * weights.cubeCycleProportion;
+  ret += teamData.autoNoClimb * weights.autoNoClimb
 
   return ret.toFixed(2);
 }

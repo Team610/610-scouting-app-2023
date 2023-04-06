@@ -1,7 +1,7 @@
 import { getCompTeams, getMatch, calculateTeamAgg, getTeamAgg } from "../neo4j/Aggregate";
 import { createNTeams, addDummyData } from "../neo4j/AddData";
 import { query, wipe } from "../neo4j/Miscellaneous";
-import { Button, Table } from "@mantine/core";
+import { Button, Table, TextInput } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { teamAggData } from "../utils";
 import sampleMatch from "../data/sampleMatch.json";
@@ -12,11 +12,11 @@ export function CompareTeamData({ teams }: { teams: Array<number> }) {
 
   useEffect(() => {
     async function getData() {
-      console.log("getting data");
       setData(await getCompTeams(teams));
     }
     getData();
-  }, []);
+    console.log(data)
+  }, [teams]);
 
   const ths = (
     <tr>
@@ -80,14 +80,16 @@ export function CompareTeamData({ teams }: { teams: Array<number> }) {
 }
 
 export default function CompareTeams() {
+  const [teams, setTeams] = useState<number[]>([])
+
   return (
     <div>
-      {/* <Button onClick={async () => await addDummyData({ data: sampleMatch })}>
-        Add dummy data
-      </Button>
-      <Button onClick={async () => await wipe()}>Wipe</Button> */}
+      <TextInput onChange={(e) => {
+        setTeams(e.target.value.split(" ").map(x=>parseInt(x)))
+        console.log(teams)
+        }}></TextInput>
 
-      {/* <CompareTeamData teams={[1, 2, 3, 4, 5, 6]} /> */}
+      <CompareTeamData teams={teams} />
     </div>
   );
 }

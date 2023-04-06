@@ -150,7 +150,7 @@ export default function Home({
       return [top, left];
     }
     if (sub == "gate") {
-      return [topSub + 60,  blueAllaince ? leftSub - 100 : leftSub];
+      return [topSub + 60, blueAllaince ? leftSub - 100 : leftSub];
     }
     if (sub == "shelf") {
       return [topShelf + 50, !blueAllaince ? leftShelf : leftShelf + 50];
@@ -249,7 +249,7 @@ export default function Home({
           </Button>
         </>
       )}
-      {locations.map((coord: IntakeLocation, idx: number) => {
+      {/* {locations.map((coord: IntakeLocation, idx: number) => {
         //always starts with empty arrow so ignore the first index
         //also ignore the last index which is yet to be assigned a game piece
         if (idx !== 0 && (idx !== locations.length - 1 || !opened)) {
@@ -273,7 +273,7 @@ export default function Home({
             ></Image>
           );
         }
-      })}
+      })} */}
       {opened && gamePiece == "nothing" ? (
         <div
           style={{

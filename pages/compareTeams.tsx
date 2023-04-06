@@ -40,6 +40,7 @@ export function CompareTeamData({ teams }: { teams: Array<number> }) {
       <th>Cone Accuracy</th>
       <th>Cube Accuracy</th>
       <th>Link PG</th>
+      <th>AutoNoClimbPG</th>
     </tr>
   );
 
@@ -68,6 +69,7 @@ export function CompareTeamData({ teams }: { teams: Array<number> }) {
         <td>{data.coneAccuracy}</td>
         <td>{data.cubeAccuracy}</td>
         <td>{data.linkPG}</td>
+        <td>{data.autoNoClimb}</td>
       </tr>
     ))
   ) : (

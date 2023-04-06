@@ -204,6 +204,14 @@ export function RadarChart({ teams }: { teams: number[] }) {
   const [teamOne, setTeamOne] = useState(teams[0]);
   const [teamTwo, setTeamTwo] = useState(teams[1]);
   const [teamThree, setTeamThree] = useState(teams[2]);
+  // useEffect(() => {
+  //   setTeamOne(teams[0]);
+  //   setTeamTwo(teams[1]);
+  //   setTeamThree(teams[2]);
+  // }, []);
+  RadarData({ team: parseInt(teamOne + ""), num: 1 });
+  RadarData({ team: parseInt(teamTwo + ""), num: 2 });
+  RadarData({ team: parseInt(teamThree + ""), num: 3 });
   const[search, setSearch] = useState(false);
   // useEffect(() => {
   //   setTeamOne(teams[0]);

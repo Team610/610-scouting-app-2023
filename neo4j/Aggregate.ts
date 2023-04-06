@@ -186,6 +186,32 @@ export async function getPiecesPickedUp(
   return result.records[0].get(0).low;
 }
 
+export async function getPiecesByLevel(team: number){
+  let res = {}
+  let pieces = ['', 'cone', 'cube']
+  const session = getNeoSession();
+  const tx = session.beginTransaction();
+  for (let i = 0; i < pieces.length; i++) {
+    const piece = pieces[i];
+    res[piece!="" ? piece : "total"] = {}
+    for (let row = 0; row < 3; row++) {
+      try {
+        const result = await tx.run(
+          'MATCH (t:Team {name: $name})-' + (piece=="" ? '[]' : '[:' + piece + ']') + '-(c:Cycle {teleop: TRUE}) OPTIONAL MATCH (c)--(s:ScoringPosition {name: $row}) RETURN count(c) AS cycleCount, count(s) AS scoredCount',
+          { name: team, row: row == 0 ? "bottom" : row == 1 ? "middle" : "top"}
+        );
+
+        res[piece!="" ? piece : "total"][row] = {
+          cycles: result.records[0].get("cycleCount")["low"], 
+          scored: result.records[0].get("scoredCount")["low"]
+        }
+      }
+      catch(e){console.error(e)}
+    }
+  }
+  return res
+}
+
 // get where team picked up pieces in all matches
 export async function getPiecesPickedUpAllMatches(
   team: number,
@@ -421,7 +447,8 @@ export async function calculateTeamAgg({ team }: { team: number }) {
     linkPG: links / matchesPlayed,
     autoPiecesPG: (autoConesScored + autoCubesScored) / matchesPlayed,
     teleopPiecesPG: (teleopConesScored + teleopCubesScored) / matchesPlayed,
-    cubeCycleProportion: (cubesPickedUp) / (conesPickedUp + cubesPickedUp)
+    cubeCycleProportion: (cubesPickedUp) / (conesPickedUp + cubesPickedUp),
+    autoNoClimb: (autoPoints - autoClimbPoints) / matchesPlayed
 
     // power rating = 4 * wCPG + 3 * accu + 2 * linkPG + 5 * PPG
     // powerRating: 4 * (nWcycles / matchesPlayed) + 3 * (conesScored + cubesScored) / (conesPickedUp + cubesPickedUp) + 2 * (links / matchesPlayed)
@@ -478,6 +505,7 @@ export async function getTeamAgg({ team }: { team: number }) {
         autoPiecesPG: pros.autoPiecesPG,
         teleopPiecesPG: pros.teleopPiecesPG,
         cubeCycleProportion: pros.cubeCycleProportion,
+        autoNoClimb: pros.autoNoClimb
 
         // power rating = 4 * wCPG + 3 * accu + 2 * linkPG + 5 * PPG
         // powerRating: 4 * (nWcycles / matchesPlayed) + 3 * (conesScored + cubesScored) / (conesPickedUp + cubesPickedUp) + 2 * (links / matchesPlayed)
@@ -780,7 +808,7 @@ export async function getMatch(team: number, match: String) {
 }
 
 export async function getCompTeams(teams: number[]) {
-  const teamPromises = teams.map((team) => getTeamAgg({ team: team }));
+  const teamPromises = teams.map((team) => calculateTeamAgg({ team: team }));
   const teamData = await Promise.all(teamPromises);
   return teamData;
 }
@@ -902,4 +930,43 @@ export async function getAllTeamData() {
   }
 
   return ret;
+}
+
+//max cycles,max gamepieces scored,max cones scored,max cubes scored, max level 3
+export async function getMax(team:number) {
+  let cycles:number=0
+  let piecesScored:number = 0
+  let conesScored:number = 0
+  let cubesSocred:number = 0
+  let level3:number = 0
+  let match:String[] = await getMatchList(team)
+
+  for (let i = 0; i < match.length; i++) {
+    let currentMatch:any = getMatch(team, match[i])
+  
+    if(currentMatch.cycles > cycles) {
+      cycles = currentMatch.cycles 
+    }
+    if(currentMatch.piecesScored > piecesScored) {
+      piecesScored = currentMatch.piecesScored
+    }
+    if(currentMatch.conesScored > conesScored) {
+      conesScored = currentMatch.conesScored
+    }
+    if(currentMatch.cubesScored > cubesSocred) {
+      cubesSocred = currentMatch.cubesScored
+    }
+    if((currentMatch.autoTop + currentMatch.teleopTop) > level3) {
+      level3 = (currentMatch.autoTop + currentMatch.teleopTop) 
+    }
+  }
+  let ret =  {
+    cycles,
+    piecesScored,
+    conesScored,
+    cubesSocred,
+    level3
+  }
+  console.log(ret)
+  return ret
 }

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { BubbleChart } from "../components/bubbleChart";
 import { RadarChart } from "../components/radarChart";
 import { blue } from "@nextui-org/react";
 import { SelectMatch } from "./matches";

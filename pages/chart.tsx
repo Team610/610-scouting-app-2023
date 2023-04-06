@@ -3,11 +3,13 @@ import { BubbleChart } from "../components/bubbleChart";
 import { RadarChart } from "../components/radarChart";
 import { blue } from "@nextui-org/react";
 import { SelectMatch } from "./matches";
+import CompareTeams, { CompareTeamData } from "./compareTeams";
 
 export default function Compare() {
   const [redTeams, setRedTeams] = useState([610, 2013, 0]);
   const [blueTeams, setBlueTeams] = useState([0, 0, 0]);
   const [selectedMatch, setSelectedMatch] = useState();
+  const [displayTable, setTable] = useState(false);
   useEffect(() => {
     async function getMatches() {
       let allMatches: any[] = await (
@@ -55,6 +57,13 @@ export default function Compare() {
           <RadarChart teams={blueTeams} />
         </div>{" "}
       </div>
+      <CompareTeams />
+      {/* <Button onClick={() => setTable(!displayTable)}>{}</Button>
+      {displayTable ? (
+        <CompareTeamData teams={redTeams.concat(blueTeams)} />
+      ) : (
+        <></>
+      )} */}
     </div>
   );
 }

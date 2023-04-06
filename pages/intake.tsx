@@ -161,27 +161,13 @@ export default function Home({
 
   return (
     <div ref={ref}>
-      {/* <Group position="left" spacing="xl">
-        <Button onClick={() => clear()}> Clear</Button>
-        <select value={selectedOption} onChange={handleChange}>
-          <option value="">Match Selection</option>
-          <option value="0">Game 1</option>
-          <option value="1">Game 2</option>
-          <option value="2">Game 3</option>
-          <option value="3">Game 4</option>
-          <option value="Clear">Clear</option>
-        </select>
-      </Group> */}
       <div>
         <Image
-          // onClick={(e) => {
-          //   gamePiece == "nothing" ? handleClick(e, "floor") : null;
-          // }}
           src={myPic}
           width={700}
           height={356}
           alt="image"
-          style={{ transform: "rotate(180deg)" }}
+          // style={{ transform: "rotate(180deg)" }}
         />
       </div>
       {autoButton ? (

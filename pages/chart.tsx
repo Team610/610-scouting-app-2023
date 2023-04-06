@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { BubbleChart } from "../components/bubbleChart";
 import { RadarChart } from "../components/radarChart";
 import { blue } from "@nextui-org/react";
 import { SelectMatch } from "./matches";
@@ -14,7 +13,7 @@ export default function Compare() {
     async function getMatches() {
       let allMatches: any[] = await (
         await fetch(
-          "https://www.thebluealliance.com/api/v3/team/frc610/event/2023onnob/matches/simple",
+          "https://www.thebluealliance.com/api/v3/team/frc610/event/2023oncmp2/matches/simple",
           {
             headers: {
               "X-TBA-Auth-Key":

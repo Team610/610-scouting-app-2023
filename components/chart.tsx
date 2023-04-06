@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { BubbleChart } from "./bubbleChart";
 import { PieChart } from "./pieChart";
 import { RadarChart } from "./radarChart";
 import StackedBarChart from "./stackedBarChart";

@@ -927,6 +927,7 @@ export async function getAllTeamData() {
     if (temp.matchesPlayed > 0) {
       ret.push(temp);
     }
+    console.log("data: " + (i + 1) + "/" + teamlist.length)
   }
 
   return ret;

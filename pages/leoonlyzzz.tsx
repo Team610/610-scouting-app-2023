@@ -11,8 +11,8 @@ export default function rdr() {
             {/* <Button onClick={async () => await addDummyData({ data: sampleMatch })}>
                 Add dummy data
            </Button>
-            <Button onClick={async () => await wipe()}>Wipe</Button>
-            <Button onClick={async () => await boasdfl()}>set aff</Button> */}
+    <Button onClick={async () => await wipe()}>Wipe</Button>*/}
+            {/* <Button onClick={async () => await boasdfl()}>boff</Button> */}
             {/* <Button onClick={async () => await calculateTeamAgg({team: 2706})}>agg time benchmark</Button> */}
         </div >
     )
@@ -20,10 +20,12 @@ export default function rdr() {
 
 export async function boasdfl() {
     const teamlist = await getAllTeamNumbers();
-
-    for (let i = 0; i < teamlist.length; i++) {
-        await setAff({ team: teamlist[i] });
-    }
+    // console.log(teamlist)
+    // for (let i = 0; i < teamlist.length; i++) {
+    //     await calculateTeamAgg({ team: teamlist[i] });
+    //     console.log("calculating " + (i + 1) + "/" + teamlist.length)
+    // }
+    // await calculateTeamAgg({team: 1334})
 }
 
 export async function setAff({ team }: { team: number }) {

@@ -4,6 +4,7 @@ import {
   getMatch,
   calculateTeamAgg,
   getPiecesByLevel,
+  getTeamAgg,
 } from "../neo4j/Aggregate";
 import { createNTeams, addDummyData } from "../neo4j/AddData";
 import { query, wipe } from "../neo4j/Miscellaneous";
@@ -79,7 +80,7 @@ export function SingleTeamData({ team }: { team: number }) {
   useEffect(() => {
     async function getData() {
       if (teamNo !== 0) {
-        setData([await calculateTeamAgg({ team: teamNo })]);
+        setData([await getTeamAgg({ team: teamNo })]);
       }
     }
     getData();

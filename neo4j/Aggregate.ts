@@ -808,7 +808,7 @@ export async function getMatch(team: number, match: String) {
 }
 
 export async function getCompTeams(teams: number[]) {
-  const teamPromises = teams.map((team) => calculateTeamAgg({ team: team }));
+  const teamPromises = teams.map((team) => getTeamAgg({ team: team }));
   const teamData = await Promise.all(teamPromises);
   return teamData;
 }

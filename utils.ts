@@ -121,6 +121,30 @@ export const defaultTeam : teamAggData ={
     // powerRating: 0
 }
 
+export const defaultTeamB : teamAggData ={
+    team: 0,
+    matchesPlayed: 0,
+    autoPPG: 0, 
+    PPG: 0,
+    cyclesPG: 0,
+    weightedCyclesPG: 0,
+    scoringAccuracy: 0,
+    coneAccuracy: 0,
+    cubeAccuracy: 0,
+    scoringPositions: [0, 0, 0],
+    autoClimbPPG: 0,
+    teleopClimbPPG: 0,
+    climbPPG: 0,
+    linkPG: 0,
+    avgPiecesScored: 0,
+    maxPiecesScored: 0,
+    autoPiecesPG: 0,
+    teleopPiecesPG: 0,
+    autoNoClimb: 0,
+    cubeCycleProportion: 0.5,
+    teleopPPG: 0,
+    // powerRating: 0
+}
 
 
 export const defaultMatch : matchData ={

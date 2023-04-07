@@ -3,6 +3,8 @@ import { RadarChart } from "../components/radarChart";
 import { blue } from "@nextui-org/react";
 import { SelectMatch } from "./matches";
 import CompareTeams, { CompareTeamData } from "./compareTeams";
+import Matchup from "./matchup";
+
 
 export default function Compare() {
   const [redTeams, setRedTeams] = useState([610, 2013, 0]);
@@ -56,7 +58,10 @@ export default function Compare() {
           <RadarChart teams={blueTeams} />
         </div>{" "}
       </div>
+      <h1>Compare Teams</h1>
       <CompareTeams />
+      <h1>Matchup</h1>
+      <Matchup />
       {/* <Button onClick={() => setTable(!displayTable)}>{}</Button>
       {displayTable ? (
         <CompareTeamData teams={redTeams.concat(blueTeams)} />

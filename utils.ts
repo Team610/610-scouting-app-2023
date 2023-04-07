@@ -47,6 +47,7 @@ export interface teamAggData {
     teleopPiecesPG: number,
     cubeCycleProportion: number,
     autoNoClimb: number,
+    teleopPPG: number,
     powerRanking?: number
 }
 
@@ -115,7 +116,8 @@ export const defaultTeam : teamAggData ={
     autoPiecesPG: 0,
     teleopPiecesPG: 0,
     autoNoClimb: 0,
-    cubeCycleProportion: 0.5
+    cubeCycleProportion: 0.5,
+    teleopPPG: 0,
     // powerRating: 0
 }
 

@@ -88,9 +88,11 @@ export function CompareTeamData({ teams }: { teams: Array<number> }) {
 export default function CompareTeams({
   defaultTeams,
 }: {
-  defaultTeams: number[];
+  defaultTeams?: number[];
 }) {
-  const [teams, setTeams] = useState<number[]>(defaultTeams);
+  const [teams, setTeams] = useState<number[]>(
+    defaultTeams ? defaultTeams : []
+  );
 
   return (
     <div>

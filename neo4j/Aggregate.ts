@@ -810,7 +810,7 @@ export async function getMatch(team: number, match: String) {
 }
 
 export async function getCompTeams(teams: number[]) {
-  const teamPromises = teams.map((team) => calculateTeamAgg({ team: team }));
+  const teamPromises = teams.map((team) => getTeamAgg({ team: team }));
   const teamData = await Promise.all(teamPromises);
   return teamData;
 }
@@ -929,6 +929,7 @@ export async function getAllTeamData() {
     if (temp.matchesPlayed > 0) {
       ret.push(temp);
     }
+    console.log("data: " + (i + 1) + "/" + teamlist.length)
   }
 
   return ret;

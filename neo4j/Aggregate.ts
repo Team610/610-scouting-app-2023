@@ -6,6 +6,7 @@ import {
   teamAggData,
   arrayAverage,
   standardDeviation,
+  roundToTwo,
 } from "../utils";
 
 // returns how many game pieces the robot scored in that row: 1 is bottom, 3 is top
@@ -419,8 +420,6 @@ export async function calculateTeamAgg({ team }: { team: number }) {
     links = await getLinks(team, tx);
     maxPiecesScored = await getMaxPiecesScored(team, tx);
 
-    // maxPiecesScored = await getMaxPiecesScored(team, tx)
-
     await tx.close();
     await session.close();
   } catch (error) {
@@ -430,33 +429,33 @@ export async function calculateTeamAgg({ team }: { team: number }) {
   let teamdata: teamAggData = {
     team: team,
     matchesPlayed: matchesPlayed,
-    autoPPG: autoPoints / matchesPlayed,
-    PPG: points / matchesPlayed,
-    cyclesPG: ncycles / matchesPlayed,
+    autoPPG: roundToTwo(autoPoints / matchesPlayed),
+    PPG: roundToTwo(points / matchesPlayed),
+    cyclesPG: roundToTwo(ncycles / matchesPlayed),
     weightedCyclesPG: nWcycles / matchesPlayed,
     avgPiecesScored: (conesScored + cubesScored) / matchesPlayed,
     maxPiecesScored: maxPiecesScored,
     scoringAccuracy:
-      (conesScored + cubesScored) / (conesPickedUp + cubesPickedUp),
-    coneAccuracy: conesScored / conesPickedUp,
-    cubeAccuracy: cubesScored / cubesPickedUp,
+      roundToTwo((conesScored + cubesScored) / (conesPickedUp + cubesPickedUp)),
+    coneAccuracy: roundToTwo(conesScored / conesPickedUp),
+    cubeAccuracy: roundToTwo(cubesScored / cubesPickedUp),
     scoringPositions: scoringPositions,
-    autoClimbPPG: autoClimbPoints / matchesPlayed,
-    teleopClimbPPG: teleopClimbPoints / matchesPlayed,
-    climbPPG: (autoClimbPoints + teleopClimbPoints) / matchesPlayed,
-    linkPG: links / matchesPlayed,
-    autoPiecesPG: (autoConesScored + autoCubesScored) / matchesPlayed,
-    teleopPiecesPG: (teleopConesScored + teleopCubesScored) / matchesPlayed,
-    cubeCycleProportion: (cubesPickedUp) / (conesPickedUp + cubesPickedUp),
-    autoNoClimb: (autoPoints - autoClimbPoints) / matchesPlayed,
-    teleopPPG: (points / matchesPlayed) - ((autoPoints - autoClimbPoints) / matchesPlayed) - ((autoClimbPoints + teleopClimbPoints) / matchesPlayed),
+    autoClimbPPG: roundToTwo(autoClimbPoints / matchesPlayed),
+    teleopClimbPPG: roundToTwo(teleopClimbPoints / matchesPlayed),
+    climbPPG: roundToTwo((autoClimbPoints + teleopClimbPoints) / matchesPlayed),
+    linkPG: roundToTwo(links / matchesPlayed),
+    autoPiecesPG: roundToTwo((autoConesScored + autoCubesScored) / matchesPlayed),
+    teleopPiecesPG: roundToTwo((teleopConesScored + teleopCubesScored) / matchesPlayed),
+    cubeCycleProportion: roundToTwo((cubesPickedUp) / (conesPickedUp + cubesPickedUp)),
+    autoNoClimb: roundToTwo((autoPoints - autoClimbPoints) / matchesPlayed),
+    teleopPPG: roundToTwo((points / matchesPlayed) - ((autoPoints - autoClimbPoints) / matchesPlayed) - ((autoClimbPoints + teleopClimbPoints) / matchesPlayed)),
 
     // power rating = 4 * wCPG + 3 * accu + 2 * linkPG + 5 * PPG
     // powerRating: 4 * (nWcycles / matchesPlayed) + 3 * (conesScored + cubesScored) / (conesPickedUp + cubesPickedUp) + 2 * (links / matchesPlayed)
     // + 5 * (points / matchesPlayed)
   };
 
-  // console.log(teamdata)
+  console.log(teamdata)
 
   let endTime = Date.now()
 

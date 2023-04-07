@@ -3,12 +3,14 @@ import { RadarChart } from "../components/radarChart";
 import { blue } from "@nextui-org/react";
 import { SelectMatch } from "./matches";
 import CompareTeams, { CompareTeamData } from "./compareTeams";
+import { Button } from "@mantine/core";
 
 export default function Compare() {
   const [redTeams, setRedTeams] = useState([610, 2013, 0]);
   const [blueTeams, setBlueTeams] = useState([0, 0, 0]);
+  const [loading, setLoading] = useState(true);
   const [selectedMatch, setSelectedMatch] = useState();
-  const [displayTable, setTable] = useState(false);
+  const [selectingMatch, setSelectingMatch] = useState(false);
   useEffect(() => {
     async function getMatches() {
       let allMatches: any[] = await (
@@ -36,33 +38,41 @@ export default function Compare() {
           break;
         }
       }
+      setLoading(false);
     }
     getMatches();
   }, []);
 
   return (
     <div>
-      {/* <SelectMatch
-        setRedTeams={setRedTeams}
-        setBlueTeams={setBlueTeams}
-        setSelectedMatch={setSelectedMatch}
-      /> */}
-      <div style={{ display: "flex" }}>
-        {" "}
-        <div style={{ flex: "1" }}>
-          <RadarChart teams={redTeams} />
-        </div>
-        <div style={{ flex: "1" }}>
-          <RadarChart teams={blueTeams} />
-        </div>{" "}
-      </div>
-      <CompareTeams />
-      {/* <Button onClick={() => setTable(!displayTable)}>{}</Button>
-      {displayTable ? (
-        <CompareTeamData teams={redTeams.concat(blueTeams)} />
+      {selectingMatch ? (
+        <SelectMatch
+          setRedTeams={setRedTeams}
+          setBlueTeams={setBlueTeams}
+          setSelectedMatch={setSelectedMatch}
+        />
       ) : (
         <></>
-      )} */}
+      )}
+      <Button onClick={() => setSelectingMatch(!selectingMatch)}>
+        {selectingMatch ? "Submit Match" : "Select Match"}
+      </Button>
+      {loading || selectingMatch ? (
+        <></>
+      ) : (
+        <>
+          <div style={{ display: "flex" }}>
+            {" "}
+            <div style={{ flex: "1" }}>
+              <RadarChart teams={redTeams} />
+            </div>
+            <div style={{ flex: "1" }}>
+              <RadarChart teams={blueTeams} />
+            </div>{" "}
+          </div>
+          <CompareTeams defaultTeams={redTeams.concat(blueTeams)} />
+        </>
+      )}
     </div>
   );
 }

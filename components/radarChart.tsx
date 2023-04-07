@@ -9,7 +9,7 @@ import {
   Legend,
 } from "chart.js";
 import { Radar } from "react-chartjs-2";
-import { calculateTeamAgg, getMatchList } from "../neo4j/Aggregate";
+import { calculateTeamAgg, getMatchList, getTeamAgg } from "../neo4j/Aggregate";
 import { teamAggData } from "../utils";
 import { TextInput } from "@mantine/core";
 
@@ -77,72 +77,32 @@ function changeData({
     "rgba(" +
     (num % 3 == 0 ? "0, 0, 255," : num % 2 == 0 ? "0, 255, 0," : "255, 0, 0,") +
     " 1)";
+  let newData = [
+    parseFloat(teamData.cyclesPG + ""),
+    parseFloat(teamData.autoClimbPPG + ""),
+    parseFloat(teamData.teleopClimbPPG + ""),
+    parseFloat(teamData.autoPiecesPG + ""),
+    parseFloat(teamData.scoringPositions[0] + ""),
+    parseFloat(teamData.scoringPositions[1] + ""),
+    parseFloat(teamData.scoringPositions[2] + ""),
+  ];
+  let newDataset = {
+    label: strLabel,
+    data: newData,
+    backgroundColor: bgColor,
+    borderColor: bdColor,
+    borderWidth: 1,
+  };
+  // data.datasets[num - 1] = newDataset
   switch (num) {
     case 1:
-      data.datasets = [
-        {
-          label: strLabel,
-          //data: [cycles * 10, autoClimb / 15 * 100, teleopClimb * 10, autoPieces * 50, cycles != 0 ? levelOne / cycles * 100 : 0, cycles != 0 ? levelTwo / cycles * 100 : 0, cycles != 0 ? levelThree / cycles * 100 : 0],
-          data: [
-            parseFloat(teamData.cyclesPG + ""),
-            parseFloat(teamData.autoClimbPPG + ""),
-            parseFloat(teamData.teleopClimbPPG + ""),
-            parseFloat(teamData.autoPiecesPG + ""),
-            parseFloat(teamData.scoringPositions[0] + ""),
-            parseFloat(teamData.scoringPositions[1] + ""),
-            parseFloat(teamData.scoringPositions[2] + ""),
-          ],
-          backgroundColor: bgColor,
-          borderColor: bdColor,
-          borderWidth: 1,
-        },
-        data.datasets[1],
-        data.datasets[2],
-      ];
+      data.datasets = [newDataset, data.datasets[1], data.datasets[2]];
       break;
     case 2:
-      data.datasets = [
-        data.datasets[0],
-        {
-          label: strLabel,
-          //data: [cycles * 10, autoClimb / 15 * 100, teleopClimb * 10, autoPieces * 50, cycles != 0 ? levelOne / cycles * 100 : 0, cycles != 0 ? levelTwo / cycles * 100 : 0, cycles != 0 ? levelThree / cycles * 100 : 0],
-          data: [
-            parseFloat(teamData.cyclesPG + ""),
-            parseFloat(teamData.autoClimbPPG + ""),
-            parseFloat(teamData.teleopClimbPPG + ""),
-            parseFloat(teamData.autoPiecesPG + ""),
-            parseFloat(teamData.scoringPositions[0] + ""),
-            parseFloat(teamData.scoringPositions[1] + ""),
-            parseFloat(teamData.scoringPositions[2] + ""),
-          ],
-          backgroundColor: bgColor,
-          borderColor: bdColor,
-          borderWidth: 1,
-        },
-        data.datasets[2],
-      ];
+      data.datasets = [data.datasets[0], newDataset, data.datasets[2]];
       break;
     case 3:
-      data.datasets = [
-        data.datasets[0],
-        data.datasets[1],
-        {
-          label: strLabel,
-          //data: [cycles * 10, autoClimb / 15 * 100, teleopClimb * 10, autoPieces * 50, cycles != 0 ? levelOne / cycles * 100 : 0, cycles != 0 ? levelTwo / cycles * 100 : 0, cycles != 0 ? levelThree / cycles * 100 : 0],
-          data: [
-            parseFloat(teamData.cyclesPG + ""),
-            parseFloat(teamData.autoClimbPPG + ""),
-            parseFloat(teamData.teleopClimbPPG + ""),
-            parseFloat(teamData.autoPiecesPG + ""),
-            parseFloat(teamData.scoringPositions[0] + ""),
-            parseFloat(teamData.scoringPositions[1] + ""),
-            parseFloat(teamData.scoringPositions[2] + ""),
-          ],
-          backgroundColor: bgColor,
-          borderColor: bdColor,
-          borderWidth: 1,
-        },
-      ];
+      data.datasets = [data.datasets[0], data.datasets[1], newDataset];
       break;
   }
 }
@@ -163,9 +123,7 @@ async function RadarData({ team, num }: { team: number; num: number }) {
   const [teamData, setTeamData] = useState<teamAggData>();
   useEffect(() => {
     async function getData() {
-      let teamAgg = await calculateTeamAgg({ team: parseInt(team + "") });
-      // console.log(teamAgg);
-      setTeamData(teamAgg);
+      setTeamData(await getTeamAgg({ team: parseInt(team + "") }));
     }
     getData();
   }, [team]);
@@ -184,11 +142,7 @@ export function RadarChart({ teams }: { teams: number[] }) {
   const [teamOne, setTeamOne] = useState(teams[0]);
   const [teamTwo, setTeamTwo] = useState(teams[1]);
   const [teamThree, setTeamThree] = useState(teams[2]);
-  // useEffect(() => {
-  //   setTeamOne(teams[0]);
-  //   setTeamTwo(teams[1]);
-  //   setTeamThree(teams[2]);
-  // }, []);
+
   RadarData({ team: parseInt(teamOne + ""), num: 1 });
   RadarData({ team: parseInt(teamTwo + ""), num: 2 });
   RadarData({ team: parseInt(teamThree + ""), num: 3 });

@@ -514,7 +514,6 @@ export async function getTeamAgg({ team }: { team: number }) {
         // + 5 * (points / matchesPlayed)
       };
 
-      // console.log(teamdata)
       return teamdata;
     }
   } catch (error) {

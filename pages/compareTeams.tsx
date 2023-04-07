@@ -20,7 +20,6 @@ export function CompareTeamData({ teams }: { teams: Array<number> }) {
       setData(await getCompTeams(teams));
     }
     getData();
-    console.log(data);
   }, [teams]);
 
   const ths = (
@@ -86,15 +85,19 @@ export function CompareTeamData({ teams }: { teams: Array<number> }) {
   );
 }
 
-export default function CompareTeams() {
-  const [teams, setTeams] = useState<number[]>([]);
+export default function CompareTeams({
+  defaultTeams,
+}: {
+  defaultTeams: number[];
+}) {
+  const [teams, setTeams] = useState<number[]>(defaultTeams);
 
   return (
     <div>
       <TextInput
+        defaultValue={teams.map((team) => team + " ")}
         onChange={(e) => {
           setTeams(e.target.value.split(" ").map((x) => parseInt(x)));
-          console.log(teams);
         }}
       ></TextInput>
 

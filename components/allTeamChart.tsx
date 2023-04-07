@@ -1,21 +1,10 @@
 import React, { useEffect, useState } from "react";
-import {
-  Chart as ChartJS,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Tooltip,
-  Legend,
-  Chart,
-} from "chart.js";
-import { Scatter, Bubble } from "react-chartjs-2";
+import { Chart as ChartJS, LinearScale, PointElement, Tooltip } from "chart.js";
+import { Bubble } from "react-chartjs-2";
 import { teamAggData } from "../utils";
-import { getAllTeamData, getCompTeams } from "../neo4j/Aggregate";
-import { Anchor, NativeSelect, Select, Text } from "@mantine/core";
-import { isContext } from "vm";
-import { Point } from "neo4j-driver";
+import { getAllTeamData } from "../neo4j/Aggregate";
+import { NativeSelect, Text } from "@mantine/core";
 import ChartDataLabels from "chartjs-plugin-datalabels";
-import { number } from "prop-types";
 
 ChartJS.register(LinearScale, PointElement, Tooltip, ChartDataLabels);
 export let plugins = [ChartDataLabels];

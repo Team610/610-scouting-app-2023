@@ -4,6 +4,7 @@ import { blue } from "@nextui-org/react";
 import { SelectMatch } from "./matches";
 import CompareTeams, { CompareTeamData } from "./compareTeams";
 import { Button } from "@mantine/core";
+import Matchup from "./matchup";
 
 export default function Compare() {
   const [redTeams, setRedTeams] = useState([610, 2013, 0]);
@@ -54,6 +55,7 @@ export default function Compare() {
       ) : (
         <></>
       )}
+
       <Button onClick={() => setSelectingMatch(!selectingMatch)}>
         {selectingMatch ? "Submit Match" : "Select Match"}
       </Button>
@@ -71,6 +73,8 @@ export default function Compare() {
             </div>{" "}
           </div>
           <CompareTeams defaultTeams={redTeams.concat(blueTeams)} />
+          <h1>Matchup</h1>
+          <Matchup defaultTeams={redTeams.concat(blueTeams)} />
         </>
       )}
     </div>

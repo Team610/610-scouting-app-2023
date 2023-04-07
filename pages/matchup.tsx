@@ -8,35 +8,57 @@ import { createNTeams, addDummyData } from "../neo4j/AddData";
 import { query, wipe } from "../neo4j/Miscellaneous";
 import { Button, Table, TextInput } from "@mantine/core";
 import { useEffect, useState } from "react";
-import { defaultTeam, teamAggData } from "../utils";
+import { defaultTeam, defaultTeamB, teamAggData } from "../utils";
 import sampleMatch from "../data/sampleMatch.json";
 
-export function Matchup({ teams }: { teams: Array<number> }) {
+export function Display({ teams }: { teams: Array<number> }) {
     const [data, setData] = useState<teamAggData[]>();
-    const teamRoles = ["Blue 1", "Blue 2", "Blue 3", "Red 1", "Red 2", "Red 3", "Blue TOT", "Red TOT"];
+    const teamRoles = ["Blue 1", "Blue 2", "Blue 3", "Red 1", "Red 2", "Red 3", "Blue Alliance", "Red Alliance"];
 
-    useEffect(() => {
-        async function getData() {
-            let tempD = await getCompTeams(teams)
-            let blueT = defaultTeam
-            for (const teamD of tempD.slice(0, 3)){
-                for (const property in teamD){
-                    if(property == "scoringPositions"){
-                        blueT[property][0] += teamD[property][0]
-                        blueT[property][1] += teamD[property][1]
-                        blueT[property][2] += teamD[property][2]
-                    }else if(property == "cubeCycleProportion"){
-                        blueT[property] = 0
-                    }else if(typeof teamD[property] === 'number' && typeof blueT[property] === 'number'){
-                        let temp: number = blueT[property] as number
-                        temp += teamD[property] as number
-                        blueT[property] = temp
-                    }
+    const getData = async () => {
+        let tempD = await getCompTeams(teams)
+        let blueT = Object.assign({}, defaultTeam)
+        let redT = Object.assign({}, defaultTeamB)
+        for (const teamD of tempD.slice(0, 3)) {
+            for (const property in teamD) {
+                if (property == "scoringPositions") {
+                    blueT["scoringPositions"][0] += teamD["scoringPositions"][0]
+                    blueT["scoringPositions"][1] += teamD["scoringPositions"][1]
+                    blueT["scoringPositions"][2] += teamD["scoringPositions"][2]
+                } else if (property == "cubeCycleProportion") {
+                    blueT[property] = 0
+                } else if (property == "team") {
+                    blueT[property] = -1
+                } else if (typeof teamD[property] === 'number' && typeof blueT[property] === 'number') {
+                    let temp: number = blueT[property] as number
+                    temp += teamD[property] as number
+                    blueT[property] = temp
                 }
             }
         }
+        for (const teamD of tempD.slice(3, 6)) {
+            for (const property in teamD) {
+                if (property == "scoringPositions") {
+                    redT["scoringPositions"][0] += teamD["scoringPositions"][0]
+                    redT["scoringPositions"][1] += teamD["scoringPositions"][1]
+                    redT["scoringPositions"][2] += teamD["scoringPositions"][2]
+                } else if (property == "cubeCycleProportion") {
+                    redT[property] = 0
+                } else if (property == "team") {
+                    redT[property] = -2
+                } else if (typeof teamD[property] === 'number' && typeof redT[property] === 'number') {
+                    let temp: number = redT[property] as number
+                    temp += teamD[property] as number
+                    redT[property] = temp
+                }
+            }
+        }
+        setData([...tempD, blueT, redT])
+    }
+
+    const handleGetData = () => {
         getData();
-    }, [teams]);
+    };
 
     const ths = (
         <tr>
@@ -52,8 +74,8 @@ export function Matchup({ teams }: { teams: Array<number> }) {
             <th>MAX teleop low</th>
             <th>EXP links</th>
             <th>MAX links</th>
-            <th>EXP teleop points</th>
-            <th>MAX teleop points</th>
+            <th>EXP teleop points w/o link</th>
+            <th>MAX teleop points w/0 link</th>
             <th>EXP points w/o climb</th>
             <th>MAX points w/o climb</th>
             <th>EXP cycles</th>
@@ -64,23 +86,25 @@ export function Matchup({ teams }: { teams: Array<number> }) {
     const rows = data ? (
         data.map((data: teamAggData, index: number) => (
             <tr key={data.team}>
-                <td>{data.team}</td>
+                <td>{
+                    data.team == -1 ? "Blue Alliance" : data.team == -2 ? "Red Alliance" : data.team
+                }</td>
                 <td>{teamRoles[index]}</td>
-                <td>{data.autoNoClimb}</td>
+                <td>{data.autoNoClimb.toFixed(2)}</td>
                 <td>{-1}</td>
-                <td>{data.scoringPositions[2]}</td>
+                <td>{data.scoringPositions[2].toFixed(2)}</td>
                 <td>{-1}</td>
-                <td>{data.scoringPositions[1]}</td>
+                <td>{data.scoringPositions[1].toFixed(2)}</td>
                 <td>{-1}</td>
-                <td>{data.scoringPositions[0]}</td>
+                <td>{data.scoringPositions[0].toFixed(2)}</td>
                 <td>{-1}</td>
-                <td>{data.linkPG}</td>
+                <td>{data.linkPG.toFixed(2)}</td>
                 <td>{-1}</td>
-                <td>{2 * data.scoringPositions[0] + 3 * data.scoringPositions[1] + 5 * data.scoringPositions[2]}</td>
+                <td>{(2 * data.scoringPositions[0] + 3 * data.scoringPositions[1] + 5 * data.scoringPositions[2]).toFixed(2)}</td>
                 <td>{-1}</td>
-                <td>{data.autoNoClimb + 2 * data.scoringPositions[0] + 3 * data.scoringPositions[1] + 5 * data.scoringPositions[2]}</td>
+                <td>{(data.autoNoClimb + 2 * data.scoringPositions[0] + 3 * data.scoringPositions[1] + 5 * data.scoringPositions[2]).toFixed(2)}</td>
                 <td>{-1}</td>
-                <td>{data.cyclesPG}</td>
+                <td>{(data.cyclesPG).toFixed(2)}</td>
                 <td>{-1}</td>
             </tr>
         ))
@@ -90,6 +114,7 @@ export function Matchup({ teams }: { teams: Array<number> }) {
 
     return (
         <>
+            <Button onClick={handleGetData}>Get Data</Button>
             <Table>
                 <thead>{ths}</thead>
                 <tbody>{rows}</tbody>
@@ -98,7 +123,7 @@ export function Matchup({ teams }: { teams: Array<number> }) {
     );
 }
 
-export default function CompareTeams() {
+export default function Matchup() {
     const [teams, setTeams] = useState<number[]>([]);
 
     return (
@@ -106,11 +131,10 @@ export default function CompareTeams() {
             <TextInput
                 onChange={(e) => {
                     setTeams(e.target.value.split(" ").map((x) => parseInt(x)));
-                    console.log(teams);
                 }}
             ></TextInput>
 
-            <Matchup teams={teams} />
+            <Display teams={teams} />
         </div>
     );
 }

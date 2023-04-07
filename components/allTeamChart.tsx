@@ -134,7 +134,7 @@ function SelectAxis({ setAxis }: { setAxis: Function }) {
             setAxis(event.currentTarget.value)
         }
         size="xs"
-        data={["autoNoClimb", "teleopPPG", "cyclesPG", "climbPPG", "avgPiecesScored", "maxPiecesScored", "weightedCyclesPG", "linkPG"]}
+        data={["autoNoClimb", "teleopPPG", "cyclesPG", "climbPPG", "avgPiecesScored", "maxPiecesScored", "scoringAccuracy", "weightedCyclesPG", "linkPG"]}
     />
 }
 

@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { RadarChart } from "../components/radarChart";
 import { blue } from "@nextui-org/react";
 import { SelectMatch } from "./matches";
-import CompareTeams, { CompareTeamData } from "./compareTeams";
+import CompareTeams, { CompareTeamData } from "../components/compareTeams";
 import { Button } from "@mantine/core";
-import Matchup from "./matchup";
+import Matchup from "../components/matchup";
 import { TeamInput } from "../components/teamInput";
 
 export default function Compare() {

@@ -1,9 +1,4 @@
-import {
-  getCompTeams,
-  getMatch,
-  calculateTeamAgg,
-  getTeamAgg,
-} from "../neo4j/Aggregate";
+import { getCompTeams, getMatch, calculateTeamAgg } from "../neo4j/Aggregate";
 import { createNTeams, addDummyData } from "../neo4j/AddData";
 import { query, wipe } from "../neo4j/Miscellaneous";
 import { Button, Table, TextInput } from "@mantine/core";
@@ -25,7 +20,7 @@ export function Display({ teams }: { teams: Array<number> }) {
   ];
 
   const getData = async () => {
-    let tempD = await getCompTeams(teams);
+    let tempD: teamAggData[] = (await getCompTeams(teams)) as teamAggData[];
     let blueT = Object.assign({}, defaultTeam);
     let redT = Object.assign({}, defaultTeamB);
     for (const teamD of tempD.slice(0, 3)) {

@@ -8,6 +8,7 @@ import {
   standardDeviation,
   roundToTwo,
 } from "../utils";
+import { getTeams } from "./GetData";
 
 // returns how many game pieces the robot scored in that row: 1 is bottom, 3 is top
 export async function getTeamScoreLocation(
@@ -464,61 +465,79 @@ export async function calculateTeamAgg({ team }: { team: number }) {
   return teamdata.matchesPlayed > 0 ? teamdata : defaultTeam;
 }
 
-export async function getTeamAgg({ team }: { team: number }) {
+export async function getAgg(team?:number) {
   const session = getNeoSession();
+  let teams = 0;
+  let ret: teamAggData[] = []
   try {
+    let res;
     const tx = session.beginTransaction();
-    const res = await tx.run(
-      "MATCH (t:TeamAgg{name: $name}) RETURN properties(t)",
-      { name: team }
-    );
+    if (team){
+        res = await tx.run(
+        "MATCH (t:TeamAgg{name: $name}) RETURN properties(t)",
+        { name: team }
+      );
+    }
+    else{
+      res = await tx.run(
+        "MATCH (t:TeamAgg) RETURN properties(t)",
+      );
+      teams = (await getTeams()).length
+    }
     if (res.records.length > 0) {
-      const pros = res.records[0].get("properties(t)");
+      for (let i = 0; i < teams || i == 0; i++){
+        const pros = res.records[i].get("properties(t)");
 
-      let teamdata: teamAggData = {
-        team: team,
-        matchesPlayed: pros.matchesPlayed.low,
-        autoPPG: pros.autoPPG,
-        PPG: pros.PPG,
-        cyclesPG: pros.cyclesPG,
-        weightedCyclesPG: pros.weightedCyclesPG,
-        avgPiecesScored: pros.avgPiecesScored,
-        maxPiecesScored: pros.maxPiecesScored,
-        scoringAccuracy: pros.scoringAccuracy,
-        coneAccuracy: pros.coneAccuracy,
-        cubeAccuracy: pros.cubeAccuracy,
-        scoringPositions: [
-          parseFloat((pros.lowerScored.hasOwnProperty("low")
-            ? pros.lowerScored.low
-            : pros.lowerScored).toFixed(2)),
-          parseFloat((pros.middleScored.hasOwnProperty("low")
-            ? pros.middleScored.low
-            : pros.middleScored).toFixed(2)),
-          parseFloat((pros.upperScored.hasOwnProperty("low")
-            ? pros.upperScored.low
-            : pros.upperScored).toFixed(2)),
-        ],
-        autoClimbPPG: pros.autoClimbPPG,
-        teleopClimbPPG: pros.teleopClimbPPG,
-        climbPPG: pros.climbPPG,
-        linkPG: pros.linkPG,
-        autoPiecesPG: pros.autoPiecesPG,
-        teleopPiecesPG: pros.teleopPiecesPG,
-        cubeCycleProportion: pros.cubeCycleProportion,
-        autoNoClimb: pros.autoNoClimb,
-        teleopPPG: pros.teleopPPG
-
-        // power rating = 4 * wCPG + 3 * accu + 2 * linkPG + 5 * PPG
-        // powerRating: 4 * (nWcycles / matchesPlayed) + 3 * (conesScored + cubesScored) / (conesPickedUp + cubesPickedUp) + 2 * (links / matchesPlayed)
-        // + 5 * (points / matchesPlayed)
-      };
-      for (const key in teamdata) {
-        if (key != "scoringPositions" && teamdata[key]){
-          teamdata[key] = parseFloat((teamdata[key] as number).toFixed(2))
+        let teamdata: teamAggData = {
+          team: pros.team,
+          matchesPlayed: pros.matchesPlayed.low,
+          autoPPG: pros.autoPPG,
+          PPG: pros.PPG,
+          cyclesPG: pros.cyclesPG,
+          weightedCyclesPG: pros.weightedCyclesPG,
+          avgPiecesScored: pros.avgPiecesScored,
+          maxPiecesScored: pros.maxPiecesScored,
+          scoringAccuracy: pros.scoringAccuracy,
+          coneAccuracy: pros.coneAccuracy,
+          cubeAccuracy: pros.cubeAccuracy,
+          scoringPositions: [
+            parseFloat((pros.lowerScored.hasOwnProperty("low")
+              ? pros.lowerScored.low
+              : pros.lowerScored).toFixed(2)),
+            parseFloat((pros.middleScored.hasOwnProperty("low")
+              ? pros.middleScored.low
+              : pros.middleScored).toFixed(2)),
+            parseFloat((pros.upperScored.hasOwnProperty("low")
+              ? pros.upperScored.low
+              : pros.upperScored).toFixed(2)),
+          ],
+          autoClimbPPG: pros.autoClimbPPG,
+          teleopClimbPPG: pros.teleopClimbPPG,
+          climbPPG: pros.climbPPG,
+          linkPG: pros.linkPG,
+          autoPiecesPG: pros.autoPiecesPG,
+          teleopPiecesPG: pros.teleopPiecesPG,
+          cubeCycleProportion: pros.cubeCycleProportion,
+          autoNoClimb: pros.autoNoClimb,
+          teleopPPG: pros.teleopPPG
+  
+          // power rating = 4 * wCPG + 3 * accu + 2 * linkPG + 5 * PPG
+          // powerRating: 4 * (nWcycles / matchesPlayed) + 3 * (conesScored + cubesScored) / (conesPickedUp + cubesPickedUp) + 2 * (links / matchesPlayed)
+          // + 5 * (points / matchesPlayed)
+        };
+        for (const key in teamdata) {
+          if (key != "scoringPositions" && teamdata[key]){
+            teamdata[key] = parseFloat((teamdata[key] as number).toFixed(2))
+          }
+        }
+        if (teams == 0){
+          return teamdata;
+        }
+        else{
+          ret.push(teamdata)
         }
       }
-
-      return teamdata;
+      return ret;
     }
   } catch (error) {
     console.error(error);
@@ -587,7 +606,7 @@ export async function getTeamStandardizedScores(team: number) {
   let foundTeam: number = 0;
 
   for (let index = 0; index < teams.length; index++) {
-    let thisTeam: any = await getTeamAgg({ team: teams[index] });
+    let thisTeam: any = await getAgg(teams[index]);
 
     if (thisTeam.team == team) {
       foundTeam = index;
@@ -813,7 +832,7 @@ export async function getMatch(team: number, match: String) {
 }
 
 export async function getCompTeams(teams: number[]) {
-  const teamPromises = teams.map((team) => getTeamAgg({ team: team }));
+  const teamPromises = teams.map((team) => getAgg(team));
   const teamData = await Promise.all(teamPromises);
   return teamData;
 }
@@ -920,20 +939,23 @@ export async function setTeamAgg({
 }
 
 export async function getAllTeamData() {
-  let ret: teamAggData[] = [];
 
-  const teamlist = await getAllTeamNumbers();
+  // const teamlist = await getAllTeamNumbers();
 
   // DUMMY!!
   // const teamlist = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 
-  for (let i = 0; i < teamlist.length; i++) {
-    let temp = await getTeamAgg({ team: teamlist[i] });
-    if (temp.matchesPlayed > 0) {
-      ret.push(temp);
-    }
-    console.log("data: " + (i + 1) + "/" + teamlist.length)
-  }
+  
+  let ret:teamAggData[] = await getAgg() as teamAggData[];
+  console.log(ret)
+
+  // for (let i = 0; i < teamlist.length; i++) {
+  //   let temp = await getAgg({ team: teamlist[i] });
+  //   if (temp.matchesPlayed > 0) {
+  //     ret.push(temp);
+  //   }
+  //   console.log("data: " + (i + 1) + "/" + teamlist.length)
+  // }
 
   return ret;
 }

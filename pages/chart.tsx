@@ -8,8 +8,8 @@ import Matchup from "../components/matchup";
 import { TeamInput } from "../components/teamInput";
 
 export default function Compare() {
-  const [redTeams, setRedTeams] = useState([610, 2013, 4920]);
-  const [blueTeams, setBlueTeams] = useState([4946, 4678, 1334]);
+  const [redTeams, setRedTeams] = useState([610, 1310, 1285]);
+  const [blueTeams, setBlueTeams] = useState([4069, 4907, 1334]);
   const [loading, setLoading] = useState(true);
   const [selectedMatch, setSelectedMatch] = useState();
   const [selectingMatch, setSelectingMatch] = useState(false);

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import {
   getMatchList,
   calculateTeamAgg,
-  getTeamAgg,
+  getAgg,
   getPiecesByLevel,
 } from "../../neo4j/Aggregate";
 import { teamAggData } from "../../utils";
@@ -22,7 +22,7 @@ export default function Home() {
   useEffect(() => {
     async function getData() {
       let data = await getMatchList(parseInt(teamNumber));
-      let teamAgg = await getTeamAgg({ team: parseInt(teamNumber) });
+      let teamAgg = (await getAgg(parseInt(teamNumber))) as teamAggData;
       console.log(teamAgg);
       setMatches(data);
       setAgg(teamAgg);

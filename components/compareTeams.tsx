@@ -1,9 +1,4 @@
-import {
-  getCompTeams,
-  getMatch,
-  calculateTeamAgg,
-  getTeamAgg,
-} from "../neo4j/Aggregate";
+import { getCompTeams, getMatch, calculateTeamAgg } from "../neo4j/Aggregate";
 import { Button, Table, TextInput } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { teamAggData } from "../utils";
@@ -14,7 +9,7 @@ export function CompareTeamData({ teams }: { teams: Array<number> }) {
 
   useEffect(() => {
     async function getData() {
-      setData(await getCompTeams(teams));
+      setData((await getCompTeams(teams)) as teamAggData[]);
     }
     getData();
   }, [teams]);

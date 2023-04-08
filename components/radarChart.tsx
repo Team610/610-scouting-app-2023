@@ -9,7 +9,7 @@ import {
   Legend,
 } from "chart.js";
 import { Radar } from "react-chartjs-2";
-import { calculateTeamAgg, getMatchList, getTeamAgg } from "../neo4j/Aggregate";
+import { calculateTeamAgg, getMatchList, getAgg } from "../neo4j/Aggregate";
 import { teamAggData } from "../utils";
 import { TextInput } from "@mantine/core";
 
@@ -112,7 +112,10 @@ async function RadarData({ team, num }: { team: number; num: number }) {
   const [teamData, setTeamData] = useState<teamAggData>();
   useEffect(() => {
     async function getData() {
-      setTeamData(await getTeamAgg({ team: parseInt(team + "") }));
+      console.log(team);
+      let temp = (await getAgg(team)) as teamAggData;
+      console.log(temp);
+      setTeamData(temp);
     }
     getData();
   }, [team]);

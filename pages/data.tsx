@@ -4,7 +4,7 @@ import {
   getMatch,
   calculateTeamAgg,
   getPiecesByLevel,
-  getTeamAgg,
+  getAgg,
 } from "../neo4j/Aggregate";
 import { createNTeams, addDummyData } from "../neo4j/AddData";
 import { query, wipe } from "../neo4j/Miscellaneous";
@@ -69,55 +69,6 @@ export function DisplayTeamData({
         "Loading"
       )}
     </>
-  );
-}
-
-export function SingleTeamData({ team }: { team: number }) {
-  const [teamNo, setTeamNo] = useState(team);
-  const [data, setData] = useState<teamAggData[]>();
-  const [searching, setSearching] = useState(false);
-
-  useEffect(() => {
-    async function getData() {
-      if (teamNo !== 0) {
-        setData([await getTeamAgg({ team: teamNo })]);
-      }
-    }
-    getData();
-  }, []);
-
-  return (
-    <div>
-      {team === 0 ? (
-        <div>
-          <TextInput
-            placeholder="610"
-            label="Team Number"
-            withAsterisk
-            onChange={(e) => {
-              setTeamNo(
-                e.currentTarget.value == ""
-                  ? 0
-                  : parseInt(e.currentTarget.value)
-              );
-              setData(undefined);
-              setSearching(false);
-            }}
-          ></TextInput>
-          <Button
-            onClick={async () => {
-              setData([await getTeamAgg({ team: teamNo })]);
-              setSearching(true);
-            }}
-          >
-            Run Query
-          </Button>
-        </div>
-      ) : null}
-      {data !== undefined ? (
-        <DisplayTeamData data={data} weight={defaultWeight} />
-      ) : null}
-    </div>
   );
 }
 

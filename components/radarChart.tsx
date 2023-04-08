@@ -106,18 +106,7 @@ function changeData({
       break;
   }
 }
-//text input to put in specific team
-function TeamInput({ setTeam, num }: { setTeam: Function; num: number }) {
-  let str = "Team: #" + num;
-  return (
-    <TextInput
-      value={num}
-      label={str}
-      withAsterisk
-      onChange={(event) => setTeam(event.currentTarget.value)}
-    />
-  );
-}
+
 //calculates team aggregate data
 async function RadarData({ team, num }: { team: number; num: number }) {
   const [teamData, setTeamData] = useState<teamAggData>();
@@ -139,21 +128,17 @@ async function RadarData({ team, num }: { team: number; num: number }) {
 
 //shows radar chart
 export function RadarChart({ teams }: { teams: number[] }) {
-  const [teamOne, setTeamOne] = useState(teams[0]);
-  const [teamTwo, setTeamTwo] = useState(teams[1]);
-  const [teamThree, setTeamThree] = useState(teams[2]);
-
-  RadarData({ team: parseInt(teamOne + ""), num: 1 });
-  RadarData({ team: parseInt(teamTwo + ""), num: 2 });
-  RadarData({ team: parseInt(teamThree + ""), num: 3 });
+  RadarData({ team: parseInt(teams[0] + ""), num: 1 });
+  RadarData({ team: parseInt(teams[1] + ""), num: 2 });
+  RadarData({ team: parseInt(teams[2] + ""), num: 3 });
 
   return (
     <>
       <div style={{ backgroundColor: "white" }}>
         <div>
-          <TeamInput setTeam={setTeamOne} num={teamOne} />
+          {/* <TeamInput setTeam={setTeamOne} num={teamOne} />
           <TeamInput setTeam={setTeamTwo} num={teamTwo} />
-          <TeamInput setTeam={setTeamThree} num={teamThree} />
+          <TeamInput setTeam={setTeamThree} num={teamThree} /> */}
           <div
             style={{
               height: "100vh",
@@ -165,7 +150,9 @@ export function RadarChart({ teams }: { teams: number[] }) {
             <Radar
               data={data}
               options={{
-                scales: { r: { pointLabels: { font: { size: 10 } } } },
+                scales: {
+                  r: { pointLabels: { font: { size: 10 } }, suggestedMax: 15 },
+                },
               }}
             />
           </div>

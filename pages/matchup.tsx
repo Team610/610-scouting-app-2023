@@ -100,7 +100,7 @@ export function Display({ teams }: { teams: Array<number> }) {
 
   const rows = data ? (
     data.map((data: teamAggData, index: number) => (
-      <tr key={data.team}>
+      <tr key={index}>
         <td>
           {data.team == -1
             ? "Blue Alliance"
@@ -109,34 +109,30 @@ export function Display({ teams }: { teams: Array<number> }) {
             : data.team}
         </td>
         <td>{teamRoles[index]}</td>
-        <td>{data.autoNoClimb.toFixed(2)}</td>
+        <td>{data.autoNoClimb}</td>
         <td>{-1}</td>
-        <td>{data.scoringPositions[2].toFixed(2)}</td>
+        <td>{data.scoringPositions[2]}</td>
         <td>{-1}</td>
-        <td>{data.scoringPositions[1].toFixed(2)}</td>
+        <td>{data.scoringPositions[1]}</td>
         <td>{-1}</td>
-        <td>{data.scoringPositions[0].toFixed(2)}</td>
+        <td>{data.scoringPositions[0]}</td>
         <td>{-1}</td>
-        <td>{data.linkPG.toFixed(2)}</td>
+        <td>{data.linkPG}</td>
         <td>{-1}</td>
         <td>
-          {(
-            2 * data.scoringPositions[0] +
+          {2 * data.scoringPositions[0] +
             3 * data.scoringPositions[1] +
-            5 * data.scoringPositions[2]
-          ).toFixed(2)}
+            5 * data.scoringPositions[2]}
         </td>
         <td>{-1}</td>
         <td>
-          {(
-            data.autoNoClimb +
+          {data.autoNoClimb +
             2 * data.scoringPositions[0] +
             3 * data.scoringPositions[1] +
-            5 * data.scoringPositions[2]
-          ).toFixed(2)}
+            5 * data.scoringPositions[2]}
         </td>
         <td>{-1}</td>
-        <td>{data.cyclesPG.toFixed(2)}</td>
+        <td>{data.cyclesPG}</td>
         <td>{-1}</td>
       </tr>
     ))
@@ -170,33 +166,5 @@ export default function Matchup({ defaultTeams }: { defaultTeams?: number[] }) {
 
       <Display teams={teams} />
     </div>
-  );
-}
-
-export function AggregateRow({ data }: { data: teamAggData }) {
-  return (
-    <tr key={data.team}>
-      <td>{data.team}</td>
-      <td>{data.matchesPlayed}</td>
-      <td>{data.autoPPG.toFixed(2)}</td>
-      <td>{data.PPG.toFixed(2)}</td>
-      <td>{data.cyclesPG.toFixed(2)}</td>
-      <td>{data.weightedCyclesPG.toFixed(2)}</td>
-      <td>{data.scoringAccuracy.toFixed(2)}</td>
-      <td>{data.coneAccuracy.toFixed(2)}</td>
-      <td>{data.cubeAccuracy.toFixed(2)}</td>
-      <td>
-        {"Lower: " +
-          data.scoringPositions[0] +
-          " Middle: " +
-          data.scoringPositions[1] +
-          " Top: " +
-          data.scoringPositions[2]}
-      </td>
-      <td>{data.autoClimbPPG.toFixed(2)}</td>
-      <td>{data.teleopClimbPPG.toFixed(2)}</td>
-      <td>{data.climbPPG.toFixed(2)}</td>
-      <td>{data.linkPG.toFixed(2)}</td>
-    </tr>
   );
 }

@@ -489,15 +489,15 @@ export async function getTeamAgg({ team }: { team: number }) {
         coneAccuracy: pros.coneAccuracy,
         cubeAccuracy: pros.cubeAccuracy,
         scoringPositions: [
-          pros.lowerScored.hasOwnProperty("low")
+          parseFloat((pros.lowerScored.hasOwnProperty("low")
             ? pros.lowerScored.low
-            : pros.lowerScored,
-          pros.middleScored.hasOwnProperty("low")
+            : pros.lowerScored).toFixed(2)),
+          parseFloat((pros.middleScored.hasOwnProperty("low")
             ? pros.middleScored.low
-            : pros.middleScored,
-          pros.upperScored.hasOwnProperty("low")
+            : pros.middleScored).toFixed(2)),
+          parseFloat((pros.upperScored.hasOwnProperty("low")
             ? pros.upperScored.low
-            : pros.upperScored,
+            : pros.upperScored).toFixed(2)),
         ],
         autoClimbPPG: pros.autoClimbPPG,
         teleopClimbPPG: pros.teleopClimbPPG,
@@ -513,6 +513,11 @@ export async function getTeamAgg({ team }: { team: number }) {
         // powerRating: 4 * (nWcycles / matchesPlayed) + 3 * (conesScored + cubesScored) / (conesPickedUp + cubesPickedUp) + 2 * (links / matchesPlayed)
         // + 5 * (points / matchesPlayed)
       };
+      for (const key in teamdata) {
+        if (key != "scoringPositions" && teamdata[key]){
+          teamdata[key] = parseFloat((teamdata[key] as number).toFixed(2))
+        }
+      }
 
       return teamdata;
     }

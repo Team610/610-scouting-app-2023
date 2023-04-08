@@ -9,7 +9,7 @@ import {
 import { teamAggData } from "../../utils";
 import { SingleTeamData } from "../data";
 import Image from "next/image";
-import Chart from "../../components/chart";
+import Chart from "../../components/matchChart";
 import { StatsRing } from "../../components/statBox";
 
 export default function Home() {
@@ -34,13 +34,17 @@ export default function Home() {
         "X-TBA-Auth-Key":
           "monpiIlPoQ81Y5bc8zhoMNuTbm8bLHQzYikSQuYYZHvM3BbAm8Y4uFeaOU6bMNg1",
       };
-      const response = await fetch(
-        `https://www.thebluealliance.com/api/v3/team/frc${teamNumber}/media/2023`,
-        { headers: headers }
-      );
-      let data = await response.json();
-      if (data.length > 0) {
-        setImage(data[1].direct_url);
+      try {
+        const response = await fetch(
+          `https://www.thebluealliance.com/api/v3/team/frc${teamNumber}/media/2023`,
+          { headers: headers }
+        );
+        let data = await response.json();
+        if (data.length > 0) {
+          setImage(data[1].direct_url);
+        }
+      } catch (e) {
+        console.log(e);
       }
     }
 

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { RadarChart } from "../components/radarChart";
 import { blue } from "@nextui-org/react";
 import { SelectMatch } from "./matches";
-import CompareTeams, { CompareTeamData } from "./compareTeams";
+import CompareTeams, { CompareTeamData } from "../components/compareTeams";
 
 export default function Compare() {
   const [redTeams, setRedTeams] = useState([610, 2013, 0]);

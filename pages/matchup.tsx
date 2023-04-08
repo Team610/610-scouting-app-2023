@@ -160,7 +160,7 @@ export default function Matchup({ defaultTeams }: { defaultTeams?: number[] }) {
       <TextInput
         defaultValue={teams.map((team) => team + " ")}
         onChange={(e) => {
-          setTeams(e.target.value.split(" ").map((x) => parseInt(x)));
+          setTeams(e.target.value.split(" ,").map((x) => parseInt(x)));
         }}
       ></TextInput>
 

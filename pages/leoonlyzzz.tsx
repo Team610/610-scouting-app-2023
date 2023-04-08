@@ -1,6 +1,6 @@
 import { Button } from "@mantine/core";
 import { addDummyData } from "../neo4j/AddData";
-import { calculateTeamAgg, getAllTeamNumbers, getPiecesPickedUpAllMatches, getPiecesScoredAllMatches, setTeamAgg } from "../neo4j/Aggregate";
+import { calculateTeamAgg, getAllTeamNumbers, getMaxPiecesScored, getPiecesPickedUpAllMatches, getPiecesScoredAllMatches, setTeamAgg } from "../neo4j/Aggregate";
 import { wipe } from "../neo4j/Miscellaneous";
 import sampleMatch from "../data/sampleMatch.json"
 import { getNeoSession } from "../neo4j/Session";
@@ -19,13 +19,12 @@ export default function rdr() {
 }
 
 export async function boasdfl() {
-    const teamlist = await getAllTeamNumbers();
-    // console.log(teamlist)
-    // for (let i = 0; i < teamlist.length; i++) {
-    //     await calculateTeamAgg({ team: teamlist[i] });
-    //     console.log("calculating " + (i + 1) + "/" + teamlist.length)
-    // }
-    // await calculateTeamAgg({team: 1334})
+    const sesh = getNeoSession();
+    const tx = sesh.beginTransaction();
+    try {
+        console.log(await calculateTeamAgg({team: 610}))
+        tx.close()
+    } catch (error) { console.error(error) }
 }
 
 export async function setAff({ team }: { team: number }) {

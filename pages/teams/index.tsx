@@ -8,7 +8,7 @@ export default function Home() {
   const [teams, setTeams] = useState<string[]>();
   useEffect(() => {
     async function fetchTeams() {
-      let teams = [...(await getTeams())];
+      let teams = [...await getTeams()];
       teams = teams.sort((a, b) => a - b);
       setTeams(teams);
       console.log(teams);
@@ -22,11 +22,7 @@ export default function Home() {
       <h1>Teams</h1>
       {teams
         ? teams.map((team: string) => {
-            return (
-              <Link href={"/teams/" + team} style={{ color: "white" }}>
-                {team}
-              </Link>
-            );
+            return <Link href={"/teams/" + team}>{team}</Link>;
           })
         : null}
     </div>

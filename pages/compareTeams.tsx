@@ -4,9 +4,12 @@ import {
   calculateTeamAgg,
   getTeamAgg,
 } from "../neo4j/Aggregate";
+import { createNTeams, addDummyData } from "../neo4j/AddData";
+import { query, wipe } from "../neo4j/Miscellaneous";
 import { Button, Table, TextInput } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { teamAggData } from "../utils";
+import sampleMatch from "../data/sampleMatch.json";
 
 export function CompareTeamData({ teams }: { teams: Array<number> }) {
   const [data, setData] = useState<teamAggData[]>();
@@ -17,6 +20,7 @@ export function CompareTeamData({ teams }: { teams: Array<number> }) {
       setData(await getCompTeams(teams));
     }
     getData();
+    console.log(data);
   }, [teams]);
 
   const ths = (
@@ -42,7 +46,7 @@ export function CompareTeamData({ teams }: { teams: Array<number> }) {
 
   const rows = data ? (
     data.map((data: teamAggData, index: number) => (
-      <tr key={index}>
+      <tr key={data.team}>
         <td>{data.team}</td>
         <td>{teamRoles[index]}</td>
         <td>{data.matchesPlayed}</td>
@@ -82,9 +86,18 @@ export function CompareTeamData({ teams }: { teams: Array<number> }) {
   );
 }
 
-export default function CompareTeams({ teams }: { teams?: number[] }) {
+export default function CompareTeams() {
+  const [teams, setTeams] = useState<number[]>([]);
+
   return (
     <div>
+      <TextInput
+        onChange={(e) => {
+          setTeams(e.target.value.split(" ").map((x) => parseInt(x)));
+          console.log(teams);
+        }}
+      ></TextInput>
+
       <CompareTeamData teams={teams} />
     </div>
   );

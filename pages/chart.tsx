@@ -3,17 +3,12 @@ import { RadarChart } from "../components/radarChart";
 import { blue } from "@nextui-org/react";
 import { SelectMatch } from "./matches";
 import CompareTeams, { CompareTeamData } from "./compareTeams";
-import { Button } from "@mantine/core";
-import Matchup from "./matchup";
-import { TeamInput } from "../components/teamInput";
 
 export default function Compare() {
-  const [redTeams, setRedTeams] = useState([610, 2013, 4920]);
-  const [blueTeams, setBlueTeams] = useState([4946, 4678, 1334]);
-  const [loading, setLoading] = useState(true);
+  const [redTeams, setRedTeams] = useState([610, 2013, 0]);
+  const [blueTeams, setBlueTeams] = useState([0, 0, 0]);
   const [selectedMatch, setSelectedMatch] = useState();
-  const [selectingMatch, setSelectingMatch] = useState(false);
-  const [editTeams, setEditTeams] = useState(false);
+  const [displayTable, setTable] = useState(false);
   useEffect(() => {
     async function getMatches() {
       let allMatches: any[] = await (
@@ -41,93 +36,33 @@ export default function Compare() {
           break;
         }
       }
-      setLoading(false);
     }
     getMatches();
   }, []);
 
-  function handleBlueTeams(num: number, idx: number) {
-    let newBlue = [...blueTeams];
-    newBlue[idx] = num;
-    setBlueTeams(newBlue);
-  }
-
-  function handleRedTeams(num: number, idx: number) {
-    let newRed = [...redTeams];
-    newRed[idx] = num;
-    setRedTeams(newRed);
-  }
-
   return (
     <div>
-      {selectingMatch ? (
-        <SelectMatch
-          setRedTeams={setRedTeams}
-          setBlueTeams={setBlueTeams}
-          setSelectedMatch={setSelectedMatch}
-        />
-      ) : (
-        <></>
-      )}
-
-      {editTeams ? (
-        <div style={{ display: "flex", width: "100%" }}>
-          <div style={{ flex: 1 }}>
-            {[0, 1, 2].map((idx) => (
-              <div key={idx}>
-                <TeamInput
-                  setTeam={handleBlueTeams}
-                  num={blueTeams[idx]}
-                  idx={idx}
-                />
-              </div>
-            ))}
-          </div>
-          <div style={{ flex: 1 }}>
-            {[0, 1, 2].map((idx) => (
-              <div key={idx}>
-                <TeamInput
-                  setTeam={handleRedTeams}
-                  num={redTeams[idx]}
-                  idx={idx}
-                />
-              </div>
-            ))}
-          </div>
+      {/* <SelectMatch
+        setRedTeams={setRedTeams}
+        setBlueTeams={setBlueTeams}
+        setSelectedMatch={setSelectedMatch}
+      /> */}
+      <div style={{ display: "flex" }}>
+        {" "}
+        <div style={{ flex: "1" }}>
+          <RadarChart teams={redTeams} />
         </div>
-      ) : (
-        <></>
-      )}
-
-      <div style={{ display: "flex", gap: "10px", padding: "10px 0px" }}>
-        <Button onClick={() => setSelectingMatch(!selectingMatch)}>
-          {selectingMatch ? "Submit Match" : "Select Match"}
-        </Button>
-        <Button onClick={() => setEditTeams(!editTeams)}>
-          {editTeams ? "Save" : "Edit Teams"}
-        </Button>
+        <div style={{ flex: "1" }}>
+          <RadarChart teams={blueTeams} />
+        </div>{" "}
       </div>
-
-      {loading || selectingMatch || editTeams ? (
-        <></>
+      <CompareTeams />
+      {/* <Button onClick={() => setTable(!displayTable)}>{}</Button>
+      {displayTable ? (
+        <CompareTeamData teams={redTeams.concat(blueTeams)} />
       ) : (
-        <>
-          <h1>Radar</h1>
-          <div style={{ display: "flex" }}>
-            {" "}
-            <div style={{ flex: "1" }}>
-              <RadarChart teams={redTeams} />
-            </div>
-            <div style={{ flex: "1" }}>
-              <RadarChart teams={blueTeams} />
-            </div>{" "}
-          </div>
-          <h1>Comapre</h1>
-          <CompareTeams teams={redTeams.concat(blueTeams)} />
-          <h1>Matchup</h1>
-          <Matchup defaultTeams={redTeams.concat(blueTeams)} />
-        </>
-      )}
+        <></>
+      )} */}
     </div>
   );
 }

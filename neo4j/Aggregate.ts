@@ -10,6 +10,20 @@ import {
 } from "../utils";
 import { getTeams } from "./GetData";
 
+export async function getGridData() {
+  try {
+    const session = getNeoSession()
+    const tx = session.beginTransaction()
+    const qs = "MATCH (n:Team{name:610}) - [x] - (m:Cycle)\n"
+      + "MATCH(m) - [y: SCORED] - (s:ScoringPosition)\n"
+      + "RETURN n.name, s.name, TYPE(x), m.substation, m.teleop, y.link, COUNT(*)"
+    const ret = await tx.run(qs)
+  } catch (error) { console.error(error) }
+}
+
+
+
+
 // returns how many game pieces the robot scored in that row: 1 is bottom, 3 is top
 export async function getTeamScoreLocation(
   team: number,
@@ -68,8 +82,8 @@ export async function getPiecesScoredAllMatches(
 ) {
   const res = await tx.run(
     "MATCH (t:Team {name: $name})-[r:" +
-      piece +
-      "]->(m:Cycle) - [:SCORED{teleop: $teleop}] -> (q:ScoringPosition) RETURN count(*)",
+    piece +
+    "]->(m:Cycle) - [:SCORED{teleop: $teleop}] -> (q:ScoringPosition) RETURN count(*)",
     { name: team, piece: piece, teleop: teleop }
   );
 
@@ -85,8 +99,8 @@ export async function getPiecesScored(
 ) {
   const res = await tx.run(
     "MATCH (t:Team {name: $name})-[:" +
-      piece +
-      "{match: toString($match)}]->(c:Cycle) - [:SCORED] -> (q:ScoringPosition) RETURN count(*)",
+    piece +
+    "{match: toString($match)}]->(c:Cycle) - [:SCORED] -> (q:ScoringPosition) RETURN count(*)",
     { name: team, match: match, piece: piece }
   );
   return res.records[0].get(0).low;
@@ -182,33 +196,33 @@ export async function getPiecesPickedUp(
   //cones picked up
   const result = await tx.run(
     "MATCH (t:Team {name: $name})-[:" + piece +
-      "{match: toString($match)}]->(c:Cycle) RETURN count(*)",
-    { name: team, match: match}
+    "{match: toString($match)}]->(c:Cycle) RETURN count(*)",
+    { name: team, match: match }
   );
   return result.records[0].get(0).low;
 }
 
-export async function getPiecesByLevel(team: number){
+export async function getPiecesByLevel(team: number) {
   let res = {}
   let pieces = ['', 'cone', 'cube']
   const session = getNeoSession();
   const tx = session.beginTransaction();
   for (let i = 0; i < pieces.length; i++) {
     const piece = pieces[i];
-    res[piece!="" ? piece : "total"] = {}
+    res[piece != "" ? piece : "total"] = {}
     for (let row = 0; row < 3; row++) {
       try {
         const result = await tx.run(
-          'MATCH (t:Team {name: $name})-' + (piece=="" ? '[]' : '[:' + piece + ']') + '-(c:Cycle {teleop: TRUE}) OPTIONAL MATCH (c)--(s:ScoringPosition {name: $row}) RETURN count(c) AS cycleCount, count(s) AS scoredCount',
-          { name: team, row: row == 0 ? "bottom" : row == 1 ? "middle" : "top"}
+          'MATCH (t:Team {name: $name})-' + (piece == "" ? '[]' : '[:' + piece + ']') + '-(c:Cycle {teleop: TRUE}) OPTIONAL MATCH (c)--(s:ScoringPosition {name: $row}) RETURN count(c) AS cycleCount, count(s) AS scoredCount',
+          { name: team, row: row == 0 ? "bottom" : row == 1 ? "middle" : "top" }
         );
 
-        res[piece!="" ? piece : "total"][row] = {
-          cycles: result.records[0].get("cycleCount")["low"], 
+        res[piece != "" ? piece : "total"][row] = {
+          cycles: result.records[0].get("cycleCount")["low"],
           scored: result.records[0].get("scoredCount")["low"]
         }
       }
-      catch(e){console.error(e)}
+      catch (e) { console.error(e) }
     }
   }
   return res
@@ -290,8 +304,8 @@ export async function getClimbAllMatches(
 
   let result = await tx.run(
     "MATCH (t:Team {name: $name})-[]-(c:" +
-      (teleop ? "Park" : "Mobility") +
-      ") RETURN count(*)",
+    (teleop ? "Park" : "Mobility") +
+    ") RETURN count(*)",
     { name: team }
   );
 
@@ -299,8 +313,8 @@ export async function getClimbAllMatches(
 
   result = await tx.run(
     "MATCH (t:Team {name: $name})-[:DOCKED]-(:" +
-      (teleop ? "Teleop" : "Auto") +
-      "Climb) RETURN count(*)",
+    (teleop ? "Teleop" : "Auto") +
+    "Climb) RETURN count(*)",
     { name: team }
   );
 
@@ -308,8 +322,8 @@ export async function getClimbAllMatches(
 
   result = await tx.run(
     "MATCH (t:Team {name: $name})-[:ENGAGED]-(:" +
-      (teleop ? "Teleop" : "Auto") +
-      "Climb) RETURN count(*)",
+    (teleop ? "Teleop" : "Auto") +
+    "Climb) RETURN count(*)",
     { name: team }
   );
 
@@ -465,27 +479,27 @@ export async function calculateTeamAgg({ team }: { team: number }) {
   return teamdata.matchesPlayed > 0 ? teamdata : defaultTeam;
 }
 
-export async function getAgg(team?:number) {
+export async function getAgg(team?: number) {
   const session = getNeoSession();
   let teams = 0;
   let ret: teamAggData[] = []
   try {
     let res;
     const tx = session.beginTransaction();
-    if (team){
-        res = await tx.run(
+    if (team) {
+      res = await tx.run(
         "MATCH (t:TeamAgg{name: $name}) RETURN properties(t)",
         { name: team }
       );
     }
-    else{
+    else {
       res = await tx.run(
         "MATCH (t:TeamAgg) RETURN properties(t)",
       );
       teams = (await getTeams()).length
     }
     if (res.records.length > 0) {
-      for (let i = 0; i < teams || i == 0; i++){
+      for (let i = 0; i < teams || i == 0; i++) {
         const pros = res.records[i].get("properties(t)");
 
         let teamdata: teamAggData = {
@@ -520,20 +534,20 @@ export async function getAgg(team?:number) {
           cubeCycleProportion: pros.cubeCycleProportion,
           autoNoClimb: pros.autoNoClimb,
           teleopPPG: pros.teleopPPG
-  
+
           // power rating = 4 * wCPG + 3 * accu + 2 * linkPG + 5 * PPG
           // powerRating: 4 * (nWcycles / matchesPlayed) + 3 * (conesScored + cubesScored) / (conesPickedUp + cubesPickedUp) + 2 * (links / matchesPlayed)
           // + 5 * (points / matchesPlayed)
         };
         for (const key in teamdata) {
-          if (key != "scoringPositions" && teamdata[key]){
+          if (key != "scoringPositions" && teamdata[key]) {
             teamdata[key] = parseFloat((teamdata[key] as number).toFixed(2))
           }
         }
-        if (teams == 0){
+        if (teams == 0) {
           return teamdata;
         }
-        else{
+        else {
           ret.push(teamdata)
         }
       }
@@ -555,7 +569,7 @@ interface TeamRelativeStatistics {
   cyclesPerGame: number;
 }
 
-function calculatePercentiles({teamsData} : {teamsData: teamAggData[]}) {
+function calculatePercentiles({ teamsData }: { teamsData: teamAggData[] }) {
   const stats = [
     'autoPPG',
     'PPG',
@@ -761,10 +775,10 @@ export async function getMatch(team: number, match: String) {
     cycles = cycles.filter(el => el)
 
     cycles.map(cycle => {
-      if(cycle.teleop){
+      if (cycle.teleop) {
         teleopCycles += 1
       }
-      else{
+      else {
         autoCycles += 1
       }
     })
@@ -777,7 +791,7 @@ export async function getMatch(team: number, match: String) {
     autoBottom = await getTeamScoreLocationByMatch(team, 1, match, false, tx)
 
     autoScored += autoTop + autoMiddle + autoBottom
-    autoPoints += 3 * autoBottom + 4* autoMiddle + 6 * autoTop
+    autoPoints += 3 * autoBottom + 4 * autoMiddle + 6 * autoTop
 
     teleopTop = await getTeamScoreLocationByMatch(team, 3, match, true, tx)
     teleopMiddle = await getTeamScoreLocationByMatch(team, 2, match, true, tx)
@@ -945,8 +959,8 @@ export async function getAllTeamData() {
   // DUMMY!!
   // const teamlist = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 
-  
-  let ret:teamAggData[] = await getAgg() as teamAggData[];
+
+  let ret: teamAggData[] = await getAgg() as teamAggData[];
   console.log(ret)
 
   // for (let i = 0; i < teamlist.length; i++) {
@@ -961,34 +975,34 @@ export async function getAllTeamData() {
 }
 
 //max cycles,max gamepieces scored,max cones scored,max cubes scored, max level 3
-export async function getMax(team:number) {
-  let cycles:number=0
-  let piecesScored:number = 0
-  let conesScored:number = 0
-  let cubesSocred:number = 0
-  let level3:number = 0
-  let match:String[] = await getMatchList(team)
+export async function getMax(team: number) {
+  let cycles: number = 0
+  let piecesScored: number = 0
+  let conesScored: number = 0
+  let cubesSocred: number = 0
+  let level3: number = 0
+  let match: String[] = await getMatchList(team)
 
   for (let i = 0; i < match.length; i++) {
-    let currentMatch:any = getMatch(team, match[i])
-  
-    if(currentMatch.cycles > cycles) {
-      cycles = currentMatch.cycles 
+    let currentMatch: any = getMatch(team, match[i])
+
+    if (currentMatch.cycles > cycles) {
+      cycles = currentMatch.cycles
     }
-    if(currentMatch.piecesScored > piecesScored) {
+    if (currentMatch.piecesScored > piecesScored) {
       piecesScored = currentMatch.piecesScored
     }
-    if(currentMatch.conesScored > conesScored) {
+    if (currentMatch.conesScored > conesScored) {
       conesScored = currentMatch.conesScored
     }
-    if(currentMatch.cubesScored > cubesSocred) {
+    if (currentMatch.cubesScored > cubesSocred) {
       cubesSocred = currentMatch.cubesScored
     }
-    if((currentMatch.autoTop + currentMatch.teleopTop) > level3) {
-      level3 = (currentMatch.autoTop + currentMatch.teleopTop) 
+    if ((currentMatch.autoTop + currentMatch.teleopTop) > level3) {
+      level3 = (currentMatch.autoTop + currentMatch.teleopTop)
     }
   }
-  let ret =  {
+  let ret = {
     cycles,
     piecesScored,
     conesScored,

@@ -4,7 +4,8 @@ import { getNeoSession } from "../../../neo4j/Session";
 import router from "next/router";
 
 type Data = {
-    teamAgg: teamAggData
+    teamAgg?: teamAggData
+    error?: String
 }
 
 export default async function handler(
@@ -15,7 +16,7 @@ export default async function handler(
     if(typeof teamNumber === "string"){
         res.status(200).json({ teamAgg: await getTeamAgg(teamNumber) })
     }else{
-        res.status(200)
+        res.status(400).json({error: "invalid team name"})
     }
 }
 

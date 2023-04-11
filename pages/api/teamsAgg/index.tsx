@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { getNeoSession } from '../../neo4j/Session'
-import { defaultTeam, roundToTwo, teamAggData } from '../../utils';
+import { getNeoSession } from '../../../neo4j/Session'
+import { defaultTeam, roundToTwo, teamAggData } from '../../../utils';
 
 type Data = {
   teamdata: any
@@ -18,7 +18,7 @@ export async function getAgg(team?: number) {
   const session = getNeoSession();
   try {
     const tx = session.beginTransaction();
-    let res = team ? await tx.run("MATCH (t:TeamAgg{name: $name}) RETURN properties(t)", { name: team }) : await tx.run("MATCH (t:TeamAgg) RETURN properties(t) AS properties")
+    let res = team ? await tx.run("MATCH (t:TeamAgg{name: $name}) RETURN properties(t) AS properties", { name: team }) : await tx.run("MATCH (t:TeamAgg) RETURN properties(t) AS properties")
     const ret = res.records.map((record) => {
       const pros = record.get("properties")
       const teamdata: teamAggData = {
@@ -58,9 +58,8 @@ export async function getAgg(team?: number) {
     })
 
     await tx.close()
-
-    console.log(ret)
     return ret
+
   } catch (error) {
     console.error(error);
   } finally {

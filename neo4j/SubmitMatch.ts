@@ -15,7 +15,10 @@ export interface clientCycle {
 
 export async function submitMatch(match: matchData){
 
-    await scoreMatch(match)
-    await setTeamAgg({team_agg_data: await calculateTeamAgg({team: match.team})})
+    fetch("/api/scoreMatch", {
+        method: "POST",
+        body: JSON.stringify(match)
+    }).then(data => console.log(data.json()))
+    // await setTeamAgg({team_agg_data: await calculateTeamAgg({team: match.team})})
 
 }

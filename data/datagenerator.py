@@ -27,7 +27,7 @@ for i in range(N_ROUNDS):
             t = {}
             t['teleop'] = False if j < auto_cycles else True
             t['substation'] = random.choice(["red bottom", "red middle", "red top", "blue bottom", "blue middle", "blue top", "shelf", "gate", "floor"])
-            t['level'] = random.randint(0, 3)
+            t['level'] = random.randint(0, 4)
             t['link'] = ranBoolean() == 1
             t['object'] = "cube" if random.randint(0, 2) == 0 else "cone"
             cycles.append(t)
@@ -35,7 +35,7 @@ for i in range(N_ROUNDS):
         m['enemies'] = [teams[x] for x in [3, 4, 5]] if a < 3 else [teams[x] for x in [0, 1, 2]]
         m['defended'] = []
         for i in range(random.randint(0, 2)):
-            m['defended'].append({"team": str(random.choice(m['enemies'])), "time": random.randint(0, 10)})
+            m['defended'].append({"team": str(random.choice(m['enemies'])), "time": random.randint(0, 60000)})
         m['allies'] = [teams[x] for x in [3, 4, 5] if x != a] if a > 2 else [teams[x] for x in [0, 1, 2] if x != a]
         data.append(m)
 

@@ -183,7 +183,7 @@ export default function AllTeamData() {
           ) : (
             <DisplayTeamData data={data} weight={weights} />
           )}
-          <CSVLink data={data}>Download CSV</CSVLink>
+          {/* <CSVLink data={data}>Download CSV</CSVLink> */}
         </div>
       ) : (
         <div>Loading...</div>

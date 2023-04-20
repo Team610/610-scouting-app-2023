@@ -486,45 +486,48 @@ export async function getAgg(team?:number) {
     }
     if (res.records.length > 0) {
       for (let i = 0; i < teams || i == 0; i++){
-        const pros = res.records[i].get("properties(t)");
+        if(res.records[i]){
 
-        let teamdata: teamAggData = {
-          team: pros.team,
-          matchesPlayed: pros.matchesPlayed.low,
-          autoPPG: pros.autoPPG,
-          PPG: pros.PPG,
-          cyclesPG: pros.cyclesPG,
-          weightedCyclesPG: pros.weightedCyclesPG,
-          avgPiecesScored: pros.avgPiecesScored,
-          maxPiecesScored: pros.maxPiecesScored,
-          scoringAccuracy: pros.scoringAccuracy,
-          coneAccuracy: pros.coneAccuracy,
-          cubeAccuracy: pros.cubeAccuracy,
-          scoringPositions: [
-            parseFloat((pros.lowerScored.hasOwnProperty("low")
-              ? pros.lowerScored.low
-              : pros.lowerScored).toFixed(2)),
-            parseFloat((pros.middleScored.hasOwnProperty("low")
-              ? pros.middleScored.low
-              : pros.middleScored).toFixed(2)),
-            parseFloat((pros.upperScored.hasOwnProperty("low")
-              ? pros.upperScored.low
-              : pros.upperScored).toFixed(2)),
-          ],
-          autoClimbPPG: pros.autoClimbPPG,
-          teleopClimbPPG: pros.teleopClimbPPG,
-          climbPPG: pros.climbPPG,
-          linkPG: pros.linkPG,
-          autoPiecesPG: pros.autoPiecesPG,
-          teleopPiecesPG: pros.teleopPiecesPG,
-          cubeCycleProportion: pros.cubeCycleProportion,
-          autoNoClimb: pros.autoNoClimb,
-          teleopPPG: pros.teleopPPG
+          const pros = res.records[i].get("properties(t)");
   
-          // power rating = 4 * wCPG + 3 * accu + 2 * linkPG + 5 * PPG
-          // powerRating: 4 * (nWcycles / matchesPlayed) + 3 * (conesScored + cubesScored) / (conesPickedUp + cubesPickedUp) + 2 * (links / matchesPlayed)
-          // + 5 * (points / matchesPlayed)
-        };
+          let teamdata: teamAggData = {
+            team: pros.team,
+            matchesPlayed: pros.matchesPlayed.low,
+            autoPPG: pros.autoPPG,
+            PPG: pros.PPG,
+            cyclesPG: pros.cyclesPG,
+            weightedCyclesPG: pros.weightedCyclesPG,
+            avgPiecesScored: pros.avgPiecesScored,
+            maxPiecesScored: pros.maxPiecesScored,
+            scoringAccuracy: pros.scoringAccuracy,
+            coneAccuracy: pros.coneAccuracy,
+            cubeAccuracy: pros.cubeAccuracy,
+            scoringPositions: [
+              parseFloat((pros.lowerScored.hasOwnProperty("low")
+                ? pros.lowerScored.low
+                : pros.lowerScored).toFixed(2)),
+              parseFloat((pros.middleScored.hasOwnProperty("low")
+                ? pros.middleScored.low
+                : pros.middleScored).toFixed(2)),
+              parseFloat((pros.upperScored.hasOwnProperty("low")
+                ? pros.upperScored.low
+                : pros.upperScored).toFixed(2)),
+            ],
+            autoClimbPPG: pros.autoClimbPPG,
+            teleopClimbPPG: pros.teleopClimbPPG,
+            climbPPG: pros.climbPPG,
+            linkPG: pros.linkPG,
+            autoPiecesPG: pros.autoPiecesPG,
+            teleopPiecesPG: pros.teleopPiecesPG,
+            cubeCycleProportion: pros.cubeCycleProportion,
+            autoNoClimb: pros.autoNoClimb,
+            teleopPPG: pros.teleopPPG
+    
+            // power rating = 4 * wCPG + 3 * accu + 2 * linkPG + 5 * PPG
+            // powerRating: 4 * (nWcycles / matchesPlayed) + 3 * (conesScored + cubesScored) / (conesPickedUp + cubesPickedUp) + 2 * (links / matchesPlayed)
+            // + 5 * (points / matchesPlayed)
+        }
+        
         for (const key in teamdata) {
           if (key != "scoringPositions" && teamdata[key]){
             teamdata[key] = parseFloat((teamdata[key] as number).toFixed(2))
@@ -536,6 +539,7 @@ export async function getAgg(team?:number) {
         else{
           ret.push(teamdata)
         }
+      }
       }
       return ret;
     }

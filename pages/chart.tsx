@@ -18,7 +18,7 @@ export default function Compare() {
     async function getMatches() {
       let allMatches: any[] = await (
         await fetch(
-          "https://www.thebluealliance.com/api/v3/team/frc610/event/2023oncmp2/matches/simple",
+          "https://www.thebluealliance.com/api/v3/team/frc610/event/2023hop/matches/simple",
           {
             headers: {
               "X-TBA-Auth-Key":

@@ -4,7 +4,7 @@ import {
   getMatch,
   calculateTeamAgg,
   getPiecesByLevel,
-  getTeamAgg,
+  getAgg,
 } from "../neo4j/Aggregate";
 import { createNTeams, addDummyData } from "../neo4j/AddData";
 import { query, wipe } from "../neo4j/Miscellaneous";
@@ -80,7 +80,7 @@ export function SingleTeamData({ team }: { team: number }) {
   useEffect(() => {
     async function getData() {
       if (teamNo !== 0) {
-        setData([await getTeamAgg({ team: teamNo })]);
+        setData([(await getAgg(teamNo)) as teamAggData]);
       }
     }
     getData();
@@ -106,7 +106,7 @@ export function SingleTeamData({ team }: { team: number }) {
           ></TextInput>
           <Button
             onClick={async () => {
-              setData([await getTeamAgg({ team: teamNo })]);
+              setData([(await getAgg(teamNo)) as teamAggData]);
               setSearching(true);
             }}
           >
@@ -149,7 +149,7 @@ export default function AllTeamData() {
       maxLength={3}
     ></TextInput>
   ));
-
+  console.log(data);
   return (
     <div style={{ padding: "10px" }}>
       {displayWeights ? (
@@ -262,9 +262,9 @@ export function calcPR({
   ret += teamData.teleopPiecesPG * weights.telePiecesPG;
   ret += teamData.weightedCyclesPG * weights.wCyclesPG;
   ret += isNaN(teamData.cubeCycleProportion * weights.cubeCycleProportion)
-  ? 0
-  : teamData.cubeCycleProportion * weights.cubeCycleProportion;
-  ret += teamData.autoNoClimb * weights.autoNoClimb
+    ? 0
+    : teamData.cubeCycleProportion * weights.cubeCycleProportion;
+  ret += teamData.autoNoClimb * weights.autoNoClimb;
 
   return ret.toFixed(2);
 }

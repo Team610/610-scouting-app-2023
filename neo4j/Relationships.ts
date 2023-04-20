@@ -7,22 +7,24 @@ import { matchData } from "../utils";
 export async function allies(data: matchData) {
     const session = getNeoSession()
     for (let index = 0; index < data.allies.length; index++) {
-      try {
-        const tx = session.beginTransaction()
-        const _ = await tx.run  (
-          'MERGE (:Team{name:toInteger($allyname)})',
-          { allyname: data.allies[index]}
-        )
-  
-        const result = await tx.run(
-          'MATCH (t:Team),(ot:Team) WHERE t.name = toInteger($name) AND ot.name = toInteger($otherName) CREATE (t)-[:ALLY{match: toString($match)}]->(ot)',
-          { name: data.team, otherName: data.allies[index], match: data.match },
-        )
-  
-        await tx.commit()
-        
-      } catch (error) {
-        console.error(error)
+      if(data.team != data.allies[index]){
+        try {
+          const tx = session.beginTransaction()
+          const _ = await tx.run  (
+            'MERGE (:Team{name:toInteger($allyname)})',
+            { allyname: data.allies[index]}
+          )
+    
+          const result = await tx.run(
+            'MATCH (t:Team),(ot:Team) WHERE t.name = toInteger($name) AND ot.name = toInteger($otherName) CREATE (t)-[:ALLY{match: toString($match)}]->(ot)',
+            { name: data.team, otherName: data.allies[index], match: data.match },
+          )
+    
+          await tx.commit()
+          
+        } catch (error) {
+          console.error(error)
+        }
       }
     }
   }

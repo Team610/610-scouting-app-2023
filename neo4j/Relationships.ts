@@ -7,29 +7,30 @@ import { matchData } from "../utils";
 export async function allies(data: matchData) {
     const session = getNeoSession()
     for (let index = 0; index < data.allies.length; index++) {
-      try {
-        const tx = session.beginTransaction()
-        const _ = await tx.run  (
-          'MERGE (:Team{name:toInteger($allyname)})',
-          { allyname: data.allies[index]}
-        )
-  
-        const result = await tx.run(
-          'MATCH (t:Team),(ot:Team) WHERE t.name = toInteger($name) AND ot.name = toInteger($otherName) CREATE (t)-[:ALLY{match: toString($match)}]->(ot)',
-          { name: data.team, otherName: data.allies[index], match: data.match },
-        )
-  
-        await tx.commit()
-        
-      } catch (error) {
-        console.error(error)
+      if(data.team != data.allies[index]){
+        try {
+          const tx = session.beginTransaction()
+          const _ = await tx.run  (
+            'MERGE (:Team{name:toInteger($allyname)})',
+            { allyname: data.allies[index]}
+          )
+    
+          const result = await tx.run(
+            'MATCH (t:Team),(ot:Team) WHERE t.name = toInteger($name) AND ot.name = toInteger($otherName) CREATE (t)-[:ALLY{match: toString($match)}]->(ot)',
+            { name: data.team, otherName: data.allies[index], match: data.match },
+          )
+    
+          await tx.commit()
+          
+        } catch (error) {
+          console.error(error)
+        }
       }
     }
   }
 //takes the match data for a team as the parameter, creates the enemy relaitionships for the team
 
   export async function enemies(data: any) {
-    console.log(data.enemies)
     const session = getNeoSession()
     for (let index = 0; index < data.enemies.length; index++) {
       try {
@@ -53,3 +54,29 @@ export async function allies(data: matchData) {
     }
   }
   
+  export async function defence(data: any) {
+    const session = getNeoSession()
+    for (let index = 0; index < data.defended.length; index++) {
+      console.log(data.defended)
+      if(data.defended[index].time > 0){
+        try {
+          const tx = session.beginTransaction()
+          
+          const _ = await tx.run  (
+            'MERGE (:Team{name:toInteger($enemyname)})',
+            { enemyname: data.defended[index]["team"]}
+          )
+  
+          const result = await tx.run(
+            'MATCH (t:Team),(ot:Team) WHERE t.name = toInteger($name) AND ot.name = toInteger($otherName) CREATE (t)-[:DEFENDED{match: toString($match), time: toFloat($time)}]->(ot)',
+            { name: data.team, otherName: data.defended[index]["team"], match: data.match, time: (data.defended[index]["time"] / 1000).toFixed(2) },
+          )
+    
+          await tx.commit()
+          
+        } catch (error) {
+          console.error(error)
+        }
+      }
+    }
+  }

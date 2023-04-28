@@ -1,8 +1,9 @@
 import { Session } from "next-auth";
 import { getNeoSession } from "./Session";
 import neo4j from 'neo4j-driver'
-import { allies, enemies } from "./Relationships";
+import { allies, defence, enemies } from "./Relationships";
 import { matchData } from "../utils";
+import { calculateTeamAgg, setTeamAgg } from "./Aggregate";
 
 
 //create teams to test with takes a number as parameter for number of teams, returns nothing
@@ -124,27 +125,30 @@ export async function climb(data: matchData) {
 
 export async function addDummyData({data}: {data: Array<matchData>}){
     for(var i = 0; i < data.length; i++){
-        // console.log("added dummy data " + (i + 1) + "/" + (data.length + 1))
-        score(data[i])
-        allies(data[i])
-        enemies(data[i])
-        climb(data[i])
-        park(data[i])
-        mobility(data[i])
+        console.log("added dummy data " + (i + 1) + "/" + data.length)
+        await score(data[i])
+        await allies(data[i])
+        await enemies(data[i])
+        await climb(data[i])
+        await park(data[i])
+        await mobility(data[i])
+        await defence(data[i])
+
+        await setTeamAgg({team_agg_data: await calculateTeamAgg({team: data[i].team})})
     }
 }
 
 //scores a single match
 export async function scoreMatch(match: matchData){
     console.log(match)
-    makeTeam(match.team)
-    score(match)
-    allies(match)
-    enemies(match)
-    park(match)
-    mobility(match)
-    climb(match)
-
+    await makeTeam(match.team)
+    await score(match)
+    await allies(match)
+    await enemies(match)
+    await park(match)
+    await mobility(match)
+    await climb(match)
+    await defence(match)
 }
 
 
@@ -152,20 +156,15 @@ export async function scoreMatch(match: matchData){
 export async function score(data: matchData) {
     const session = getNeoSession()
 
-    // try
-
-    //climb
-
     for (var i = 0; i < data.cycles.length; i++) {
         try {
             const tx = session.beginTransaction()
             //create the cycle node for the current cycle
             const result = await tx.run(
-                'CREATE (a:Cycle{x:$x,y:$y,match:toString($match),teleop:$teleop}) RETURN  ID(a)',
+                'CREATE (a:Cycle{substation:toString($sub),match:toString($match),teleop:$teleop}) RETURN  ID(a)',
                 {
+                    sub: data.cycles[i].substation,
                     team: data.team,
-                    x: data.cycles[i].x,
-                    y: data.cycles[i].y,
                     match: data.match,
                     teleop: data.cycles[i].teleop,
                 },
@@ -178,23 +177,23 @@ export async function score(data: matchData) {
                 {
                     id: id,
                     team: data.team,
-                    x: data.cycles[i].x,
-                    y: data.cycles[i].y,
                     match: data.match,
                     teleop: data.cycles[i].teleop,
                     object: data.cycles[i].object
                 }
             )
 
-            //if the piece is scored merge the node with the name of the position, and then create the relationship from the cycle to the scoringposition
-            if (data.cycles[i].scoringPosition != null) {
+            //if the piece is scored merge the node with the name of the position
+            if (data.cycles[i].level != null && data.cycles[i].level != 0) {
+                const positions = ["dropped", "bottom", "middle", "top"]
                 const result2 = await tx.run(
-                    'MERGE (z:ScoringPosition{name: toInteger($name), team:toInteger($team)}) RETURN ID(z)',
+                    'MERGE (z:ScoringPosition{name: $posName, team:toInteger($team)}) RETURN ID(z)',
                     {
-                        name: data.cycles[i].scoringPosition,
+                        posName: positions[data.cycles[i].level],
                         team: data.team
                     },
                 )
+                //and then create the relationship from the cycle to the scoringposition
                 const scoringId = result2.records[0].get(0).toNumber()
                 const result3 = await tx.run(
                     'MATCH (c:Cycle), (s:ScoringPosition) WHERE ID(c) = $id AND ID(s) = $scoringId CREATE (c)-[r:SCORED{teleop:$teleop, match:toString($match),link:$link}]->(s)',

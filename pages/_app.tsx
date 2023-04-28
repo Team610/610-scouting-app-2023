@@ -19,9 +19,13 @@ export default function App({
           withNormalizeCSS
           theme={{ colorScheme: "dark" }}
         >
-          {!router.asPath.includes('match') ? <Layout>
+          {!router.asPath.includes("match") ? (
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          ) : (
             <Component {...pageProps} />
-          </Layout> : <Component {...pageProps} />}
+          )}
         </MantineProvider>
       </SessionProvider>
     </>

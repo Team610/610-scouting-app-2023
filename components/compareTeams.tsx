@@ -1,21 +1,18 @@
-import { getCompTeams, getMatch, getTeam } from "../neo4j/Aggregate";
-import { createNTeams, addDummyData } from "../neo4j/AddData";
-import { query, wipe } from "../neo4j/Miscellaneous";
-import { Button, Table } from "@mantine/core";
+import { getCompTeams, getMatch, calculateTeamAgg } from "../neo4j/Aggregate";
+import { Button, Table, TextInput } from "@mantine/core";
 import { useEffect, useState } from "react";
 import { teamAggData } from "../utils";
 
 export function CompareTeamData({ teams }: { teams: Array<number> }) {
-  const [data6, setData6] = useState<teamAggData[]>();
+  const [data, setData] = useState<teamAggData[]>();
   const teamRoles = ["Blue 1", "Blue 2", "Blue 3", "Red 1", "Red 2", "Red 3"];
 
   useEffect(() => {
     async function getData() {
-      console.log("getting data");
-      setData6(await getCompTeams(teams));
+      setData((await getCompTeams(teams)) as teamAggData[]);
     }
     getData();
-  }, []);
+  }, [teams]);
 
   const ths = (
     <tr>
@@ -34,12 +31,13 @@ export function CompareTeamData({ teams }: { teams: Array<number> }) {
       <th>Cone Accuracy</th>
       <th>Cube Accuracy</th>
       <th>Link PG</th>
+      <th>AutoNoClimbPG</th>
     </tr>
   );
 
-  const rows = data6 ? (
-    data6.map((data: teamAggData, index: number) => (
-      <tr key={data.team}>
+  const rows = data ? (
+    data.map((data: teamAggData, index: number) => (
+      <tr key={index}>
         <td>{data.team}</td>
         <td>{teamRoles[index]}</td>
         <td>{data.matchesPlayed}</td>
@@ -62,6 +60,7 @@ export function CompareTeamData({ teams }: { teams: Array<number> }) {
         <td>{data.coneAccuracy}</td>
         <td>{data.cubeAccuracy}</td>
         <td>{data.linkPG}</td>
+        <td>{data.autoNoClimb}</td>
       </tr>
     ))
   ) : (
@@ -78,24 +77,10 @@ export function CompareTeamData({ teams }: { teams: Array<number> }) {
   );
 }
 
-export default function CompareTeams() {
+export default function CompareTeams({ teams }: { teams?: number[] }) {
   return (
     <div>
-      {/* <Button onClick={async () => await createNTeams(20)}>
-        Create dummy teams
-      </Button> */}
-      {/* <Button onClick={async () => await addDummyData({ data: sampleMatch })}>
-                Add dummy data
-            </Button> */}
-      {/* <Button onClick={async () => await wipe()}>Wipe</Button> */}
-      {/* <Button onClick={async () => {
-          await fetch("/api/create-team", {
-            method: "POST",
-            body: JSON.stringify({team_number: 5})
-          })
-      }}>create teams</Button> */}
-
-      <CompareTeamData teams={[1, 2, 3, 4, 5, 6]} />
+      <CompareTeamData teams={teams} />
     </div>
   );
 }

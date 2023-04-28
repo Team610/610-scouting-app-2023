@@ -1,33 +1,8 @@
-import {
-  createStyles,
-  Header,
-  HoverCard,
-  Group,
-  Button,
-  UnstyledButton,
-  Text,
-  SimpleGrid,
-  ThemeIcon,
-  Anchor,
-  Divider,
-  Center,
-  Box,
-  Burger,
-  Drawer,
-  Collapse,
-  ScrollArea,
-} from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { createStyles, Header, Group, Button, Box } from "@mantine/core";
 import SignIn, { checkAccount } from "./signIn";
 import Link from "next/link";
-import { getSession, signIn, signOut } from "next-auth/react";
-import {
-  GetServerSidePropsContext,
-  NextComponentType,
-  NextPageContext,
-} from "next";
+import { signIn } from "next-auth/react";
 import { ReactNode } from "react";
-import { addUser } from "../neo4j/User";
 
 const useStyles = createStyles((theme) => ({
   link: {
@@ -69,20 +44,6 @@ const useStyles = createStyles((theme) => ({
     }),
 
     "&:active": theme.activeStyles,
-  },
-
-  dropdownFooter: {
-    backgroundColor:
-      theme.colorScheme === "dark"
-        ? theme.colors.dark[7]
-        : theme.colors.gray[0],
-    margin: -theme.spacing.md,
-    marginTop: theme.spacing.sm,
-    padding: `${theme.spacing.md}px ${theme.spacing.md * 2}px`,
-    paddingBottom: theme.spacing.xl,
-    borderTop: `1px solid ${
-      theme.colorScheme === "dark" ? theme.colors.dark[5] : theme.colors.gray[1]
-    }`,
   },
 
   hiddenMobile: {
@@ -151,7 +112,13 @@ export function HeaderMegaMenu() {
               Teams
             </Link>
             <Link href="/data" className={classes.link}>
-              Data
+              Ranking
+            </Link>
+            <Link href="/chart" className={classes.link}>
+              Compare Teams
+            </Link>
+            <Link href="/allTeams" className={classes.link}>
+              All Teams Scatter
             </Link>
             <Link
               href={""}

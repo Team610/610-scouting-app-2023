@@ -1,21 +1,21 @@
 import { convertCycleServer } from "../lib/clientCycleToServer";
 import { matchData } from "../utils";
 import { mobility, scoreMatch } from "./AddData";
+import { calculateTeamAgg, setTeamAgg } from "./Aggregate";
 import { getNeoSession } from "./Session";
 
 export interface clientCycle {
-    x: number,
-    y: number,
+    substation: string,
     auto: boolean,
-    grid: number,
     level: number,
     cone: boolean,
     link: boolean,
-    position: number
+    dropped: boolean
 }
 
 export async function submitMatch(match: matchData){
 
-    scoreMatch(match)
+    await scoreMatch(match)
+    await setTeamAgg({team_agg_data: await calculateTeamAgg({team: match.team})})
 
 }
